@@ -12,38 +12,25 @@ summary: 'A developer installs the cupboard CLI via go install and verifies it w
 actor: Developer or agent with a Go toolchain (1.25+) installed
 trigger: Wanting to use cupboard on a new machine or in a new project
 flow:
-- id: F1
-  step: 'Install cupboard binary: run go install github.com/mesh-intelligence/crumbs/cmd/cupboard@latest'
-- id: F2
-  step: 'Verify binary accessible: run cupboard --help'
-- id: F3
-  step: 'Initialize cupboard: run cupboard init in a project directory'
-- id: F4
-  step: 'Create a crumb: run cupboard set crumbs with JSON payload'
-- id: F5
-  step: 'List crumbs: run cupboard list crumbs to confirm persistence'
+  - F1: "Install cupboard binary: run go install github.com/mesh-intelligence/crumbs/cmd/cupboard@latest"
+  - F2: "Verify binary accessible: run cupboard --help"
+  - F3: "Initialize cupboard: run cupboard init in a project directory"
+  - F4: "Create a crumb: run cupboard set crumbs with JSON payload"
+  - F5: "List crumbs: run cupboard list crumbs to confirm persistence"
 touchpoints:
-- T1: 'cmd/cupboard: CLI binary built by go install'
-- T2: 'pkg/types: Config struct, entity types (prd001-cupboard-core R1)'
-- T3: 'internal/sqlite: Backend that creates JSONL files and SQLite cache (prd002-sqlite-backend
-    R1, R4)'
-- T4: 'internal/paths: Resolves default config and data directories (prd010-configuration-directories
-    R1, R2)'
+  - T1: "cmd/cupboard: CLI binary built by go install"
+  - T2: "pkg/types: Config struct, entity types (prd001-cupboard-core R1)"
+  - T3: "internal/sqlite: Backend that creates JSONL files and SQLite cache (prd002-sqlite-backend R1, R4)"
+  - T4: "internal/paths: Resolves default config and data directories (prd010-configuration-directories R1, R2)"
 success_criteria:
-- id: S1
-  criterion: go install github.com/mesh-intelligence/crumbs/cmd/cupboard@latest completes
-    without errors
-- id: S2
-  criterion: cupboard --help prints usage from $GOBIN
-- id: S3
-  criterion: cupboard init creates the data directory with JSONL files
-- id: S4
-  criterion: cupboard set crumbs and cupboard list crumbs round-trips a crumb
-- id: S5
-  criterion: No manual compilation steps required beyond go install
+  - S1: go install github.com/mesh-intelligence/crumbs/cmd/cupboard@latest completes without errors
+  - S2: cupboard --help prints usage from $GOBIN
+  - S3: cupboard init creates the data directory with JSONL files
+  - S4: cupboard set crumbs and cupboard list crumbs round-trips a crumb
+  - S5: No manual compilation steps required beyond go install
 out_of_scope:
-- Package managers (brew, apt, snap)
-- Docker-based installation (see rel99.0-uc002-docker-bootstrap)
-- Version management or update mechanisms
-- Cross-compilation or release binaries (goreleaser, GitHub releases)
+  - Package managers (brew, apt, snap)
+  - Docker-based installation (see rel99.0-uc002-docker-bootstrap)
+  - Version management or update mechanisms
+  - Cross-compilation or release binaries (goreleaser, GitHub releases)
 test_suite: test-rel01.1

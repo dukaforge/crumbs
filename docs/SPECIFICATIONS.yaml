@@ -90,145 +90,149 @@ prd_index:
     title: Configuration Directory Structure
     summary: Defines platform-specific configuration and data directory locations for the CLI
     path: specs/product-requirements/prd010-configuration-directories.yaml
+  - id: prd011-blazes-templates
+    title: Blazes Template Schema, Discovery, and Selection
+    summary: Defines the Blaze template schema for reusable agent workflow patterns with tag-based discovery and selection
+    path: specs/product-requirements/prd011-blazes-templates.yaml
 
 use_case_index:
   - id: rel01.0-uc001-cupboard-lifecycle
     title: Configuration and Cupboard Lifecycle
     release: "01.0"
     status: done
-    test_suite: test-rel01.0-uc001-cupboard-lifecycle
+    test_suite: test-rel01.0
     path: specs/use-cases/rel01.0-uc001-cupboard-lifecycle.yaml
   - id: rel01.0-uc002-table-crud
     title: Table Interface CRUD Operations
     release: "01.0"
     status: done
-    test_suite: test-rel01.0-uc002-table-crud
+    test_suite: test-rel01.0
     path: specs/use-cases/rel01.0-uc002-table-crud.yaml
   - id: rel01.0-uc003-crumb-lifecycle
     title: Crumb Entity Operations
     release: "01.0"
     status: done
-    test_suite: test-rel01.0-uc003-crumb-lifecycle
+    test_suite: test-rel01.0
     path: specs/use-cases/rel01.0-uc003-crumb-lifecycle.yaml
   - id: rel01.0-uc004-scaffolding-validation
     title: Scaffolding Validation
     release: "01.0"
     status: done
-    test_suite: test-rel01.0-uc004-scaffolding-validation
+    test_suite: test-rel01.0
     path: specs/use-cases/rel01.0-uc004-scaffolding-validation.yaml
   - id: rel01.0-uc005-crumbs-table-benchmarks
     title: Crumbs Table Performance Benchmarks
     release: "01.0"
     status: done
-    test_suite: test-rel01.0-uc005-crumbs-table-benchmarks
+    test_suite: test-rel01.0
     path: specs/use-cases/rel01.0-uc005-crumbs-table-benchmarks.yaml
   - id: rel01.1-uc001-go-install
     title: Go Install
     release: "01.1"
     status: done
-    test_suite: test-rel01.1-uc001-go-install
+    test_suite: test-rel01.1
     path: specs/use-cases/rel01.1-uc001-go-install.yaml
   - id: rel01.1-uc002-jsonl-git-roundtrip
     title: JSONL Git Roundtrip
     release: "01.1"
     status: done
-    test_suite: test-rel01.1-uc002-jsonl-git-roundtrip
+    test_suite: test-rel01.1
     path: specs/use-cases/rel01.1-uc002-jsonl-git-roundtrip.yaml
   - id: rel01.1-uc003-configuration-loading
     title: Configuration and Path Resolution
     release: "01.1"
     status: done
-    test_suite: test-rel01.1-uc003-configuration-loading
+    test_suite: test-rel01.1
     path: specs/use-cases/rel01.1-uc003-configuration-loading.yaml
   - id: rel01.1-uc004-generic-table-cli
     title: Generic Table CLI Operations
     release: "01.1"
     status: done
-    test_suite: test-rel01.1-uc004-generic-table-cli
+    test_suite: test-rel01.1
     path: specs/use-cases/rel01.1-uc004-generic-table-cli.yaml
   - id: rel01.1-uc005-flat-self-hosting
     title: Flat Self-Hosting
     release: "01.1"
     status: done
-    test_suite: test-rel01.1-uc005-flat-self-hosting
+    test_suite: test-rel01.1
     path: specs/use-cases/rel01.1-uc005-flat-self-hosting.yaml
   - id: rel02.0-uc001-property-enforcement
     title: Property Enforcement
     release: "02.0"
     status: done
-    test_suite: test-rel02.0-uc001-property-enforcement
+    test_suite: test-rel02.0
     path: specs/use-cases/rel02.0-uc001-property-enforcement.yaml
   - id: rel02.0-uc002-regeneration-compatibility
     title: Regeneration Compatibility
     release: "02.0"
     status: done
-    test_suite: test-rel02.0-uc002-regeneration-compatibility
+    test_suite: test-rel02.0
     path: specs/use-cases/rel02.0-uc002-regeneration-compatibility.yaml
   - id: rel02.1-uc001-issue-tracking-cli
     title: Issue-Tracking CLI
     release: "02.1"
     status: done
-    test_suite: test-rel02.1-uc001-issue-tracking-cli
+    test_suite: test-rel02.1
     path: specs/use-cases/rel02.1-uc001-issue-tracking-cli.yaml
   - id: rel02.1-uc002-table-benchmarks
     title: Table Benchmarks
     release: "02.1"
     status: done
-    test_suite: test-rel02.1-uc002-table-benchmarks
+    test_suite: test-rel02.1
     path: specs/use-cases/rel02.1-uc002-table-benchmarks.yaml
   - id: rel02.1-uc003-self-hosting
     title: Self-Hosting
     release: "02.1"
     status: done
-    test_suite: test-rel02.1-uc003-self-hosting
+    test_suite: test-rel02.1
     path: specs/use-cases/rel02.1-uc003-self-hosting.yaml
   - id: rel02.1-uc004-metadata-lifecycle
     title: Metadata Lifecycle Operations
     release: "02.1"
     status: done
-    test_suite: test-rel02.1-uc004-metadata-lifecycle
+    test_suite: test-rel02.1
     path: specs/use-cases/rel02.1-uc004-metadata-lifecycle.yaml
   - id: rel03.0-uc001-trail-exploration
     title: Trail-Based Exploration
     release: "03.0"
     status: done
-    test_suite: test-rel03.0-uc001-trail-exploration
+    test_suite: test-rel03.0
     path: specs/use-cases/rel03.0-uc001-trail-exploration.yaml
   - id: rel03.0-uc002-link-management
     title: Link Management
     release: "03.0"
     status: done
-    test_suite: test-rel03.0-uc002-link-management
+    test_suite: test-rel03.0
     path: specs/use-cases/rel03.0-uc002-link-management.yaml
   - id: rel03.0-uc003-stash-operations
     title: Stash Operations
     release: "03.0"
     status: done
-    test_suite: test-rel03.0-uc003-stash-operations
+    test_suite: test-rel03.0
     path: specs/use-cases/rel03.0-uc003-stash-operations.yaml
   - id: rel03.0-uc004-trail-crumb-lifecycle
     title: Trail-Crumb Lifecycle Control
     release: "03.0"
     status: done
-    test_suite: test-rel03.0-uc004-trail-crumb-lifecycle
+    test_suite: test-rel03.0
     path: specs/use-cases/rel03.0-uc004-trail-crumb-lifecycle.yaml
   - id: rel03.1-uc001-self-hosting-with-epics
     title: Self-Hosting with Epics via Trails
     release: "03.1"
     status: done
-    test_suite: test-rel03.1-uc001-self-hosting-with-epics
+    test_suite: test-rel03.1
     path: specs/use-cases/rel03.1-uc001-self-hosting-with-epics.yaml
   - id: rel99.0-uc001-blazes-templates
     title: Agent Uses Blazes (Workflow Templates)
     release: "99.0"
     status: not_started
-    test_suite: test-rel99.0-uc001-blazes-templates
+    test_suite: test-rel99.0
     path: specs/use-cases/rel99.0-uc001-blazes-templates.yaml
   - id: rel99.0-uc002-docker-bootstrap
     title: Docker Bootstrap (Docs to Working System)
     release: "99.0"
     status: not_started
-    test_suite: test-rel99.0-uc002-docker-bootstrap
+    test_suite: test-rel99.0
     path: specs/use-cases/rel99.0-uc002-docker-bootstrap.yaml
 
 test_suite_index:
@@ -537,6 +541,10 @@ prd_to_use_case_mapping:
     why_required: Storage, JSONL persistence for trails and links
     coverage: Partial (R1-R5)
   - use_case: rel99.0-uc001-blazes-templates
+    prd: prd011-blazes-templates
+    why_required: Template schema, discovery, tag matching, and selection
+    coverage: Partial (R1, R4-R8)
+  - use_case: rel99.0-uc001-blazes-templates
     prd: prd003-crumbs-interface
     why_required: Crumb struct fields referenced in template definitions
     coverage: Partial (R1)
@@ -562,5 +570,5 @@ prd_to_use_case_mapping:
     coverage: Partial (R3, R4, R7, R8)
 
 coverage_gaps: |
-  No gaps identified. All 23 use cases have corresponding test suites, and all 10 PRDs are
+  No gaps identified. All 23 use cases have corresponding test suites, and all 11 PRDs are
   referenced by at least one use case.

@@ -13,6 +13,7 @@ project:
     context_include: ""
     context_exclude: ""
     release: ""
+    releases: []
     seed_files: {}
 generation:
     prefix: generation-
@@ -38,7 +39,10 @@ cobbler:
     max_context_bytes: 0
     enforce_measure_validation: false
     max_measure_retries: 0
+    max_requirements_per_task: 0
     history_dir: history
+    doc_tag_prefix: v0.
+    base_branch: main
 podman:
     image: claude-cli
     args: []
