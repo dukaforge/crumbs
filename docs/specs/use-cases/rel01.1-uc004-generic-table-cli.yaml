@@ -14,75 +14,39 @@ summary: 'A developer uses the cupboard CLI to perform CRUD operations on any ta
 actor: Developer using the cupboard CLI
 trigger: Invoking a generic table command (get, set, list, or delete)
 flow:
-- id: F1
-  step: 'Get entity by ID: run cupboard get <table> <id> to retrieve a single entity
-    as JSON'
-- id: F2
-  step: 'Set entity: run cupboard set <table> <id> <json> to create (id empty) or
-    update (id provided) an entity'
-- id: F3
-  step: 'List entities: run cupboard list <table> [filter...] to query entities with
-    optional key=value filters'
-- id: F4
-  step: 'Delete entity: run cupboard delete <table> <id> to remove an entity by ID'
-- id: F5
-  step: 'Handle unknown table: commands return exit code 1 with error listing valid
-    table names'
-- id: F6
-  step: 'Handle missing entity: get and delete return exit code 1 with entity not
-    found message'
-- id: F7
-  step: 'Handle invalid JSON: set returns exit code 1 with parse error details'
-- id: F8
-  step: 'Handle invalid filter: list returns exit code 1 with expected key=value message'
+  - F1: "Get entity by ID: run cupboard get <table> <id> to retrieve a single entity as JSON"
+  - F2: "Set entity: run cupboard set <table> <id> <json> to create (id empty) or update (id provided) an entity"
+  - F3: "List entities: run cupboard list <table> [filter...] to query entities with optional key=value filters"
+  - F4: "Delete entity: run cupboard delete <table> <id> to remove an entity by ID"
+  - F5: "Handle unknown table: commands return exit code 1 with error listing valid table names"
+  - F6: "Handle missing entity: get and delete return exit code 1 with entity not found message"
+  - F7: "Handle invalid JSON: set returns exit code 1 with parse error details"
+  - F8: "Handle invalid filter: list returns exit code 1 with expected key=value message"
 touchpoints:
-- T1: 'Cupboard interface: GetTable returns Table for any standard table name (prd001-cupboard-core
-    R2)'
-- T2: 'Table interface: Get, Set, Delete, Fetch operations (prd001-cupboard-core R3)'
-- T3: 'cmd/cupboard/get.go: retrieves entity by ID, outputs JSON (prd009-cupboard-cli
-    R3.1)'
-- T4: 'cmd/cupboard/set.go: creates or updates entity from JSON input (prd009-cupboard-cli
-    R3.2)'
-- T5: 'cmd/cupboard/list.go: queries with key=value filters, outputs JSON array (prd009-cupboard-cli
-    R3.4)'
-- T6: 'cmd/cupboard/delete.go: removes entity by ID (prd009-cupboard-cli R3.3)'
-- T7: 'Error handling: exit codes and message format (prd009-cupboard-cli R8, R9)'
-- T8: 'Output format: JSON with 2-space indentation (prd009-cupboard-cli R7)'
+  - T1: "Cupboard interface: GetTable returns Table for any standard table name (prd001-cupboard-core R2)"
+  - T2: "Table interface: Get, Set, Delete, Fetch operations (prd001-cupboard-core R3)"
+  - T3: "cmd/cupboard/get.go: retrieves entity by ID, outputs JSON (prd009-cupboard-cli R3.1)"
+  - T4: "cmd/cupboard/set.go: creates or updates entity from JSON input (prd009-cupboard-cli R3.2)"
+  - T5: "cmd/cupboard/list.go: queries with key=value filters, outputs JSON array (prd009-cupboard-cli R3.4)"
+  - T6: "cmd/cupboard/delete.go: removes entity by ID (prd009-cupboard-cli R3.3)"
+  - T7: "Error handling: exit codes and message format (prd009-cupboard-cli R8, R9)"
+  - T8: "Output format: JSON with 2-space indentation (prd009-cupboard-cli R7)"
 success_criteria:
-- id: S1
-  criterion: cupboard get <table> <id> returns JSON object with exit 0 for valid entity
-- id: S2
-  criterion: cupboard get <table> <id> returns exit 1 with 'not found' for missing
-    entity
-- id: S3
-  criterion: cupboard get <unknown-table> <id> returns exit 1 with valid table names
-    listed
-- id: S4
-  criterion: cupboard set <table> '' <json> creates new entity and returns JSON with
-    generated ID
-- id: S5
-  criterion: cupboard set <table> <id> <json> updates existing entity and returns
-    JSON
-- id: S6
-  criterion: cupboard set <table> <id> <invalid-json> returns exit 1 with parse error
-- id: S7
-  criterion: cupboard list <table> returns JSON array of all entities with exit 0
-- id: S8
-  criterion: cupboard list <table> State=draft returns filtered JSON array with exit
-    0
-- id: S9
-  criterion: cupboard list <table> invalid-filter returns exit 1 with expected format
-    message
-- id: S10
-  criterion: cupboard delete <table> <id> removes entity and outputs confirmation
-    with exit 0
-- id: S11
-  criterion: cupboard delete <table> <id> returns exit 1 for missing entity
-- id: S12
-  criterion: 'Commands work across all table types: crumbs, trails, links'
+  - S1: cupboard get <table> <id> returns JSON object with exit 0 for valid entity
+  - S2: cupboard get <table> <id> returns exit 1 with 'not found' for missing entity
+  - S3: cupboard get <unknown-table> <id> returns exit 1 with valid table names listed
+  - S4: "cupboard set <table> '' <json> creates new entity and returns JSON with generated ID"
+  - S5: cupboard set <table> <id> <json> updates existing entity and returns JSON
+  - S6: cupboard set <table> <id> <invalid-json> returns exit 1 with parse error
+  - S7: cupboard list <table> returns JSON array of all entities with exit 0
+  - S8: cupboard list <table> State=draft returns filtered JSON array with exit 0
+  - S9: cupboard list <table> invalid-filter returns exit 1 with expected format message
+  - S10: cupboard delete <table> <id> removes entity and outputs confirmation with exit 0
+  - S11: cupboard delete <table> <id> returns exit 1 for missing entity
+  - S12: "Commands work across all table types: crumbs, trails, links"
 out_of_scope:
-- Entity-specific commands with friendly flags (cupboard crumb add --name)
-- Human-readable table output (only JSON output tested)
-- Issue-tracking workflow commands (ready, create, update, close)
-- Property operations on crumbs
+  - Entity-specific commands with friendly flags (cupboard crumb add --name)
+  - Human-readable table output (only JSON output tested)
+  - Issue-tracking workflow commands (ready, create, update, close)
+  - Property operations on crumbs
 test_suite: test-rel01.1
