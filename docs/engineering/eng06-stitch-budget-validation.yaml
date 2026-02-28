@@ -158,8 +158,9 @@ sections:
 
 - title: rel03.0 — Trails and Stashes
   content: |
-    rel03.0 introduces three new subsystems (pkg/trails, pkg/stash, pkg/types) and the Link
-    table accessor. One task is HIGH risk; two are MEDIUM.
+    rel03.0 completes pkg/schema (Trail, Stash, Link entity types and methods), pkg/constants
+    (link and stash operation constants), and the internal/persistence/ table accessors for
+    trails, links, and stashes. One task is HIGH risk; two are MEDIUM.
 
     Table 6 rel03.0 proposed tasks
 
@@ -202,24 +203,25 @@ sections:
 
 - title: Recommendations
   content: |
-    Four actions are required before GH-15 runs. One is blocking.
+    Four actions are required before GH-15 runs. The blocking action is resolved.
 
     Table 8 Pre-generation actions
 
     | Priority | Action | Blocking? | Owner |
     |----------|--------|-----------|-------|
-    | 1 | Resolve package naming discrepancy between eng05 and PRDs | Yes | Architecture |
+    | 1 | Resolve package naming discrepancy between eng05 and PRDs | RESOLVED (GH-18) | Architecture |
     | 2 | Split entity hydration task (prd002 R14-R15) into two tasks | No | Stitch measure |
     | 3 | Split Crumb state+property task (prd003 R4-R11) into two tasks | No | Stitch measure |
     | 4 | Add transaction requirement to Property backfill task (prd004 R4) | No | Stitch measure |
 
-    Resolve package naming (blocking). eng05-testing-strategy describes pkg/schema for all
-    entity methods and internal/persistence for the backend. The PRDs (prd001-prd009) name
-    specific packages: pkg/cupboard, pkg/crumbs, pkg/properties, pkg/trails, pkg/stash,
-    internal/sqlite. Stitch will use whatever structure it infers from docs; if the PRDs and
-    eng05 disagree, generated code will be inconsistent. Update ARCHITECTURE.yaml with an
-    explicit project_structure table that names every package and its role. This resolves the
-    conflict for stitch before generation begins.
+    Resolve package naming (resolved by GH-18). ARCHITECTURE.yaml now defines an expanded
+    project_structure with per-package prds and role_detail fields. The canonical packages are
+    pkg/api (interfaces), pkg/schema (all entity structs and methods), pkg/constants (all domain
+    strings), internal/persistence/engine (SQLite lifecycle), internal/persistence/mapping
+    (hydration/dehydration), internal/persistence/ (Table implementations), and cmd/cupboard
+    (CLI). The explicit pkg/types references in prd007 R2.2 and prd008 R7.3, R7.5, R12.1 have
+    been corrected to pkg/constants, pkg/schema, and pkg/api respectively. No package name
+    ambiguity remains across PRDs, eng05, and ARCHITECTURE.yaml.
 
     Split hydration task (prd002 R14-R15). At an estimated 480 LOC, the entity hydration
     and dehydration task exceeds the HIGH threshold. Measure should propose two tasks at
@@ -264,9 +266,11 @@ sections:
     cascade) is intentionally kept whole. One (Property backfill) needs an explicit transaction
     note in the stitch task.
 
-    The single blocking action is the package naming discrepancy. GH-15 must not run until
-    ARCHITECTURE.yaml names every package explicitly and eng05-testing-strategy is reconciled
-    with the PRD package structure. Once that update is committed, GH-15 can proceed.
+    The single blocking action (package naming discrepancy) is resolved by GH-18.
+    ARCHITECTURE.yaml project_structure now maps every package to its PRDs and role. The
+    explicit pkg/types references in prd007 and prd008 are corrected. GH-15 can proceed
+    once the three remaining Stitch measure actions (items 2-4) are applied at generation
+    time.
 references:
 - id: eng02-generation-workflow
   path: engineering/eng02-generation-workflow.yaml

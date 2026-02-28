@@ -293,20 +293,30 @@ technology_choices:
     purpose: Traces, metrics, and structured logs in a single pipeline
 
 project_structure:
-  - path: cmd/cupboard/
-    role: CLI entrypoint
   - path: pkg/api/
-    role: Intent — Cupboard, Table interfaces and Config
+    role: "Intent — Cupboard and Table interfaces, Config, SQLiteConfig, sentinel errors. The only package callers import. Implements prd001-cupboard-core R1-R3, R6-R7."
+
   - path: pkg/schema/
-    role: Domain — entity structs and state-transition methods
+    role: "Domain — all entity structs and state-transition methods (Crumb, Trail, Property, Category, Stash, Metadata, Link, StashHistoryEntry). No dependency on pkg/api or internal/. One file per entity type. Implements prd003-crumbs-interface, prd004-properties-interface, prd005-metadata-interface, prd006-trails-interface, prd007-links-interface R1, prd008-stash-interface R1-R7."
+
   - path: pkg/constants/
-    role: Rules — states, link types, property defaults (no magic strings)
+    role: "Rules — all domain strings as named constants: state values, link types, table names, sync strategies, stash operation codes, property value types. No package uses raw string literals. Authoritative location for constants referenced by prd007-links-interface R2.2 and prd008-stash-interface R2, R7.3. Implements prd001-cupboard-core R2.5, prd002-sqlite-backend R2."
+
   - path: internal/persistence/engine/
-    role: Infrastructure — SQLite lifecycle, JSONL flush, file I/O
+    role: "Infrastructure — SQLite lifecycle, JSONL flush, RWMutex, atomic write pattern (temp file, fsync, rename). Knows nothing about entity types. Implements prd002-sqlite-backend R1-R11, R16, prd010-configuration-directories R4-R7."
+
   - path: internal/persistence/mapping/
-    role: Translation — entity struct to/from SQL row (hydration/dehydration)
+    role: "Translation — hydration (SQL row to entity struct) and dehydration (entity struct to SQL params) for all entity types. One mapper per entity type. The only place that knows both field names and column names. Implements prd002-sqlite-backend R14, R15."
+
+  - path: internal/persistence/
+    role: "Persistence — Table interface implementations for all entity types. One file per entity table (crumbs_table.go, trails_table.go, etc.). Imports pkg/api, pkg/schema, pkg/constants, and internal/persistence/engine and mapping. Implements cascade operations for trail complete and abandon. Implements prd002-sqlite-backend R12-R13, prd003-crumbs-interface R6-R10, prd004-properties-interface R4-R6, prd005-metadata-interface R4-R8, prd006-trails-interface R3-R4, prd007-links-interface R3-R4, prd008-stash-interface R3, R8-R11."
+
+  - path: cmd/cupboard/
+    role: "CLI entrypoint — cobra commands, config loading, output formatting. One file per command group. Imports pkg/api and pkg/schema only; never imports internal/. Implements prd009-cupboard-cli, prd010-configuration-directories R1, R8."
+
   - path: internal/telemetry/
-    role: Observability — OpenTelemetry implementation
+    role: "Observability — OpenTelemetry traces, metrics, and structured logs. Imported by internal/persistence/engine."
+
   - path: go.mod
     role: Module definition
 
