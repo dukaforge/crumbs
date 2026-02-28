@@ -13,6 +13,16 @@ goals:
 - G6: Specify state validation rules for entity methods
 - G7: Document error conditions for entity operations
 requirements:
+  D:
+    title: Design Decisions
+    items:
+    - D-ENTITY: Entity methods (SetState, Pebble, Dust, SetProperty, GetProperty, GetProperties, ClearProperty) are
+        implemented entirely in pkg/schema/crumb.go. They operate only on the Crumb struct in memory. They do not import
+        internal/persistence or any backend package. Persistence is always the caller's responsibility — after calling an
+        entity method, the caller passes the modified struct to Table.Set.
+    - D-TABLE-CRUMB: The Crumbs table accessor is implemented in internal/persistence/crumbs_table.go. It implements the
+        Table interface for the crumbs table. It imports pkg/schema for the Crumb struct but does not call any Crumb entity
+        methods directly; it reads and writes struct fields.
   R1:
     title: Crumb Struct
     items:
@@ -46,6 +56,8 @@ requirements:
   R4:
     title: State Transition Methods
     items:
+    - R4.0: Entity methods (R4-R5) must be implemented before the Crumbs table accessor (R6-R11). The table accessor imports
+        pkg/schema/crumb.go; that file must exist and compile before internal/persistence/crumbs_table.go is generated.
     - R4.1: The Crumb struct provides methods for common state transitions
     - R4.5: After calling any state transition method, the caller must save the crumb with Table.Set to persist the changes
   R5:
@@ -66,6 +78,8 @@ requirements:
   R6:
     title: Retrieving Crumbs
     items:
+    - R6.0: 'Table accessor group (R6-R11) — implement in internal/persistence/crumbs_table.go. Depends on R4-R5 (entity
+        methods in pkg/schema/crumb.go) being complete.'
     - R6.1: To retrieve a crumb by ID, use Table.Get
     - R6.2: Table.Get returns the entity as any; the caller must type-assert to *Crumb
     - R6.3: Table.Get returns ErrNotFound if no crumb exists with the given ID
@@ -135,4 +149,5 @@ acceptance_criteria:
 - Filter map defined with states, trail_id, parent_id, properties, limit, offset
 - Query via Table.Fetch specified (filter map, type assertion, pagination)
 - Error types documented (including ErrInvalidTransition)
+- D-ENTITY and D-TABLE-CRUMB design decisions present; R4.0 ordering requirement present; R6.0 table accessor group marker present
 - All requirements numbered and specific
