@@ -26,7 +26,7 @@ requirements:
     title: Link Types and Semantics
     items:
     - R2.1: LinkType must be one of the four valid types
-    - R2.2: Link type constants must be defined in pkg/types/link.go
+    - R2.2: Link type constants must be defined in pkg/constants
     - R2.3: Table.Set must reject unrecognized LinkType values with ErrInvalidData
     - R2.4: The graph formed by child_of links must be a DAG (no cycles). See R8 for validation
   R3:
@@ -91,7 +91,7 @@ non_goals:
 acceptance_criteria:
 - Link struct defined with LinkID, LinkType, FromID, ToID, CreatedAt
 - Link types documented (belongs_to, child_of, branches_from, scoped_to)
-- Link type constants defined in pkg/types/link.go
+- Link type constants defined in pkg/constants
 - CRUD operations specified via Table interface
 - Filter keys documented (LinkID, LinkType, FromID, ToID, CreatedAt)
 - AND semantics for multiple filter keys documented

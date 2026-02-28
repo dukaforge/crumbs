@@ -82,8 +82,8 @@ requirements:
     - R7.1: The backend maintains a history log of stash mutations. History is backend-managed, not accessed through entity
         methods
     - R7.2: StashHistoryEntry contains the following fields
-    - R7.3: Operation constants (defined in pkg/types/stash.go)
-    - R7.5: The StashHistoryEntry struct is defined in pkg/types for backends to use when returning history data
+    - R7.3: Operation constants (defined in pkg/constants)
+    - R7.5: The StashHistoryEntry struct is defined in pkg/schema for backends to use when returning history data
     - R7.6: Backend must provide a method to query stash history entries by stash ID, returning entries ordered by version
         ascending
   R8:
@@ -120,7 +120,7 @@ requirements:
   R12:
     title: Error Types
     items:
-    - R12.1: Stash entity methods and Table operations use sentinel errors defined in pkg/types/table.go
+    - R12.1: Stash entity methods and Table operations use sentinel errors defined in pkg/api
     - R12.2: All errors are checkable with errors.Is
     - R12.3: Backend implementations may return additional errors for validation (e.g., duplicate names) as needed
   R13:
