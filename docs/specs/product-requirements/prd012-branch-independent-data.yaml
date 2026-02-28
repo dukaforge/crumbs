@@ -1,0 +1,68 @@
+id: prd012-branch-independent-data
+title: Branch-Independent Data Persistence
+problem: |
+  The beads model tied issue state to git branches. JSONL files traveled with task branches,
+  which meant the issue tracker reflected only the issues visible on the current branch. An
+  abandoned branch silently took issue state with it; issues created on a feature branch were
+  invisible from main until the branch merged. The issue tracker and the git branch lifecycle
+  were coupled, and that coupling produced two problems: issue state was not always available,
+  and issue recovery depended on branch recovery.
+
+  We need issue data to live on main at all times, independent of the code branch the
+  developer is working on. The data directory is a fixed location; JSONL files in it are
+  always committed to main. Code branches are for code. The cupboard is for issues.
+
+goals:
+- G1: JSONL files are always committed to main, regardless of the active code branch
+- G2: Issue state is visible and identical from any git branch
+- G3: Issue lifecycle is decoupled from git branch lifecycle
+- G4: No task-branch naming conventions or worktree conventions are required for issue tracking
+
+requirements:
+  R1:
+    title: Data Directory Location
+    items:
+    - R1.1: The data directory must be a fixed path, not scoped to any git branch or worktree
+    - R1.2: The data directory path must be determined by configuration (see prd010-configuration-directories),
+        not by the current branch name or worktree path
+    - R1.3: All JSONL files in the data directory must be committed to the main branch
+    - R1.4: The SQLite database (cupboard.db) must remain gitignored; it is rebuilt from JSONL on Attach
+  R2:
+    title: Commit Behavior
+    items:
+    - R2.1: When issue state changes (create, update, close, comment), the resulting JSONL changes
+        must be committed to main
+    - R2.2: JSONL commits must not require an in-progress code branch to be merged first
+    - R2.3: Code commits and JSONL commits are independent; they may appear on different branches
+        without coordination
+  R3:
+    title: No Task Branch Model
+    items:
+    - R3.1: The system must not define or require task-branch naming conventions for issues
+    - R3.2: Issue tracking must not depend on git worktrees
+    - R3.3: Abandoning or deleting a code branch must not affect issue state
+    - R3.4: Creating or merging a code branch must not trigger any issue state change
+  R4:
+    title: Traceability
+    items:
+    - R4.1: Code commit messages may reference crumb IDs for traceability
+    - R4.2: Traceability from a commit to an issue is achieved via commit message references,
+        not branch colocation
+    - R4.3: Traceability from an issue to commits is achieved via git log --grep="<crumb-id>",
+        searching across all branches
+
+non_goals:
+- This PRD does not define how agents create or manage code branches for development work.
+  Branch conventions for code are outside this PRD's scope.
+- This PRD does not define CI/CD pipelines, remote synchronization, or push behavior.
+- This PRD does not change the JSONL format, SQLite schema, or Cupboard interface.
+- This PRD does not prohibit committing JSONL changes alongside code changes on the same
+  commit; it requires only that JSONL not be isolated to task branches.
+
+acceptance_criteria:
+- Data directory path is fixed and resolved from configuration, not from the current branch name
+- JSONL files are committed to main on every issue state change
+- No task-branch naming scheme is defined or required by the system
+- Abandoning a code branch leaves issue state intact on main
+- SQLite database remains gitignored and ephemeral
+- Commit message references to crumb IDs are supported for reverse traceability

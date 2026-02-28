@@ -94,6 +94,10 @@ prd_index:
     title: Blazes Template Schema, Discovery, and Selection
     summary: Defines the Blaze template schema for reusable agent workflow patterns with tag-based discovery and selection
     path: specs/product-requirements/prd011-blazes-templates.yaml
+  - id: prd012-branch-independent-data
+    title: Branch-Independent Data Persistence
+    summary: Defines that JSONL files always live on main, independent of code branches, decoupling issue lifecycle from git branch lifecycle
+    path: specs/product-requirements/prd012-branch-independent-data.yaml
 
 use_case_index:
   - id: rel01.0-uc001-cupboard-lifecycle
