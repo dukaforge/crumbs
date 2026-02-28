@@ -49,6 +49,15 @@ requirements:
     - D-HYD: Hydration and dehydration functions are independent of each other and of all table accessors. A hydration
         function for Crumb does not call any function in any other entity's hydration file. This independence is the
         precondition that allows hydration to be implemented in two separate tasks.
+    - D-LOCK: The backend embeds a sync.RWMutex directly in the backend struct. The mutex is value-initialized (no
+        constructor). Attach acquires the write lock for its entire duration. GetTable, Detach, and all table operations
+        acquire the appropriate lock (read or write) on entry and release it on return. This is the only synchronization
+        primitive in the backend; there are no channel-based synchronization patterns.
+    - D-START: 'The startup sequence is a single, non-interruptible operation. If any step fails, Attach returns an error and
+        the backend is left in a detached state. The sequence is: (1) create DataDir if missing, (2) delete stale
+        cupboard.db if present, (3) create new cupboard.db and apply schema, (4) load each JSONL file line by line, (5) run
+        FK validation and DAG audit, (6) seed built-in properties if properties.jsonl was empty, (7) mark the backend as
+        attached. No table accessors are returned until step 7 completes.'
   R1:
     title: Directory Layout
     items:
@@ -82,6 +91,8 @@ requirements:
   R4:
     title: Startup Sequence
     items:
+    - R4.0: The startup sequence must follow the order in D-START exactly. Steps 1-7 must complete before Attach returns. If
+        any step fails, all resources acquired in prior steps must be released before returning the error.
     - R4.2: If any JSONL file contains malformed lines (invalid JSON), skip those lines and log a warning. Malformed lines
         do not halt loading
     - R4.3: If foreign key validation fails (e.g., crumb references non-existent trail), Attach must return an error. We do
@@ -223,7 +234,8 @@ non_goals:
 acceptance_criteria:
 - JSONL file format specified for all entity types (R2)
 - SQLite schema specified with all tables and indexes (R3)
-- 'Startup sequence specified: create, load, validate (R4)'
+- 'Startup sequence specified: create, load, validate (R4); D-START and D-LOCK design decisions present; R4.0 ordering
+  requirement present'
 - 'Write operation pattern specified: transaction, persist, atomicity (R5)'
 - Trail cascade behavior documented for Table.Set (R5.6, R5.7)
 - Shutdown sequence specified (R6)
