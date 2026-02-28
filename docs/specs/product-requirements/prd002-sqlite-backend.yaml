@@ -43,6 +43,12 @@ goals:
 - G10: 'Define entity hydration: converting table rows to entity objects'
 - G11: 'Define entity persistence: converting entity objects to table rows'
 requirements:
+  D:
+    title: Design Decisions
+    items:
+    - D-HYD: Hydration and dehydration functions are independent of each other and of all table accessors. A hydration
+        function for Crumb does not call any function in any other entity's hydration file. This independence is the
+        precondition that allows hydration to be implemented in two separate tasks.
   R1:
     title: Directory Layout
     items:
@@ -161,10 +167,16 @@ requirements:
   R14:
     title: Entity Hydration
     items:
+    - R14.0: 'Hydration for core types (R14a) must be complete before hydration for supporting types (R14b) begins. stitch must
+        generate these as two separate tasks. Neither task may depend on the other''s output; they share only the base hydration
+        pattern defined in R14.1.'
     - R14.1: Hydration converts a SQLite row into an entity struct. Each table accessor defines hydration for its entity type
+    - R14a: 'Core types (Crumb, Trail, Property) — implement in internal/persistence/mapping/. Must be complete before R14b.'
     - R14.2: Hydration mapping for Crumb (from crumbs table)
     - R14.3: Hydration mapping for Trail (from trails table)
     - R14.4: Hydration mapping for Property (from properties table)
+    - R14b: 'Supporting types (Metadata, Link, Stash, StashHistory) — implement in internal/persistence/mapping/. Depends on R14a
+        being complete.'
     - R14.5: Hydration mapping for Metadata (from metadata table)
     - R14.6: Hydration mapping for Link (from links table)
     - R14.7: Hydration mapping for Stash (from stashes table)
@@ -185,6 +197,10 @@ requirements:
         before persistence
     - R15.8: After SQLite persistence, the entity must be written to the corresponding JSONL file following the atomic write
         pattern (R5.2)
+    - R15a: 'Core types (Crumb, Trail, Property) — implement dehydration functions for these entity types first. Must be complete
+        before R15b.'
+    - R15b: 'Supporting types (Metadata, Link, Stash, StashHistory) — implement dehydration functions after R15a is complete.
+        R15.5 (Stash.Value JSON encoding) applies to this group.'
   R16:
     title: JSONL Sync Strategy
     items:
@@ -218,6 +234,7 @@ acceptance_criteria:
 - Cupboard interface implementation specified (R11)
 - Table name routing documented (R12)
 - Table interface implementation specified (R13)
-- Entity hydration pattern documented (R14)
-- Entity persistence pattern documented (R15)
+- Entity hydration pattern documented (R14); D-HYD design decision present; R14.0 ordering requirement present; R14a and R14b
+  sub-groups defined
+- Entity persistence pattern documented (R15); R15a and R15b sub-groups defined
 - JSONL sync strategy options documented (R16)
