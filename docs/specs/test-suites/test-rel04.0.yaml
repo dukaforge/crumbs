@@ -1,0 +1,49 @@
+id: test-rel04.0
+title: Branch-Independent Data Persistence
+release: "04.0"
+traces:
+  - rel04.0-uc001-branch-independent-data
+preconditions:
+  - Git repository initialized with cupboard configured
+  - data directory path set in config; cupboard.db in .gitignore
+  - JSONL files on main branch with at least one crumb created
+  - No uncommitted changes
+test_cases:
+  - name: cupboard list returns same issues from feature branch as from main
+    description: Issue state is visible and identical regardless of active branch.
+    inputs:
+      args:
+        - cupboard list --json > /tmp/main-issues.json
+        - git checkout -b feature-branch
+        - cupboard list --json > /tmp/branch-issues.json
+        - diff /tmp/main-issues.json /tmp/branch-issues.json
+    expected:
+      exit_code: 0
+  - name: JSONL committed to main from feature branch without merging code
+    description: JSONL changes go to main independent of the active code branch.
+    inputs:
+      args:
+        - git checkout -b feature-branch
+        - cupboard update <crumb-id> --status in_progress
+        - git add data/*.jsonl && git commit -m "update issue on main from feature branch"
+        - git log main --oneline | head -3
+    expected:
+      exit_code: 0
+      stdout: update issue on main from feature branch
+  - name: Branch abandonment leaves issues intact on main
+    description: Deleting a code branch does not affect issue state.
+    inputs:
+      args:
+        - git checkout main
+        - git branch -D feature-branch
+        - cupboard list --json
+    expected:
+      exit_code: 0
+  - name: cupboard.db is not committed to git
+    description: The SQLite cache must remain gitignored and not appear in tracked files.
+    inputs:
+      args:
+        - git status --porcelain data/cupboard.db
+    expected:
+      exit_code: 0
+      stdout: ""

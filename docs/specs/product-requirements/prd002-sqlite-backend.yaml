@@ -102,7 +102,17 @@ requirements:
     - R6.3: After Detach, all operations must return ErrCupboardDetached
   R7:
     title: Error Handling
-    items: []
+    items:
+    - R7.1: If a JSONL file contains malformed lines (invalid JSON), the backend must skip those lines, log a warning with the
+        line number and file path, and continue loading. Malformed lines must not halt Attach
+    - R7.2: If DataDir does not exist and cannot be created (e.g., permission denied), Attach must return an error describing
+        the path and the OS error
+    - R7.3: If a JSONL write fails after the temp file is written but before the atomic rename (e.g., I/O error, disk full),
+        the backend must return an error. The original JSONL file remains intact because the rename did not complete
+    - R7.4: If a JSONL file exists but a record contains unrecognized fields, the backend must ignore the unknown fields and
+        load the record using the known fields. This supports forward compatibility when older code reads newer JSONL
+    - R7.5: If a temp file from a previous crashed write is found in DataDir on startup (matching the *.jsonl.tmp pattern),
+        the backend must delete it before loading. Temp files represent incomplete writes and must not be loaded
   R8:
     title: Concurrency Model
     items:

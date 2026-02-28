@@ -115,6 +115,17 @@ releases:
         summary: Self-Hosting with Epics via Trails
         status: done
 
+  - version: "04.0"
+    name: Branch-Independent Data Persistence
+    status: not_started
+    description: |
+      Validate that JSONL files always live on main, independent of code branches.
+      Issue state is accessible from any branch and survives branch abandonment.
+    use_cases:
+      - id: rel04.0-uc001-branch-independent-data
+        summary: Branch-Independent Data Persistence
+        status: not_started
+
   - version: "99.0"
     name: Unscheduled
     status: not started

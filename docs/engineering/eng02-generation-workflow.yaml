@@ -190,7 +190,7 @@ sections:
 references:
 - id: eng01-git-integration
   path: engineering/eng01-git-integration.yaml
-  note: task-level branching, JSONL merge behavior, commit conventions
+  note: JSONL always on main, trails vs git branches, commit conventions
 - id: eng04-container-execution
   path: engineering/eng04-container-execution.yaml
   note: container runtime, credential handling

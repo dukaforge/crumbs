@@ -335,7 +335,7 @@ related_documents:
   - doc: specs/product-requirements/prd008-stash-interface.yaml
     purpose: Stash entity, shared state, versioning
   - doc: engineering/eng01-git-integration.yaml
-    purpose: Git conventions — JSONL in git, task branches, trails vs git branches, merge behavior
+    purpose: Git conventions — JSONL always on main, trails vs git branches, commit conventions
   - doc: engineering/eng02-generation-workflow.yaml
     purpose: Generation lifecycle — open, generate, close; task branch naming; scripts
   - doc: engineering/eng05-testing-strategy.yaml
