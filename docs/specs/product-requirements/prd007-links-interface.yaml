@@ -3,7 +3,7 @@ title: Links Interface
 problem: |
   Links represent directed edges in the entity graph. They connect crumbs to trails (belongs_to), crumbs to crumbs (child_of), trails to crumbs (branches_from), and stashes to trails (scoped_to). Link requirements are currently scattered across four PRDs (prd002-sqlite-backend, prd006-trails-interface, prd008-stash-interface, prd003-crumbs-interface), making it difficult to understand the complete link behavior and constraints.
 
-  This PRD consolidates all link requirements into one authoritative source. Other PRDs should reference prd007-links-interface for link behavior rather than duplicating these specifications. The Link entity is the only entity without a dedicated interface PRD; this document fills that gap.
+  We consolidate all link requirements into one authoritative source. Other PRDs should reference prd007-links-interface for link behavior rather than duplicating these specifications. The Link entity is the only entity without a dedicated interface PRD; prd007 fills that gap.
 goals:
 - G1: Define the Link struct with all required fields
 - G2: Define valid link types and their semantics

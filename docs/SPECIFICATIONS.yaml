@@ -43,6 +43,11 @@ roadmap_summary:
     use_cases_done: 1
     use_cases_total: 1
     status: done
+  - version: "04.0"
+    name: Branch-Independent Data Persistence
+    use_cases_done: 0
+    use_cases_total: 1
+    status: not_started
   - version: "99.0"
     name: Unscheduled
     use_cases_done: 0
@@ -226,6 +231,12 @@ use_case_index:
     status: done
     test_suite: test-rel03.1
     path: specs/use-cases/rel03.1-uc001-self-hosting-with-epics.yaml
+  - id: rel04.0-uc001-branch-independent-data
+    title: Branch-Independent Data Persistence
+    release: "04.0"
+    status: not_started
+    test_suite: test-rel04.0
+    path: specs/use-cases/rel04.0-uc001-branch-independent-data.yaml
   - id: rel99.0-uc001-blazes-templates
     title: Agent Uses Blazes (Workflow Templates)
     release: "99.0"
@@ -291,6 +302,12 @@ test_suite_index:
       - rel03.1-uc001-self-hosting-with-epics
     test_case_count: 22
     path: specs/test-suites/test-rel03.1.yaml
+  - id: test-rel04.0
+    title: Branch-Independent Data Persistence
+    traces:
+      - rel04.0-uc001-branch-independent-data
+    test_case_count: 4
+    path: specs/test-suites/test-rel04.0.yaml
   - id: test-rel99.0
     title: Unscheduled
     traces:
@@ -572,7 +589,26 @@ prd_to_use_case_mapping:
     prd: prd010-configuration-directories
     why_required: Config and data directory paths, JSONL format
     coverage: Partial (R3, R4, R7, R8)
+  - use_case: rel04.0-uc001-branch-independent-data
+    prd: prd012-branch-independent-data
+    why_required: Validates that JSONL lives on main, issue state is branch-independent, and branch abandonment does not affect issues
+    coverage: Full (R1-R4)
+  - use_case: rel04.0-uc001-branch-independent-data
+    prd: prd002-sqlite-backend
+    why_required: SQLite rebuilt from JSONL on Attach; cupboard.db gitignored
+    coverage: Partial (R1.1, R4)
+  - use_case: rel04.0-uc001-branch-independent-data
+    prd: prd010-configuration-directories
+    why_required: Data directory path resolved from configuration, not from branch name
+    coverage: Partial (R1, R2)
 
 coverage_gaps: |
-  No gaps identified. All 23 use cases have corresponding test suites, and all 11 PRDs are
+  No traceability gaps. All 24 use cases have corresponding test suites, and all 12 PRDs are
   referenced by at least one use case.
+
+  prd012-branch-independent-data is covered by rel04.0-uc001-branch-independent-data.
+  Implementation for rel04.0 has not started.
+
+  mage analyze reports that 9 core PRDs span multiple releases (e.g., prd001-cupboard-core,
+  prd002-sqlite-backend). This is by design: foundational PRDs underpin every release and
+  are intentionally reused across the roadmap. The warning is informational, not a gap.
