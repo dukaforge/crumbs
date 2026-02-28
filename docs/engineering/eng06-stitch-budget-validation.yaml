@@ -24,8 +24,11 @@ introduction: |
 
   The analysis also identified a package naming discrepancy between eng05-testing-strategy
   (which uses pkg/schema and internal/persistence) and the PRDs (which reference pkg/crumbs,
-  pkg/properties, pkg/trails, etc.). This must be resolved before stitch can generate code.
-  See Recommendations below.
+  pkg/properties, pkg/trails, etc.). This was resolved by GH-18 (corrected pkg/types references
+  in prd007 and prd008; expanded ARCHITECTURE.yaml project_structure with per-package PRD
+  mappings). The four HIGH-risk task mitigations were applied via GH-19 (design decisions
+  D-HYD, D-LOCK, D-START, D-ENTITY, D-TABLE-CRUMB, D-BACKFILL added to prd002, prd003,
+  prd004 along with ordering requirements). GH-15 may proceed.
 sections:
 - title: Totals by Release
   content: |
@@ -210,9 +213,9 @@ sections:
     | Priority | Action | Blocking? | Owner |
     |----------|--------|-----------|-------|
     | 1 | Resolve package naming discrepancy between eng05 and PRDs | RESOLVED (GH-18) | Architecture |
-    | 2 | Split entity hydration task (prd002 R14-R15) into two tasks | No | Stitch measure |
-    | 3 | Split Crumb state+property task (prd003 R4-R11) into two tasks | No | Stitch measure |
-    | 4 | Add transaction requirement to Property backfill task (prd004 R4) | No | Stitch measure |
+    | 2 | Split entity hydration task (prd002 R14-R15) into two tasks | RESOLVED (GH-19) | Architecture |
+    | 3 | Split Crumb state+property task (prd003 R4-R11) into two tasks | RESOLVED (GH-19) | Architecture |
+    | 4 | Add transaction requirement to Property backfill task (prd004 R4) | RESOLVED (GH-19) | Architecture |
 
     Resolve package naming (resolved by GH-18). ARCHITECTURE.yaml now defines an expanded
     project_structure with per-package prds and role_detail fields. The canonical packages are
@@ -223,22 +226,21 @@ sections:
     been corrected to pkg/constants, pkg/schema, and pkg/api respectively. No package name
     ambiguity remains across PRDs, eng05, and ARCHITECTURE.yaml.
 
-    Split hydration task (prd002 R14-R15). At an estimated 480 LOC, the entity hydration
-    and dehydration task exceeds the HIGH threshold. Measure should propose two tasks at
-    ~240 LOC each: core entity types (Crumb, Trail, Property) first, then supporting types
-    (Metadata, Link, Stash, StashHistory). The split is clean because hydration functions
-    do not call each other.
+    Split hydration task (prd002 R14-R15) — resolved by GH-19. Design decision D-HYD and
+    ordering requirement R14.0 added to prd002. R14 is split into R14a (Crumb, Trail, Property)
+    and R14b (Metadata, Link, Stash, StashHistory). R15 is split into R15a and R15b. Stitch
+    will read these group labels and generate two tasks at ~240 LOC each without agent inference.
 
-    Split Crumb state+property task (prd003 R4-R11). This task crosses two subsystems
-    (entity methods and table accessor) and is flagged HIGH. Measure should propose two tasks:
-    (a) entity methods in pkg/schema (~180 LOC); (b) Crumbs table accessor and filter map
-    in internal/persistence (~200 LOC).
+    Split Crumb state+property task (prd003 R4-R11) — resolved by GH-19. Design decisions
+    D-ENTITY (entity methods in pkg/schema/crumb.go) and D-TABLE-CRUMB (table accessor in
+    internal/persistence/crumbs_table.go) added to prd003. R4.0 ordering requirement and R6.0
+    group marker added. Stitch will generate two tasks: (a) entity methods (~180 LOC); (b)
+    Crumbs table accessor (~200 LOC).
 
-    Add transaction note to Property backfill (prd004 R4). The task is under the LOC
-    threshold but its transactional complexity is non-obvious. Stitch measure should include
-    an explicit Design Decision in the task: "The backfill must run inside a single SQLite
-    transaction. If backfill fails at any crumb, the transaction rolls back and the property
-    is not created."
+    Add transaction note to Property backfill (prd004 R4) — resolved by GH-19. Design decision
+    D-BACKFILL added to prd004. R4.2a and R4.2b specify the exact 5-step transaction algorithm
+    and the same-transaction SELECT constraint. Stitch agents have unambiguous instructions;
+    no inference required. Non-goal added to scope out incremental backfill.
 
     Dependency ordering per release:
 
@@ -255,22 +257,20 @@ sections:
 
 - title: Go/No-Go Conclusion
   content: |
-    Conclusion: PROCEED WITH CAUTION.
+    Conclusion: PROCEED.
 
     All 42 proposed tasks (28 implementation + 14 test) are within the stitch budget. No
     release requires more than 2800 LOC of production code. The average task size of 253
     LOC production is comfortably below the 400-LOC HIGH threshold.
 
-    Four HIGH-risk tasks exist across rel01.0, rel02.0, and rel03.0. None of these is a
-    showstopper. Two (hydration and Crumb state/property) benefit from splitting. One (Trail
-    cascade) is intentionally kept whole. One (Property backfill) needs an explicit transaction
-    note in the stitch task.
+    Four HIGH-risk tasks existed across rel01.0, rel02.0, and rel03.0. All four have been
+    mitigated at the specification level via GH-19. Design decisions (D-HYD, D-LOCK, D-START,
+    D-ENTITY, D-TABLE-CRUMB, D-BACKFILL) and ordering requirements (R14.0, R4.0) are now
+    embedded in prd002, prd003, and prd004. Stitch agents read these directly; no inference
+    about task boundaries is required.
 
-    The single blocking action (package naming discrepancy) is resolved by GH-18.
-    ARCHITECTURE.yaml project_structure now maps every package to its PRDs and role. The
-    explicit pkg/types references in prd007 and prd008 are corrected. GH-15 can proceed
-    once the three remaining Stitch measure actions (items 2-4) are applied at generation
-    time.
+    The package naming blocking action is resolved by GH-18. All four HIGH-risk mitigations
+    are resolved by GH-19. No blocking actions remain. GH-15 may proceed.
 references:
 - id: eng02-generation-workflow
   path: engineering/eng02-generation-workflow.yaml
