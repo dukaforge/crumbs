@@ -1,0 +1,282 @@
+id: eng06-stitch-budget-validation
+title: Stitch Budget Validation
+introduction: |
+  This guideline documents the stitch budget analysis for GH-15 (Recurring: Generate crumbs
+  code from specifications). Before running a full generation, we validate that every PRD
+  requirement group can be decomposed into tasks within stitch's sizing budget: 300-700 LOC
+  of production code per task, at most 5 files per task, and at most one new subsystem
+  boundary per task.
+
+  We analyzed all releases from rel01.0 through rel03.1, covering twelve PRDs. The analysis
+  produced per-release sizing tables with risk assessments for each proposed task. The overall
+  conclusion is PROCEED WITH CAUTION: six releases are within budget, but four HIGH-risk tasks
+  require pre-generation mitigations documented below.
+
+  Sizing rules applied throughout this analysis:
+
+  | Rule | Threshold | Flag |
+  |------|-----------|------|
+  | Production LOC | > 400 | HIGH |
+  | Subsystems crossed | > 1 | HIGH |
+  | Dependency not yet generated | — | HIGH |
+  | Multiple-table atomic transaction | — | MEDIUM |
+  | Entity method requires Cupboard reference | — | MEDIUM |
+
+  The analysis also identified a package naming discrepancy between eng05-testing-strategy
+  (which uses pkg/schema and internal/persistence) and the PRDs (which reference pkg/crumbs,
+  pkg/properties, pkg/trails, etc.). This must be resolved before stitch can generate code.
+  See Recommendations below.
+sections:
+- title: Totals by Release
+  content: |
+    Table 1 Sizing totals per release
+
+    | Release | Impl tasks | Test tasks | LOC prod | LOC test | HIGH risk | MEDIUM risk |
+    |---------|------------|------------|----------|----------|-----------|-------------|
+    | rel01.0 | 11 | 3 | 2800 | 1080 | 3 | 1 |
+    | rel01.1 | 5 | 3 | 1330 | 800 | 0 | 0 |
+    | rel02.0 | 4 | 1 | 920 | 320 | 2 | 1 |
+    | rel02.1 | 1 | 3 | 200 | 660 | 0 | 0 |
+    | rel03.0 | 6 | 3 | 1585 | 990 | 1 | 2 |
+    | rel03.1 | 1 | 1 | 260 | 370 | 0 | 0 |
+    | Total | 28 | 14 | 7095 | 4220 | 6 | 4 |
+
+    The average production LOC per task is 253 (7095 / 28), comfortably below the 400-LOC
+    HIGH threshold. No single release exceeds 3000 LOC production, which is within three
+    stitch cycles at the upper end of the budget.
+
+- title: rel01.0 — Core Storage with SQLite Backend
+  content: |
+    rel01.0 introduces four subsystems simultaneously (pkg/cupboard, internal/sqlite,
+    pkg/crumbs, pkg/metadata) and has the highest absolute LOC. Three tasks are HIGH risk.
+
+    Table 2 rel01.0 proposed tasks
+
+    | Task | PRDs covered | LOC prod | LOC test | Risk |
+    |------|-------------|----------|----------|------|
+    | Define Cupboard and Table interfaces | prd001 R1-R3, R7-R8 | 180 | — | LOW |
+    | Define SQLite schema and JSONL constants | prd002 R1-R3 | 260 | — | LOW |
+    | Attach, Detach, startup, shutdown sequence | prd002 R4, R6-R8, R11 | 420 | — | HIGH |
+    | Atomic JSONL write and sync strategy dispatch | prd002 R5.3-R5.4, R16, prd010 R6 | 310 | — | MEDIUM |
+    | GetTable routing and base table accessor | prd002 R12-R13 | 200 | — | LOW |
+    | Entity hydration and dehydration (ORM layer) | prd002 R14-R15 | 480 | — | HIGH |
+    | Built-in property seeding and graph audit | prd002 R9-R10 | 260 | — | LOW |
+    | Define Crumb struct, state values, creation defaults | prd003 R1-R3 | 190 | — | LOW |
+    | Crumb state transitions, property methods, and table accessor | prd003 R4-R11 | 360 | — | HIGH |
+    | Define Metadata struct and Schema struct | prd005 R1-R2, R10 | 140 | — | LOW |
+    | Metadata table accessor, built-in schemas, schema registration | prd005 R3-R9 | 300 | — | MEDIUM |
+    | Test: Cupboard lifecycle and JSONL roundtrip | prd001 R4-R6, prd002 R4, R6, R16 | — | 380 | LOW |
+    | Test: Crumb lifecycle and benchmarks | prd003 R1, R3-R5, R9-R10 | — | 450 | LOW |
+    | Test: Metadata interface and schema registration | prd005 R4, R6, R9 | — | 250 | LOW |
+
+    The three HIGH-risk tasks:
+
+    Entity hydration and dehydration (prd002 R14-R15) covers seven entity types (Crumb,
+    Trail, Property, Metadata, Link, Stash, StashHistory). Each type requires both hydration
+    (SQL row to struct) and dehydration (struct to SQL params). Nullable pointer handling and
+    UUID v7 generation add edge cases per type. At 480 LOC this task exceeds the 400-LOC
+    threshold. We recommend splitting it into two tasks: (a) hydration and dehydration for
+    Crumb, Trail, and Property (three core types, ~240 LOC); (b) hydration and dehydration
+    for Metadata, Link, Stash, and StashHistory (four supporting types, ~240 LOC).
+
+    Attach, Detach, startup, and shutdown (prd002 R4, R6-R8, R11) at 420 LOC is borderline
+    HIGH. Startup (create dir, delete stale DB, load JSONL, validate FK) and shutdown (flush,
+    close) are tightly coupled to the concurrency guard (RWMutex). Splitting is not recommended
+    because a partial startup sequence is untestable independently. If actual LOC approaches
+    600, extract the concurrency guard into a separate task first.
+
+    Crumb state transitions and table accessor (prd003 R4-R11) crosses two subsystems: entity
+    methods live in pkg/schema (or equivalent), while the table accessor with filter logic lives
+    in internal/persistence. We recommend splitting into: (a) entity methods only (SetState,
+    Pebble, Dust, property methods, ~180 LOC, pkg/schema); (b) Crumbs table accessor with
+    filter map implementation (~200 LOC, internal/persistence).
+
+- title: rel01.1 — Post-Core Validation
+  content: |
+    rel01.1 introduces the CLI (cmd/cupboard) with five implementation tasks, all LOW risk.
+    No task exceeds 340 LOC production.
+
+    Table 3 rel01.1 proposed tasks
+
+    | Task | PRDs covered | LOC prod | LOC test | Risk |
+    |------|-------------|----------|----------|------|
+    | Config.yaml loading and directory resolution | prd010 R1-R3, R8-R9 | 210 | — | LOW |
+    | Cobra root command, init, and version | prd009 R1-R2, R6, R10 | 200 | — | LOW |
+    | Generic table commands (get, set, delete, list) | prd009 R3, R7-R9 | 340 | — | LOW |
+    | Crumb-specific commands (crumb add/get/list/delete) | prd009 R4 | 280 | — | LOW |
+    | Issue-tracking commands (ready, create, show, update, close, comments add) | prd009 R5 | 300 | — | LOW |
+    | Test: CLI configuration loading | prd010 R1-R2, R8 | — | 200 | LOW |
+    | Test: Generic table and crumb commands | prd009 R3-R4, R7-R8 | — | 420 | LOW |
+    | Test: Go install and self-hosting roundtrip | prd009 R2, prd010 R5 | — | 180 | LOW |
+
+    rel01.1 is the lowest-risk release. Stitch can generate it cleanly in a single cycle.
+
+- title: rel02.0 — Properties with Enforcement
+  content: |
+    rel02.0 adds the property system with backfill semantics. Two tasks are HIGH risk due to
+    cross-subsystem coupling in the entity method layer.
+
+    Table 4 rel02.0 proposed tasks
+
+    | Task | PRDs covered | LOC prod | LOC test | Risk |
+    |------|-------------|----------|----------|------|
+    | Define Property and Category structs | prd004 R1-R3, R10 | 170 | — | LOW |
+    | Property table accessor with backfill enforcement | prd004 R4-R6 | 360 | — | HIGH |
+    | Category accessor and DefineCategory/GetCategories methods | prd004 R7-R9 | 270 | — | HIGH |
+    | Integrate property initialization into Crumb creation | prd003 R3.2, prd004 R4.2 | 120 | — | MEDIUM |
+    | Test: Property enforcement and backfill | prd004 R4, R7, R9, prd003 R3.2 | — | 320 | LOW |
+
+    The backfill task (prd004 R4) is HIGH because property creation must atomically initialize
+    default values on all existing crumbs. This is the only write operation in the system that
+    scales with crumb count. At 360 LOC it is under the threshold, but the transactional
+    complexity is elevated. We recommend that stitch generate this task with an explicit
+    note to the agent: backfill must run inside a single SQLite transaction that can roll back
+    if interrupted.
+
+    The Category task (prd004 R7-R9) is HIGH because DefineCategory and GetCategories are
+    entity methods on Property that require a Cupboard reference (prd004 R7.9, R8.6).
+    This couples pkg/schema (entity layer) to the backend API at the entity method boundary.
+    The PRD allows implementations to expose a RegisterSchema method or a dedicated schemas
+    table; we recommend that stitch generate this as two separate tasks to isolate the
+    coupling: (a) Category struct and DefineCategory/GetCategories signatures (pkg/schema);
+    (b) Category table accessor and persistence (internal/persistence).
+
+- title: rel02.1 — Issue-Tracking and Self-Hosting
+  content: |
+    rel02.1 is predominantly test-weight. One implementation task extends the existing CLI.
+
+    Table 5 rel02.1 proposed tasks
+
+    | Task | PRDs covered | LOC prod | LOC test | Risk |
+    |------|-------------|----------|----------|------|
+    | Property-aware crumb commands (type, priority, labels, owner flags) | prd009 R4-R5 | 200 | — | LOW |
+    | Test: Issue-tracking CLI with properties | prd009 R4-R5, prd004 R9 | — | 310 | LOW |
+    | Test: Table benchmarks | prd003 R9-R10, prd004 R6 | — | 150 | LOW |
+    | Test: Metadata lifecycle operations | prd005 R6, R9 | — | 200 | LOW |
+
+    rel02.1 can run after rel02.0 is complete and all property integration tests pass.
+
+- title: rel03.0 — Trails and Stashes
+  content: |
+    rel03.0 introduces three new subsystems (pkg/trails, pkg/stash, pkg/types) and the Link
+    table accessor. One task is HIGH risk; two are MEDIUM.
+
+    Table 6 rel03.0 proposed tasks
+
+    | Task | PRDs covered | LOC prod | LOC test | Risk |
+    |------|-------------|----------|----------|------|
+    | Define Trail struct and lifecycle entity methods | prd006 R1-R6, R8 | 165 | — | LOW |
+    | Trail table accessor with Complete and Abandon cascade | prd006 R5.6-R5.7, R6.6-R8, R9, prd002 R5.6-R5.7 | 430 | — | HIGH |
+    | Define shared type constants (LinkType, StashType, operation codes) | prd007 R2.2, prd008 R2, R7.3 | 80 | — | LOW |
+    | Link table accessor with cardinality and DAG validation | prd007 R1, R3-R8 | 310 | — | MEDIUM |
+    | Define Stash struct and value/counter/lock entity methods | prd008 R1-R2, R4-R7, R12-R13 | 260 | — | LOW |
+    | Stash table accessor with history tracking | prd008 R3, R8-R11 | 340 | — | MEDIUM |
+    | Test: Trail lifecycle and cascade (uc001, uc004) | prd006 R5-R7, R9 | — | 420 | LOW |
+    | Test: Link management and cardinality (uc002) | prd007 R5-R6, R8 | — | 260 | LOW |
+    | Test: Stash operations and history tracking (uc003) | prd008 R3, R5-R7, R13 | — | 310 | LOW |
+
+    The Trail cascade task is the most complex in the project. The Abandon path deletes
+    crumbs, crumb_properties, metadata, child_of links, and belongs_to links — all atomically
+    across five tables. State-change detection on Set requires reading the current trail state
+    before applying the cascade. At 430 LOC this is the single largest task. We do not
+    recommend splitting it: a partial cascade implementation produces an untestable intermediate
+    state. If actual LOC approaches 600 during generation, split into (a) trail table accessor
+    without cascade logic, then (b) cascade integration as a separate task that modifies the
+    Set implementation.
+
+    The links_table.go task depends on pkg/types/link.go constants and must be generated
+    before trails_table.go. Stitch must order these within rel03.0.
+
+- title: rel03.1 — Post-Trails Validation
+  content: |
+    rel03.1 requires one implementation task (trail CLI commands) and one test task.
+
+    Table 7 rel03.1 proposed tasks
+
+    | Task | PRDs covered | LOC prod | LOC test | Risk |
+    |------|-------------|----------|----------|------|
+    | Trail CLI commands (trail create, add-crumb, complete, abandon, list) | prd009 R1, prd006 R3, R5-R6 | 260 | — | LOW |
+    | Test: Self-hosting with epics via trails (uc001) | prd006 R5-R7, prd007 R6, prd009 R4 | — | 370 | LOW |
+
+    rel03.1 is well within budget and requires no pre-generation mitigation.
+
+- title: Recommendations
+  content: |
+    Four actions are required before GH-15 runs. One is blocking.
+
+    Table 8 Pre-generation actions
+
+    | Priority | Action | Blocking? | Owner |
+    |----------|--------|-----------|-------|
+    | 1 | Resolve package naming discrepancy between eng05 and PRDs | Yes | Architecture |
+    | 2 | Split entity hydration task (prd002 R14-R15) into two tasks | No | Stitch measure |
+    | 3 | Split Crumb state+property task (prd003 R4-R11) into two tasks | No | Stitch measure |
+    | 4 | Add transaction requirement to Property backfill task (prd004 R4) | No | Stitch measure |
+
+    Resolve package naming (blocking). eng05-testing-strategy describes pkg/schema for all
+    entity methods and internal/persistence for the backend. The PRDs (prd001-prd009) name
+    specific packages: pkg/cupboard, pkg/crumbs, pkg/properties, pkg/trails, pkg/stash,
+    internal/sqlite. Stitch will use whatever structure it infers from docs; if the PRDs and
+    eng05 disagree, generated code will be inconsistent. Update ARCHITECTURE.yaml with an
+    explicit project_structure table that names every package and its role. This resolves the
+    conflict for stitch before generation begins.
+
+    Split hydration task (prd002 R14-R15). At an estimated 480 LOC, the entity hydration
+    and dehydration task exceeds the HIGH threshold. Measure should propose two tasks at
+    ~240 LOC each: core entity types (Crumb, Trail, Property) first, then supporting types
+    (Metadata, Link, Stash, StashHistory). The split is clean because hydration functions
+    do not call each other.
+
+    Split Crumb state+property task (prd003 R4-R11). This task crosses two subsystems
+    (entity methods and table accessor) and is flagged HIGH. Measure should propose two tasks:
+    (a) entity methods in pkg/schema (~180 LOC); (b) Crumbs table accessor and filter map
+    in internal/persistence (~200 LOC).
+
+    Add transaction note to Property backfill (prd004 R4). The task is under the LOC
+    threshold but its transactional complexity is non-obvious. Stitch measure should include
+    an explicit Design Decision in the task: "The backfill must run inside a single SQLite
+    transaction. If backfill fails at any crumb, the transaction rolls back and the property
+    is not created."
+
+    Dependency ordering per release:
+
+    rel01.0: interfaces → schema + JSONL constants → startup/shutdown → sync strategy →
+    GetTable routing → ORM (hydration A, then hydration B) → seeding/audit →
+    Crumb entity methods → Crumb table accessor → Metadata entity → Metadata table accessor →
+    all rel01.0 tests
+
+    rel02.0: Property entity → Property table accessor (with backfill) → Category accessor →
+    Crumb creation integration → rel02.0 tests
+
+    rel03.0: type constants → Trail entity methods → Link table accessor → Trail cascade
+    accessor → Stash entity methods → Stash table accessor → rel03.0 tests
+
+- title: Go/No-Go Conclusion
+  content: |
+    Conclusion: PROCEED WITH CAUTION.
+
+    All 42 proposed tasks (28 implementation + 14 test) are within the stitch budget. No
+    release requires more than 2800 LOC of production code. The average task size of 253
+    LOC production is comfortably below the 400-LOC HIGH threshold.
+
+    Four HIGH-risk tasks exist across rel01.0, rel02.0, and rel03.0. None of these is a
+    showstopper. Two (hydration and Crumb state/property) benefit from splitting. One (Trail
+    cascade) is intentionally kept whole. One (Property backfill) needs an explicit transaction
+    note in the stitch task.
+
+    The single blocking action is the package naming discrepancy. GH-15 must not run until
+    ARCHITECTURE.yaml names every package explicitly and eng05-testing-strategy is reconciled
+    with the PRD package structure. Once that update is committed, GH-15 can proceed.
+references:
+- id: eng02-generation-workflow
+  path: engineering/eng02-generation-workflow.yaml
+  note: stitch measure/stitch cycle, task branch naming, generation lifecycle
+- id: eng05-testing-strategy
+  path: engineering/eng05-testing-strategy.yaml
+  note: test layer definitions (unit, integration, end-to-end) and package structure
+- id: docs/scratch/eng06-sizing-rel01.yaml
+  path: scratch/eng06-sizing-rel01.yaml
+  note: detailed per-task sizing tables for rel01.0 and rel01.1 (intermediate artifact, deleted after this doc)
+- id: docs/scratch/eng06-sizing-rel02-03.yaml
+  path: scratch/eng06-sizing-rel02-03.yaml
+  note: detailed per-task sizing tables for rel02.0-rel03.1 (intermediate artifact, deleted after this doc)
