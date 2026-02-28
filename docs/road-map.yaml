@@ -4,7 +4,7 @@ title: Crumbs Roadmap
 releases:
   - version: "01.0"
     name: Core Storage with SQLite Backend
-    status: done
+    status: specs_done
     description: |
       Implement the Cupboard and Table interfaces with SQLite backend. An agent
       can create, query, and manage crumbs via the Table interface.
@@ -27,7 +27,7 @@ releases:
 
   - version: "01.1"
     name: Post-Core Validation
-    status: done
+    status: specs_done
     description: |
       Validate the core storage layer with installation, persistence, and
       round-trip scenarios. Requires only rel01.0 features.
@@ -50,7 +50,7 @@ releases:
 
   - version: "02.0"
     name: Properties with Enforcement
-    status: done
+    status: specs_done
     description: |
       Implement the property system with automatic initialization and backfill.
       Every crumb always has a value for every defined property.
@@ -64,7 +64,7 @@ releases:
 
   - version: "02.1"
     name: Issue-Tracking and Self-Hosting
-    status: done
+    status: specs_done
     description: |
       Validate cupboard as an issue tracker with CLI commands, benchmarks, and
       self-hosting. Requires properties (rel02.0) for type, priority, and labels.
@@ -84,7 +84,7 @@ releases:
 
   - version: "03.0"
     name: Trails and Stashes
-    status: done
+    status: specs_done
     description: |
       Implement trail lifecycle for exploratory workflows and stash for shared
       state coordination. An agent can explore implementation approaches with
@@ -105,7 +105,7 @@ releases:
 
   - version: "03.1"
     name: Post-Trails Validation
-    status: done
+    status: specs_done
     description: |
       Validate trails functionality with self-hosting scenarios. Agents create
       trails as epics, add crumbs as tasks, and use trail lifecycle to finalize
