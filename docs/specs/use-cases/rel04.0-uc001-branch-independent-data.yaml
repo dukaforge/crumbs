@@ -28,7 +28,7 @@ touchpoints:
   - T4: Abandoning a code branch does not affect issue state (prd012-branch-independent-data R3.3)
   - T5: SQLite rebuilt from JSONL on Attach; cupboard.db gitignored (prd002-sqlite-backend R4, R1.1; prd012-branch-independent-data R1.4)
   - T6: Commit message references crumb IDs for traceability (prd012-branch-independent-data R4.1)
-  - T7: Cupboard CLI resolves data directory from configuration (prd010-configuration-directories)
+  - T7: Cupboard CLI resolves data directory from configuration (prd010-configuration-directories R1, R2)
 success_criteria:
   - S1: cupboard create on main produces a crumb; JSONL file in data directory contains the new record
   - S2: git commit of JSONL to main succeeds; cupboard.db is not included in the commit

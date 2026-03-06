@@ -25,16 +25,16 @@ flow:
   - F15: "Filter crumbs by trail: query links for completed trail returns empty (links removed on complete)"
   - F16: "Detach the cupboard: call cupboard.Detach()"
 touchpoints:
-  - T1: "Cupboard interface: Attach, Detach, GetTable"
-  - T2: "Table (crumbs): Get, Set, Delete, Fetch"
-  - T3: "Table (trails): Get, Set"
-  - T4: "Table (links): Get, Set, Delete, Fetch with belongs_to/branches_from filters"
-  - T5: "Trail entity: Complete, Abandon, SetState methods"
+  - T1: "Cupboard interface: Attach, Detach, GetTable (prd001-cupboard-core R2)"
+  - T2: "Table (crumbs): Get, Set, Delete, Fetch (prd001-cupboard-core R3)"
+  - T3: "Table (trails): Get, Set (prd001-cupboard-core R3)"
+  - T4: "Table (links): Get, Set, Delete, Fetch with belongs_to/branches_from filters (prd007-links-interface R3, R4)"
+  - T5: "Trail entity: Complete, Abandon, SetState methods (prd006-trails-interface R2, R5, R6)"
   - T6: "Trail creation via Table.Set (prd006-trails-interface R3); defaults to draft state"
   - T7: "Crumb-trail membership via belongs_to links (prd006-trails-interface R7)"
   - T8: "Trail completion makes crumbs permanent by removing links (prd006-trails-interface R5)"
   - T9: "Trail abandonment deletes associated crumbs atomically (prd006-trails-interface R6)"
-  - T10: "Link-based querying for trail membership (prd002-sqlite-backend)"
+  - T10: "Link-based querying for trail membership (prd002-sqlite-backend R12, R13)"
 success_criteria:
   - S1: Trail created via Table.Set starts in draft state by default; can be transitioned to active via SetState
   - S2: belongs_to links associate crumbs with trails
