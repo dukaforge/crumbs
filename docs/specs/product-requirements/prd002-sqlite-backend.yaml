@@ -227,6 +227,33 @@ requirements:
         (temp file, fsync, rename)
     - R16.8: The sync strategy does not affect SQLite durability. SQLite transactions commit synchronously regardless of JSONL
         sync strategy
+package_contract:
+  exports:
+    - name: SQLiteConfig
+      signature: "type SQLiteConfig struct { SyncStrategy string; BatchSize int; BatchInterval time.Duration }"
+    - name: NewSQLiteBackend
+      signature: "func NewSQLiteBackend() api.Cupboard"
+    - name: HydrateCrumb
+      signature: "func HydrateCrumb(row sql.Row) (*schema.Crumb, error)"
+    - name: HydrateTrail
+      signature: "func HydrateTrail(row sql.Row) (*schema.Trail, error)"
+    - name: HydrateProperty
+      signature: "func HydrateProperty(row sql.Row) (*schema.Property, error)"
+    - name: PersistCrumb
+      signature: "func PersistCrumb(crumb *schema.Crumb) []any"
+    - name: PersistTrail
+      signature: "func PersistTrail(trail *schema.Trail) []any"
+    - name: PersistProperty
+      signature: "func PersistProperty(prop *schema.Property) []any"
+  imports:
+    - "pkg/api"
+    - "pkg/schema"
+    - "pkg/constants"
+    - "modernc.org/sqlite"
+  import_constraints:
+    - "internal/persistence must not import cmd/"
+    - "internal/persistence/engine must not import pkg/schema (entity-agnostic)"
+    - "internal/persistence/mapping must not import internal/persistence/engine"
 non_goals:
 - This PRD does not define the Cupboard interface operations. Those are in prd001-cupboard-core and the interface PRDs
 - This PRD does not define cross-process locking. Single-process access is assumed

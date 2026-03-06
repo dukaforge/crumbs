@@ -272,6 +272,17 @@ design_decisions:
     alternatives_rejected:
       - Defining constants in the package that owns the concept scatters the lookup across multiple files
 
+shared_protocols:
+  - name: Cupboard
+    description: Storage lifecycle interface. Backends implement Attach, Detach, and GetTable to provide uniform access to all entity tables.
+    pattern: "caller imports pkg/api, calls Attach with Config, then GetTable for each entity type"
+  - name: Table
+    description: Uniform CRUD interface for all entity types. Get, Set, Delete, and Fetch operate on concrete entity structs via type assertions.
+    pattern: "one Table per entity type; callers use Table.Set to persist in-memory changes made by entity methods"
+  - name: Entity Methods
+    description: In-memory state-transition methods on entity structs (SetState, Pebble, Dust, Complete, Abandon, SetValue, Acquire, Release). Methods modify struct fields only. Callers persist via Table.Set.
+    pattern: "entity := table.Get(id); entity.Method(); table.Set(id, entity)"
+
 technology_choices:
   - component: Language
     technology: Go
