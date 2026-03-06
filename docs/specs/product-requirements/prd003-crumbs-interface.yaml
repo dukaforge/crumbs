@@ -16,11 +16,11 @@ requirements:
   D:
     title: Design Decisions
     items:
-    - D-ENTITY: Entity methods (SetState, Pebble, Dust, SetProperty, GetProperty, GetProperties, ClearProperty) are
+    - R0.1: Entity methods (SetState, Pebble, Dust, SetProperty, GetProperty, GetProperties, ClearProperty) are
         implemented entirely in pkg/schema/crumb.go. They operate only on the Crumb struct in memory. They do not import
         internal/persistence or any backend package. Persistence is always the caller's responsibility — after calling an
         entity method, the caller passes the modified struct to Table.Set.
-    - D-TABLE-CRUMB: The Crumbs table accessor is implemented in internal/persistence/crumbs_table.go. It implements the
+    - R0.2: The Crumbs table accessor is implemented in internal/persistence/crumbs_table.go. It implements the
         Table interface for the crumbs table. It imports pkg/schema for the Crumb struct but does not call any Crumb entity
         methods directly; it reads and writes struct fields.
   R1:
@@ -165,5 +165,5 @@ acceptance_criteria:
 - Filter map defined with states, trail_id, parent_id, properties, limit, offset
 - Query via Table.Fetch specified (filter map, type assertion, pagination)
 - Error types documented (including ErrInvalidTransition)
-- D-ENTITY and D-TABLE-CRUMB design decisions present; R4.0 ordering requirement present; R6.0 table accessor group marker present
+- R0.1 and R0.2 design decisions present; R4.0 ordering requirement present; R6.0 table accessor group marker present
 - All requirements numbered and specific

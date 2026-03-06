@@ -97,9 +97,8 @@ requirements:
     title: Filter Map
     items:
     - R9.1: Filters are expressed as map[string]any where keys are filter names and values are filter criteria
-    - R9.2: Supported filter keys for stashes
-    - R9.2.1: To filter by trail scope, applications query the links table for `scoped_to` links and use the resulting stash
-        IDs
+    - R9.2: Supported filter keys for stashes. To filter by trail scope, applications query the links table for `scoped_to`
+        links and use the resulting stash IDs
     - R9.3: An empty or nil filter matches all stashes
     - R9.5: Unknown filter keys must be ignored (forward compatibility)
     - R9.6: Results are ordered by CreatedAt ascending (oldest first)

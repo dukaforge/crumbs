@@ -30,7 +30,7 @@ releases:
     status: specs_done
     description: |
       Validate the core storage layer with installation, persistence, and
-      round-trip scenarios. Requires only rel01.0 features.
+      round-trip scenarios. Depends on rel01.0 (Cupboard, Table, SQLite backend).
     use_cases:
       - id: rel01.1-uc001-go-install
         summary: Go Install
@@ -54,6 +54,7 @@ releases:
     description: |
       Implement the property system with automatic initialization and backfill.
       Every crumb always has a value for every defined property.
+      Depends on rel01.0 (Cupboard, Table, crumb entity).
     use_cases:
       - id: rel02.0-uc001-property-enforcement
         summary: Property Enforcement
@@ -67,7 +68,7 @@ releases:
     status: specs_done
     description: |
       Validate cupboard as an issue tracker with CLI commands, benchmarks, and
-      self-hosting. Requires properties (rel02.0) for type, priority, and labels.
+      self-hosting. Depends on rel02.0 (properties for type, priority, labels).
     use_cases:
       - id: rel02.1-uc001-issue-tracking-cli
         summary: Issue-Tracking CLI
@@ -89,6 +90,7 @@ releases:
       Implement trail lifecycle for exploratory workflows and stash for shared
       state coordination. An agent can explore implementation approaches with
       trails, abandoning failed attempts and completing successful ones.
+      Depends on rel01.0 (Cupboard, Table, crumb CRUD, SQLite backend).
     use_cases:
       - id: rel03.0-uc001-trail-exploration
         summary: Trail-Based Exploration
@@ -109,7 +111,7 @@ releases:
     description: |
       Validate trails functionality with self-hosting scenarios. Agents create
       trails as epics, add crumbs as tasks, and use trail lifecycle to finalize
-      or discard grouped work.
+      or discard grouped work. Depends on rel03.0 (trail lifecycle, links, stashes).
     use_cases:
       - id: rel03.1-uc001-self-hosting-with-epics
         summary: Self-Hosting with Epics via Trails
@@ -121,6 +123,7 @@ releases:
     description: |
       Validate that JSONL files always live on main, independent of code branches.
       Issue state is accessible from any branch and survives branch abandonment.
+      Depends on rel01.1 (configuration directories, JSONL persistence).
     use_cases:
       - id: rel04.0-uc001-branch-independent-data
         summary: Branch-Independent Data Persistence

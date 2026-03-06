@@ -6,6 +6,11 @@ traces:
 - rel03.0-uc002-link-management
 - rel03.0-uc003-stash-operations
 - rel03.0-uc004-trail-crumb-lifecycle
+- prd001-cupboard-core R2, R3
+- prd002-sqlite-backend R3.3, R12, R13, R14.6
+- prd006-trails-interface R2, R3, R5, R5.6, R6, R6.6, R6.7, R7, R9
+- prd007-links-interface R2.1, R3, R4, R6.1
+- prd008-stash-interface R1, R1.6, R2, R4, R5, R6, R7, R9, R13
 preconditions:
 - Cupboard initialized with SQLite backend
 - trails, crumbs, and links tables accessible via GetTable

@@ -29,8 +29,8 @@ flow:
   - F19: "Detach the cupboard: Call cupboard.Detach()."
 touchpoints:
   - T1: "Cupboard interface: Attach, Detach, GetTable (prd001-cupboard-core R2)"
-  - T2: "Table (crumbs): Get, Set, Fetch"
-  - T3: "Table (properties): Get, Set, Fetch"
+  - T2: "Table (crumbs): Get, Set, Fetch (prd001-cupboard-core R3)"
+  - T3: "Table (properties): Get, Set, Fetch (prd001-cupboard-core R3)"
   - T4: "Crumb entity: SetProperty, GetProperty, GetProperties, ClearProperty (prd003-crumbs-interface R5)"
   - T5: "Property entity: struct fields, DefineCategory, GetCategories (prd004-properties-interface R7, R8)"
   - T6: "Built-in property seeding (prd004-properties-interface R9, prd002-sqlite-backend R9)"

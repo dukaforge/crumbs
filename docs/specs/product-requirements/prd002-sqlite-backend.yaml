@@ -46,14 +46,14 @@ requirements:
   D:
     title: Design Decisions
     items:
-    - D-HYD: Hydration and dehydration functions are independent of each other and of all table accessors. A hydration
+    - R0.1: Hydration and dehydration functions are independent of each other and of all table accessors. A hydration
         function for Crumb does not call any function in any other entity's hydration file. This independence is the
         precondition that allows hydration to be implemented in two separate tasks.
-    - D-LOCK: The backend embeds a sync.RWMutex directly in the backend struct. The mutex is value-initialized (no
+    - R0.2: The backend embeds a sync.RWMutex directly in the backend struct. The mutex is value-initialized (no
         constructor). Attach acquires the write lock for its entire duration. GetTable, Detach, and all table operations
         acquire the appropriate lock (read or write) on entry and release it on return. This is the only synchronization
         primitive in the backend; there are no channel-based synchronization patterns.
-    - D-START: 'The startup sequence is a single, non-interruptible operation. If any step fails, Attach returns an error and
+    - R0.3: 'The startup sequence is a single, non-interruptible operation. If any step fails, Attach returns an error and
         the backend is left in a detached state. The sequence is: (1) create DataDir if missing, (2) delete stale
         cupboard.db if present, (3) create new cupboard.db and apply schema, (4) load each JSONL file line by line, (5) run
         FK validation and DAG audit, (6) seed built-in properties if properties.jsonl was empty, (7) mark the backend as
@@ -91,7 +91,7 @@ requirements:
   R4:
     title: Startup Sequence
     items:
-    - R4.0: The startup sequence must follow the order in D-START exactly. Steps 1-7 must complete before Attach returns. If
+    - R4.0: The startup sequence must follow the order in R0.3 exactly. Steps 1-7 must complete before Attach returns. If
         any step fails, all resources acquired in prior steps must be released before returning the error.
     - R4.2: If any JSONL file contains malformed lines (invalid JSON), skip those lines and log a warning. Malformed lines
         do not halt loading
@@ -178,15 +178,15 @@ requirements:
   R14:
     title: Entity Hydration
     items:
-    - R14.0: 'Hydration for core types (R14a) must be complete before hydration for supporting types (R14b) begins. stitch must
+    - R14.0: 'Hydration for core types (R14.1) must be complete before hydration for supporting types (R14.2) begins. stitch must
         generate these as two separate tasks. Neither task may depend on the other''s output; they share only the base hydration
         pattern defined in R14.1.'
-    - R14.1: Hydration converts a SQLite row into an entity struct. Each table accessor defines hydration for its entity type
-    - R14a: 'Core types (Crumb, Trail, Property) — implement in internal/persistence/mapping/. Must be complete before R14b.'
+    - R14.1: 'Core types (Crumb, Trail, Property) — implement in internal/persistence/mapping/. Hydration converts a SQLite row
+        into an entity struct. Each table accessor defines hydration for its entity type. Must be complete before R14.2.'
     - R14.2: Hydration mapping for Crumb (from crumbs table)
     - R14.3: Hydration mapping for Trail (from trails table)
     - R14.4: Hydration mapping for Property (from properties table)
-    - R14b: 'Supporting types (Metadata, Link, Stash, StashHistory) — implement in internal/persistence/mapping/. Depends on R14a
+    - R14.2: 'Supporting types (Metadata, Link, Stash, StashHistory) — implement in internal/persistence/mapping/. Depends on R14.1
         being complete.'
     - R14.5: Hydration mapping for Metadata (from metadata table)
     - R14.6: Hydration mapping for Link (from links table)
@@ -208,9 +208,9 @@ requirements:
         before persistence
     - R15.8: After SQLite persistence, the entity must be written to the corresponding JSONL file following the atomic write
         pattern (R5.2)
-    - R15a: 'Core types (Crumb, Trail, Property) — implement dehydration functions for these entity types first. Must be complete
-        before R15b.'
-    - R15b: 'Supporting types (Metadata, Link, Stash, StashHistory) — implement dehydration functions after R15a is complete.
+    - R15.9: 'Core types (Crumb, Trail, Property) — implement dehydration functions for these entity types first. Must be complete
+        before R15.10.'
+    - R15.10: 'Supporting types (Metadata, Link, Stash, StashHistory) — implement dehydration functions after R15.9 is complete.
         R15.5 (Stash.Value JSON encoding) applies to this group.'
   R16:
     title: JSONL Sync Strategy
@@ -261,7 +261,7 @@ non_goals:
 acceptance_criteria:
 - JSONL file format specified for all entity types (R2)
 - SQLite schema specified with all tables and indexes (R3)
-- 'Startup sequence specified: create, load, validate (R4); D-START and D-LOCK design decisions present; R4.0 ordering
+- 'Startup sequence specified: create, load, validate (R4); R0.3 and R0.2 design decisions present; R4.0 ordering
   requirement present'
 - 'Write operation pattern specified: transaction, persist, atomicity (R5)'
 - Trail cascade behavior documented for Table.Set (R5.6, R5.7)
@@ -273,7 +273,7 @@ acceptance_criteria:
 - Cupboard interface implementation specified (R11)
 - Table name routing documented (R12)
 - Table interface implementation specified (R13)
-- Entity hydration pattern documented (R14); D-HYD design decision present; R14.0 ordering requirement present; R14a and R14b
+- Entity hydration pattern documented (R14); R0.1 design decision present; R14.0 ordering requirement present; R14.1 and R14.2
   sub-groups defined
-- Entity persistence pattern documented (R15); R15a and R15b sub-groups defined
+- Entity persistence pattern documented (R15); R15.9 and R15.10 sub-groups defined
 - JSONL sync strategy options documented (R16)
