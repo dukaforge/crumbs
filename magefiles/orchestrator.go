@@ -22,9 +22,6 @@ type Generator mg.Namespace
 // Scaffold groups the scaffold install/uninstall targets.
 type Scaffold mg.Namespace
 
-// Beads groups issue-tracker lifecycle targets.
-type Beads mg.Namespace
-
 // Prompt groups prompt preview targets.
 type Prompt mg.Namespace
 
@@ -66,10 +63,10 @@ func logf(format string, args ...any) {
 
 // --- Top-level targets ---
 
-// Init initializes the project (beads).
+// Init initializes the project.
 func Init() error { return newOrch().Init() }
 
-// Reset performs a full reset: cobbler, generator, beads.
+// Reset performs a full reset: cobbler and generator.
 func Reset() error { return newOrch().FullReset() }
 
 // Build compiles the project binary.
@@ -116,8 +113,13 @@ func (Cobbler) Reset() error { return newOrch().CobblerReset() }
 // Start begins a new generation trail.
 func (Generator) Start() error { return newOrch().GeneratorStart() }
 
-// Run executes N cycles of measure + stitch within the current generation.
-func (Generator) Run() error { return newOrch().GeneratorRun() }
+// Run executes measure + stitch cycles using the generation.cycles value in configuration.yaml.
+// Use RunN to override the cycle count for a single invocation.
+func (Generator) Run() error { return newOrch().GeneratorRun(0) }
+
+// RunN executes exactly n cycles of measure + stitch within the current generation.
+// Pass n > 0 to override generation.cycles in configuration.yaml for this run only.
+func (Generator) RunN(n int) error { return newOrch().GeneratorRun(n) }
 
 // Resume recovers from an interrupted run and continues.
 func (Generator) Resume() error { return newOrch().GeneratorResume() }
@@ -150,10 +152,3 @@ func (Prompt) Measure() error { return newOrch().DumpMeasurePrompt() }
 // Stitch prints the assembled stitch prompt to stdout.
 func (Prompt) Stitch() error { return newOrch().DumpStitchPrompt() }
 
-// --- Beads targets ---
-
-// Init initializes the beads issue tracker.
-func (Beads) Init() error { return newOrch().BeadsInit() }
-
-// Reset clears beads issue history.
-func (Beads) Reset() error { return newOrch().BeadsReset() }
