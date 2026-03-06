@@ -20,7 +20,7 @@ requirements:
   D:
     title: Design Decisions
     items:
-    - D-BACKFILL: 'Property creation (Table.Set with empty ID) wraps the entire operation in a single SQLite transaction:
+    - R0.1: 'Property creation (Table.Set with empty ID) wraps the entire operation in a single SQLite transaction:
         (1) INSERT the property row, (2) SELECT all existing crumb IDs, (3) INSERT one crumb_properties row per crumb using
         the property''s type-based default value. If any step fails, the transaction rolls back. The caller receives an error
         and no property is created. This transaction is the only place in the system where a single write touches both the
@@ -63,17 +63,17 @@ requirements:
         to the current time, validate that Name is non-empty (ErrInvalidName if empty), validate that Name is unique (ErrDuplicateName
         if exists), validate that ValueType is one of the valid types in R3.1 (ErrInvalidValueType if not), and initialize
         the property on all existing crumbs with the type's default value (see R3.5)
-    - R4.2a: 'The backfill algorithm must: (1) open a write transaction, (2) insert the new property row, (3) select all
+    - R4.3: 'The backfill algorithm must: (1) open a write transaction, (2) insert the new property row, (3) select all
         crumb IDs from the crumbs table within the same transaction, (4) for each crumb ID insert a crumb_properties row
         with the property''s default value, (5) commit. If any step raises an error, roll back and return the error.'
-    - R4.2b: The backfill SELECT in step 3 must use the same transaction as the INSERT in step 2. This prevents a race where
+    - R4.4: The backfill SELECT in step 3 must use the same transaction as the INSERT in step 2. This prevents a race where
         a crumb is created after the SELECT but before the commit (the newly created crumb will receive the property default
         via the crumb creation path in prd003 R3.2).
-    - R4.3: Property initialization on existing crumbs (backfill) is atomic with property creation. If backfill fails, the
+    - R4.5: Property initialization on existing crumbs (backfill) is atomic with property creation. If backfill fails, the
         property is not created
-    - R4.4: Table.Set returns the generated PropertyID and any error. After successful creation, the Property struct is updated
+    - R4.6: Table.Set returns the generated PropertyID and any error. After successful creation, the Property struct is updated
         with the generated PropertyID and CreatedAt timestamp
-    - R4.5: Table.Set must persist the property before returning
+    - R4.7: Table.Set must persist the property before returning
   R5:
     title: Retrieving Properties
     items:
@@ -152,8 +152,8 @@ acceptance_criteria:
 - Category struct defined with CategoryID, PropertyID, Name, Ordinal
 - Value types documented (categorical, text, integer, boolean, timestamp, list)
 - Default values documented for each value type (R3.5)
-- Property creation via Table.Set specified (ID generation, validation, backfill existing crumbs); D-BACKFILL design decision
-  present; R4.2a and R4.2b backfill algorithm steps present
+- Property creation via Table.Set specified (ID generation, validation, backfill existing crumbs); R0.1 design decision
+  present; R4.3 and R4.4 backfill algorithm steps present
 - Property retrieval via Table.Get specified (type assertion to *Property)
 - Property query via Table.Fetch specified (list all properties)
 - DefineCategory entity method specified (create category, validation, persist via Table.Set)

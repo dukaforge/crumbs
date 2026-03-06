@@ -27,8 +27,8 @@ introduction: |
   pkg/properties, pkg/trails, etc.). This was resolved by GH-18 (corrected pkg/types references
   in prd007 and prd008; expanded ARCHITECTURE.yaml project_structure with per-package PRD
   mappings). The four HIGH-risk task mitigations were applied via GH-19 (design decisions
-  D-HYD, D-LOCK, D-START, D-ENTITY, D-TABLE-CRUMB, D-BACKFILL added to prd002, prd003,
-  prd004 along with ordering requirements). GH-15 may proceed.
+  R0.1, R0.2, R0.3 added to prd002; R0.1, R0.2 added to prd003;
+  R0.1 added to prd004; along with ordering requirements). GH-15 may proceed.
 sections:
 - title: Totals by Release
   content: |
@@ -226,19 +226,19 @@ sections:
     been corrected to pkg/constants, pkg/schema, and pkg/api respectively. No package name
     ambiguity remains across PRDs, eng05, and ARCHITECTURE.yaml.
 
-    Split hydration task (prd002 R14-R15) — resolved by GH-19. Design decision D-HYD and
-    ordering requirement R14.0 added to prd002. R14 is split into R14a (Crumb, Trail, Property)
-    and R14b (Metadata, Link, Stash, StashHistory). R15 is split into R15a and R15b. Stitch
+    Split hydration task (prd002 R14-R15) — resolved by GH-19. Design decision R0.1 and
+    ordering requirement R14.0 added to prd002. R14 is split into R14.1 (Crumb, Trail, Property)
+    and R14.2 (Metadata, Link, Stash, StashHistory). R15 is split into R15.9 and R15.10. Stitch
     will read these group labels and generate two tasks at ~240 LOC each without agent inference.
 
     Split Crumb state+property task (prd003 R4-R11) — resolved by GH-19. Design decisions
-    D-ENTITY (entity methods in pkg/schema/crumb.go) and D-TABLE-CRUMB (table accessor in
+    R0.1 (entity methods in pkg/schema/crumb.go) and R0.2 (table accessor in
     internal/persistence/crumbs_table.go) added to prd003. R4.0 ordering requirement and R6.0
     group marker added. Stitch will generate two tasks: (a) entity methods (~180 LOC); (b)
     Crumbs table accessor (~200 LOC).
 
     Add transaction note to Property backfill (prd004 R4) — resolved by GH-19. Design decision
-    D-BACKFILL added to prd004. R4.2a and R4.2b specify the exact 5-step transaction algorithm
+    R0.1 added to prd004. R4.3 and R4.4 specify the exact 5-step transaction algorithm
     and the same-transaction SELECT constraint. Stitch agents have unambiguous instructions;
     no inference required. Non-goal added to scope out incremental backfill.
 
@@ -264,8 +264,8 @@ sections:
     LOC production is comfortably below the 400-LOC HIGH threshold.
 
     Four HIGH-risk tasks existed across rel01.0, rel02.0, and rel03.0. All four have been
-    mitigated at the specification level via GH-19. Design decisions (D-HYD, D-LOCK, D-START,
-    D-ENTITY, D-TABLE-CRUMB, D-BACKFILL) and ordering requirements (R14.0, R4.0) are now
+    mitigated at the specification level via GH-19. Design decisions (prd002 R0.1-R0.3,
+    prd003 R0.1-R0.2, prd004 R0.1) and ordering requirements (R14.0, R4.0) are now
     embedded in prd002, prd003, and prd004. Stitch agents read these directly; no inference
     about task boundaries is required.
 
