@@ -4,6 +4,12 @@ release: '99.0'
 traces:
 - rel99.0-uc001-blazes-templates
 - rel99.0-uc002-docker-bootstrap
+- prd001-cupboard-core R1, R2, R3, R4, R5
+- prd002-sqlite-backend R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16
+- prd003-crumbs-interface R1, R4, R5
+- prd006-trails-interface R3
+- prd010-configuration-directories R1, R2, R3, R4, R7, R8
+- prd011-blazes-templates R1, R4, R5, R6, R7, R8
 preconditions:
 - Template directory exists at .crumbs/blazes/ or configured path
 - At least one valid template YAML file in the directory

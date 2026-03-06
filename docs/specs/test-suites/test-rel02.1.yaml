@@ -6,6 +6,11 @@ traces:
 - rel02.1-uc002-table-benchmarks
 - rel02.1-uc003-self-hosting
 - rel02.1-uc004-metadata-lifecycle
+- prd001-cupboard-core R2, R3, R3.2, R3.3
+- prd002-sqlite-backend R1, R2, R2.8, R3, R3.3, R4, R5, R5.2, R12, R13, R14, R15, R16, R16.2
+- prd003-crumbs-interface R1, R2, R3, R4, R4.3, R5, R9, R10
+- prd004-properties-interface R9
+- prd005-metadata-interface R1, R3, R4, R5, R6.5, R7, R10
 preconditions:
 - Cupboard binary built from cmd/cupboard
 - Fresh temp directory for config and data

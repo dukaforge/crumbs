@@ -3,6 +3,10 @@ title: Post-Trails Validation
 release: '03.1'
 traces:
 - rel03.1-uc001-self-hosting-with-epics
+- prd001-cupboard-core R2, R3
+- prd002-sqlite-backend R1, R2, R3, R4, R5
+- prd006-trails-interface R2, R5, R6
+- prd007-links-interface R2.1
 preconditions:
 - Cupboard initialized with SQLite backend
 - No existing crumbs, trails, or links in the database
