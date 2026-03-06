@@ -77,6 +77,21 @@ requirements:
     - R8.1: All entity IDs must be UUID v7 (time-ordered UUIDs per RFC 9562)
     - R8.2: Backends generate UUIDs when Set is called with an empty id parameter
     - R8.3: UUID v7 provides sortability by creation time without separate timestamp columns
+package_contract:
+  exports:
+    - name: Config
+      signature: "type Config struct { Backend string; DataDir string }"
+    - name: Cupboard
+      signature: "type Cupboard interface { GetTable(string) (Table, error); Attach(Config) error; Detach() error }"
+    - name: Table
+      signature: "type Table interface { Get(string) (any, error); Set(string, any) (string, error); Delete(string) error; Fetch(map[string]any) ([]any, error) }"
+    - name: ErrAlreadyAttached
+    - name: ErrCupboardDetached
+    - name: ErrTableNotFound
+    - name: ErrNotFound
+    - name: ErrInvalidID
+  import_constraints:
+    - "pkg/api must not import pkg/schema, internal/, or cmd/"
 non_goals:
 - This PRD does not define entity-specific schemas or operations. Entity types are defined in their respective interface PRDs
   (prd003-crumbs-interface, prd006-trails-interface, etc.).

@@ -105,6 +105,16 @@ requirements:
     - R9.5: To find the branch point of a trail, query the links table for a `branches_from` link where `from_id` equals the
         trail ID
     - R9.6: Trails without a `branches_from` link are standalone (not branched from any crumb)
+package_contract:
+  exports:
+    - name: Trail
+      signature: "type Trail struct { TrailID string; State string; CreatedAt time.Time; CompletedAt time.Time }"
+    - name: Trail.Complete
+      signature: "func (t *Trail) Complete() error"
+    - name: Trail.Abandon
+      signature: "func (t *Trail) Abandon() error"
+  import_constraints:
+    - "pkg/schema must not import pkg/api or internal/"
 non_goals:
 - This PRD does not define crumb CRUD operations. See prd003-crumbs-interface.
 - This PRD does not define the Table interface or link storage. The Table interface is defined in prd001-cupboard-core and

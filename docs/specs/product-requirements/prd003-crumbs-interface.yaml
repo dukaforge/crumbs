@@ -124,6 +124,22 @@ requirements:
     items:
     - R11.1: Crumb entity methods and Table operations must return the following sentinel errors
     - R11.2: All errors must be checkable with errors.Is
+package_contract:
+  exports:
+    - name: Crumb
+      signature: "type Crumb struct { CrumbID string; Name string; State string; CreatedAt time.Time; UpdatedAt time.Time; Properties map[string]any }"
+    - name: Crumb.SetState
+      signature: "func (c *Crumb) SetState(state string) error"
+    - name: Crumb.Pebble
+      signature: "func (c *Crumb) Pebble() error"
+    - name: Crumb.Dust
+      signature: "func (c *Crumb) Dust() error"
+    - name: Crumb.SetProperty
+      signature: "func (c *Crumb) SetProperty(propertyID string, value any) error"
+    - name: Crumb.GetProperty
+      signature: "func (c *Crumb) GetProperty(propertyID string) (any, error)"
+  import_constraints:
+    - "pkg/schema must not import pkg/api or internal/"
 non_goals:
 - This PRD does not define the Table interface or Cupboard interface. See prd001-cupboard-core
 - This PRD does not define trail operations. See prd006-trails-interface

@@ -135,6 +135,22 @@ requirements:
         the stash ID
     - R13.6: To find all stashes scoped to a trail, query the links table for `scoped_to` links where `to_id` equals the trail
         ID
+package_contract:
+  exports:
+    - name: Stash
+      signature: "type Stash struct { StashID string; Name string; StashType string; Value any; Version int; CreatedAt time.Time }"
+    - name: StashHistoryEntry
+      signature: "type StashHistoryEntry struct { StashID string; Version int; Operation string; Timestamp time.Time; Metadata map[string]any }"
+    - name: Stash.SetValue
+      signature: "func (s *Stash) SetValue(value any) error"
+    - name: Stash.Increment
+      signature: "func (s *Stash) Increment(delta int64) (int64, error)"
+    - name: Stash.Acquire
+      signature: "func (s *Stash) Acquire(holder string) error"
+    - name: Stash.Release
+      signature: "func (s *Stash) Release(holder string) error"
+  import_constraints:
+    - "pkg/schema must not import pkg/api or internal/"
 non_goals:
 - This PRD does not define queue or channel stash types. These may be added in a future version
 - This PRD does not define stash replication or cross-cupboard sharing

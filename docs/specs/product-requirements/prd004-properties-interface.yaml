@@ -125,6 +125,16 @@ requirements:
     items:
     - R10.1: Property and Category operations must return the following sentinel errors
     - R10.2: All errors must be checkable with errors.Is
+package_contract:
+  exports:
+    - name: Property
+      signature: "type Property struct { PropertyID string; Name string; Description string; ValueType string; CreatedAt time.Time }"
+    - name: Category
+      signature: "type Category struct { CategoryID string; PropertyID string; Name string; Ordinal int }"
+    - name: Property.DefineCategory
+      signature: "func (p *Property) DefineCategory(name string, ordinal int) (*Category, error)"
+  import_constraints:
+    - "pkg/schema must not import pkg/api or internal/"
 non_goals:
 - This PRD does not define setting or getting property values on crumbs. See prd003-crumbs-interface for SetProperty, GetProperty,
   GetProperties, and ClearProperty
