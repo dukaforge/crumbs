@@ -13,21 +13,21 @@ actor: Developer or agent with a Go toolchain (1.25+) installed
 trigger: Wanting to use cupboard on a new machine or in a new project
 flow:
   - F1: "Install cupboard binary: run go install github.com/mesh-intelligence/crumbs/cmd/cupboard@latest"
-  - F2: "Verify binary accessible: run cupboard --help"
-  - F3: "Initialize cupboard: run cupboard init in a project directory"
-  - F4: "Create a crumb: run cupboard set crumbs with JSON payload"
-  - F5: "List crumbs: run cupboard list crumbs to confirm persistence"
+  - F2: "Verify binary accessible (requires install from F1): run cupboard --help"
+  - F3: "Initialize cupboard (requires binary from F1): run cupboard init in a project directory"
+  - F4: "Create a crumb (requires initialized cupboard from F3): run cupboard set crumbs with JSON payload"
+  - F5: "List crumbs (requires crumb from F4): run cupboard list crumbs to confirm persistence"
 touchpoints:
   - T1: "cmd/cupboard: CLI binary built by go install"
   - T2: "pkg/types: Config struct, entity types (prd001-cupboard-core R1)"
   - T3: "internal/sqlite: Backend that creates JSONL files and SQLite cache (prd002-sqlite-backend R1, R4)"
   - T4: "internal/paths: Resolves default config and data directories (prd010-configuration-directories R1, R2)"
 success_criteria:
-  - S1: go install github.com/mesh-intelligence/crumbs/cmd/cupboard@latest completes without errors
-  - S2: cupboard --help prints usage from $GOBIN
-  - S3: cupboard init creates the data directory with JSONL files
-  - S4: cupboard set crumbs and cupboard list crumbs round-trips a crumb
-  - S5: No manual compilation steps required beyond go install
+  - id: S1
+    criterion: End-to-end flow works from go install; binary installs into $GOBIN, help prints usage, init creates data directory with JSONL files, and set/list round-trips a crumb with no manual compilation steps beyond go install
+    traces:
+      - prd009-cupboard-cli AC1
+      - prd010-configuration-directories AC4
 out_of_scope:
   - Package managers (brew, apt, snap)
   - Docker-based installation (see rel99.0-uc002-docker-bootstrap)
