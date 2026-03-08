@@ -20,20 +20,20 @@ trigger: Need to organize related tasks under an epic-like container with lifecy
   control
 flow:
   - F1: "Create an epic trail: run cupboard set trails '' '{\"State\":\"draft\"}' to create a trail that will group related tasks"
-  - F2: "Transition trail to active: run cupboard set trails <trail_id> '{\"State\":\"active\"}'"
-  - F3: "Create tasks for the epic: run cupboard set crumbs '' '{\"Name\":\"Task 1\",\"State\":\"draft\"}' for each task"
-  - F4: "Associate crumbs with trail: run cupboard set links '' '{\"LinkType\":\"belongs_to\",\"FromID\":\"<crumb_id>\",\"ToID\":\"<trail_id>\"}'"
-  - F5: "Query crumbs by epic: run cupboard list links LinkType=belongs_to ToID=<trail_id>"
-  - F6: "Work on tasks: pick a task, claim it (set State to taken), complete work, close it (set State to pebble)"
-  - F7: "Add more tasks to epic during work: create new crumbs and link them to the trail"
-  - F8: "Complete the epic trail: run cupboard set trails <trail_id> '{\"State\":\"completed\"}'"
-  - F9: "Verify crumbs are permanent: run cupboard list links LinkType=belongs_to ToID=<trail_id> returns empty"
-  - F10: "Create another epic for abandonment scenario: create trail, add crumbs, link them"
-  - F11: "Abandon the failed epic: run cupboard set trails <trail_id> '{\"State\":\"abandoned\"}'"
-  - F12: "Verify cascade deletion: cupboard get crumbs <crumb_id> returns error for abandoned crumbs"
-  - F13: "Integrate with do-work.sh: script creates trail for related work, adds crumbs, completes trail on merge"
-  - F14: "Integrate with make-work.sh: script creates trails as epics and groups child tasks"
-  - F15: "Commit JSONL files to git: per eng01-git-integration, all JSONL files are committed including trails and links"
+  - F2: "Transition trail to active (requires trail from F1): run cupboard set trails <trail_id> '{\"State\":\"active\"}'"
+  - F3: "Create tasks for the epic (requires active trail from F2): run cupboard set crumbs '' '{\"Name\":\"Task 1\",\"State\":\"draft\"}' for each task"
+  - F4: "Associate crumbs with trail (requires crumbs from F3 and trail from F1): run cupboard set links '' '{\"LinkType\":\"belongs_to\",\"FromID\":\"<crumb_id>\",\"ToID\":\"<trail_id>\"}'"
+  - F5: "Query crumbs by epic (requires links from F4): run cupboard list links LinkType=belongs_to ToID=<trail_id>"
+  - F6: "Work on tasks (requires linked crumbs from F4): pick a task, claim it (set State to taken), complete work, close it (set State to pebble)"
+  - F7: "Add more tasks to epic during work (requires active trail from F2): create new crumbs and link them to the trail"
+  - F8: "Complete the epic trail (requires active trail with tasks from F3-F6): run cupboard set trails <trail_id> '{\"State\":\"completed\"}'"
+  - F9: "Verify crumbs are permanent (requires completion from F8): run cupboard list links LinkType=belongs_to ToID=<trail_id> returns empty"
+  - F10: "Create another epic for abandonment scenario (separate path from F8): create trail, add crumbs, link them"
+  - F11: "Abandon the failed epic (requires active trail from F10): run cupboard set trails <trail_id> '{\"State\":\"abandoned\"}'"
+  - F12: "Verify cascade deletion (requires abandonment from F11): cupboard get crumbs <crumb_id> returns error for abandoned crumbs"
+  - F13: "Integrate with do-work.sh (exercises F1-F8 in script context): script creates trail for related work, adds crumbs, completes trail on merge"
+  - F14: "Integrate with make-work.sh (exercises F1-F4 in script context): script creates trails as epics and groups child tasks"
+  - F15: "Commit JSONL files to git (after F13/F14 complete): per eng01-git-integration, all JSONL files are committed including trails and links"
 touchpoints:
   - T1: "cupboard CLI (cmd/cupboard): generic table commands get, set, list, delete for trails, crumbs, and links"
   - T2: "Cupboard library (pkg/types): Cupboard interface with GetTable, Table interface for CRUD (prd001-cupboard-core R2, R3)"
@@ -46,18 +46,17 @@ touchpoints:
   - T9: "make-work.sh: maps epics to trails, child tasks to belongs_to-linked crumbs"
   - T10: ".claude/rules/: agent workflow instructions referencing trail-based epic management"
 success_criteria:
-  - S1: "cupboard set trails '' '{\"State\":\"draft\"}' creates a trail and returns JSON with TrailID"
-  - S2: "cupboard set links '' '{\"LinkType\":\"belongs_to\",...}' creates belongs_to link between crumb and trail"
-  - S3: cupboard list links LinkType=belongs_to ToID=<trail_id> returns all crumbs in the epic
-  - S4: Crumbs in active trail are queryable and modifiable
-  - S5: "cupboard set trails <id> '{\"State\":\"completed\"}' removes belongs_to links"
-  - S6: After trail completion, crumbs persist without belongs_to links (permanent)
-  - S7: "cupboard set trails <id> '{\"State\":\"abandoned\"}' deletes associated crumbs atomically"
-  - S8: After trail abandonment, cupboard get crumbs <crumb_id> returns not found for deleted crumbs
-  - S9: Trail remains in database after abandonment (for audit)
-  - S10: do-work.sh can run a full cycle with trail-based epic grouping
-  - S11: make-work.sh can create epics as trails and group child tasks
-  - S12: JSONL files (trails.jsonl, links.jsonl) persist and are committed to git
+  - id: S1
+    criterion: do-work.sh completes a full cycle with trail-based epic grouping; create trail, add crumbs via belongs_to links, work tasks through state transitions, complete trail to finalize — confirming trails serve as epic containers for agent workflows
+    traces:
+      - prd006-trails-interface AC3
+      - prd006-trails-interface AC5
+      - prd003-crumbs-interface AC3
+  - id: S2
+    criterion: make-work.sh creates epics as trails, groups child tasks via belongs_to links, and the resulting JSONL files (trails.jsonl, links.jsonl, crumbs.jsonl) can be committed to git — confirming the create-and-commit workflow extends to trail-based organization
+    traces:
+      - prd006-trails-interface AC3
+      - prd002-sqlite-backend AC1
 out_of_scope:
   - Nested trails (trails containing trails) - not supported per rel03.0-uc001
   - Trail merging or splitting

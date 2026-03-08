@@ -17,18 +17,18 @@ actor: Developer or agent working through the Cupboard API
 trigger: Need to attach supplementary information to crumbs (comments, attachments) and verify metadata lifecycle behavior
 flow:
   - F1: "Attach backend: construct a Cupboard, call Attach(config) with a SQLite backend configuration; the backend creates DataDir and initializes the metadata table with built-in schemas"
-  - F2: "Create a crumb: call table.Set on the crumbs table with an empty ID to create a crumb that will hold metadata"
-  - F3: "Add a comment: construct a Metadata struct with TableName=comments and Content=text, call table.Set on the metadata table with empty ID; the backend generates a UUID v7 and persists the entry"
-  - F4: "Add a second comment: call table.Set again with different content; verify that multiple metadata entries accumulate for the same crumb"
-  - F5: "Add an attachment: construct a Metadata struct with TableName=attachments and Content=JSON object, call table.Set; the backend stores the JSON content as-is"
-  - F6: "Retrieve metadata by ID: call table.Get with the metadata ID; the backend returns the Metadata struct with all fields populated"
-  - F7: "Filter by schema: call table.Fetch with filter schema=comments; the result includes only comment entries"
-  - F8: "Filter by crumb_id: call table.Fetch with filter crumb_id=crumb-uuid; the result includes only entries for that crumb"
-  - F9: "Combine filters: call table.Fetch with both schema and crumb_id filters; verify that filters are ANDed"
-  - F10: "Verify ErrNotFound: call table.Get with a nonexistent metadata ID; the operation returns ErrNotFound"
-  - F11: "Verify ErrInvalidID: call table.Get with an empty ID; the operation returns ErrInvalidID"
-  - F12: "Delete the parent crumb: call table.Delete on the crumbs table for the crumb with metadata"
-  - F13: "Verify cascade delete: call table.Fetch with crumb_id filter for the deleted crumb; the result is empty, confirming all metadata was removed"
+  - F2: "Create a crumb (requires attached backend from F1): call table.Set on the crumbs table with an empty ID to create a crumb that will hold metadata"
+  - F3: "Add a comment (requires crumb from F2): construct a Metadata struct with TableName=comments and Content=text, call table.Set on the metadata table with empty ID; the backend generates a UUID v7 and persists the entry"
+  - F4: "Add a second comment (requires crumb from F2, tests accumulation after F3): call table.Set again with different content; verify that multiple metadata entries accumulate for the same crumb"
+  - F5: "Add an attachment (requires crumb from F2): construct a Metadata struct with TableName=attachments and Content=JSON object, call table.Set; the backend stores the JSON content as-is"
+  - F6: "Retrieve metadata by ID (requires metadata ID from F3): call table.Get with the metadata ID; the backend returns the Metadata struct with all fields populated"
+  - F7: "Filter by schema (requires entries from F3-F5): call table.Fetch with filter schema=comments; the result includes only comment entries"
+  - F8: "Filter by crumb_id (requires entries from F3-F5): call table.Fetch with filter crumb_id=crumb-uuid; the result includes only entries for that crumb"
+  - F9: "Combine filters (requires entries from F3-F5): call table.Fetch with both schema and crumb_id filters; verify that filters are ANDed"
+  - F10: "Verify ErrNotFound (independent error path): call table.Get with a nonexistent metadata ID; the operation returns ErrNotFound"
+  - F11: "Verify ErrInvalidID (independent error path): call table.Get with an empty ID; the operation returns ErrInvalidID"
+  - F12: "Delete the parent crumb (requires crumb with metadata from F2-F5): call table.Delete on the crumbs table for the crumb with metadata"
+  - F13: "Verify cascade delete (requires deletion from F12): call table.Fetch with crumb_id filter for the deleted crumb; the result is empty, confirming all metadata was removed"
   - F14: "Detach: call cupboard.Detach() to release resources"
 touchpoints:
   - T1: "Cupboard interface: Attach, GetTable, Detach (prd001-cupboard-core R2)"
@@ -41,18 +41,17 @@ touchpoints:
   - T8: "Cascade delete: metadata removed when crumb deleted (prd005-metadata-interface R6.5)"
   - T9: "Error types: ErrNotFound, ErrInvalidID (prd005-metadata-interface R10)"
 success_criteria:
-  - S1: Table.Set with empty ID generates a UUID v7 for metadata and persists to storage
-  - S2: Multiple metadata entries can be added to the same crumb (additive, not replacement)
-  - S3: Comments schema stores plain text content
-  - S4: Attachments schema stores JSON content as-is
-  - S5: Table.Get retrieves metadata with all fields matching what was created
-  - S6: Table.Fetch with schema filter returns only matching entries
-  - S7: Table.Fetch with crumb_id filter returns only entries for that crumb
-  - S8: Table.Fetch with multiple filters ANDs them together
-  - S9: Table.Get with nonexistent ID returns ErrNotFound
-  - S10: Table.Get with empty ID returns ErrInvalidID
-  - S11: When a crumb is deleted, all its metadata entries are also deleted
-  - S12: Table.Fetch for deleted crumb returns empty result
+  - id: S1
+    criterion: Additive metadata accumulation and filter composition work end-to-end; multiple comments and attachments accumulate on a crumb, schema and crumb_id filters return correct subsets, and combined filters AND correctly — confirming the append-only pattern and query system integrate across the metadata table
+    traces:
+      - prd005-metadata-interface AC5
+      - prd005-metadata-interface AC7
+      - prd005-metadata-interface AC9
+  - id: S2
+    criterion: Cascade delete maintains referential integrity; deleting a crumb removes all its metadata entries, and subsequent Fetch with crumb_id filter returns empty — confirming cross-table lifecycle coupling between crumbs and metadata
+    traces:
+      - prd005-metadata-interface AC7
+      - prd003-crumbs-interface AC10
 out_of_scope:
   - Schema registration for custom metadata types (see prd005-metadata-interface R9)
   - PropertyID linking for property-specific metadata

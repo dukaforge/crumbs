@@ -10,23 +10,23 @@ actor: Coding agent or developer managing entity relationships
 trigger: Need to establish, query, or remove relationships between crumbs, trails, and stashes
 flow:
   - F1: "Create cupboard and get tables: construct a Cupboard via sqlite.NewBackend(), call Attach(config), and get links, crumbs, trails, and stashes tables"
-  - F2: "Create prerequisite entities: create parent crumb, child crumb, trail, and stash for linking"
-  - F3: "Create belongs_to link: create a link from crumb to trail indicating trail membership"
-  - F4: "Verify belongs_to link: retrieve the link and confirm link_type, from_id, and to_id"
-  - F5: "Create child_of link: create a link from child crumb to parent crumb indicating hierarchy"
-  - F6: "Verify child_of link: retrieve the link and confirm the crumb dependency relationship"
-  - F7: "Create branches_from link: create a link from trail to crumb indicating branch point"
-  - F8: "Verify branches_from link: retrieve the link and confirm the trail branch point"
-  - F9: "Create scoped_to link: create a link from stash to trail indicating trail scope"
-  - F10: "Verify scoped_to link: retrieve the link and confirm the stash scope"
-  - F11: "Fetch links by link_type: query links table with link_type filter"
-  - F12: "Fetch links by from_id: query links table with from_id filter"
-  - F13: "Fetch links by to_id: query links table with to_id filter"
-  - F14: "Fetch links with combined filters: query with multiple filter keys"
-  - F15: "Update link (idempotent): Set with existing link ID updates fields"
-  - F16: "Delete link: remove a link and verify ErrNotFound on subsequent Get"
-  - F17: "Delete nonexistent link: verify ErrNotFound returned"
-  - F18: "Verify uniqueness: attempt duplicate link creation with same link_type+from_id+to_id"
+  - F2: "Create prerequisite entities (requires tables from F1): create parent crumb, child crumb, trail, and stash for linking"
+  - F3: "Create belongs_to link (requires crumb and trail from F2): create a link from crumb to trail indicating trail membership"
+  - F4: "Verify belongs_to link (requires link from F3): retrieve the link and confirm link_type, from_id, and to_id"
+  - F5: "Create child_of link (requires parent and child crumbs from F2): create a link from child crumb to parent crumb indicating hierarchy"
+  - F6: "Verify child_of link (requires link from F5): retrieve the link and confirm the crumb dependency relationship"
+  - F7: "Create branches_from link (requires trail and crumb from F2): create a link from trail to crumb indicating branch point"
+  - F8: "Verify branches_from link (requires link from F7): retrieve the link and confirm the trail branch point"
+  - F9: "Create scoped_to link (requires stash and trail from F2): create a link from stash to trail indicating trail scope"
+  - F10: "Verify scoped_to link (requires link from F9): retrieve the link and confirm the stash scope"
+  - F11: "Fetch links by link_type (requires links from F3-F9): query links table with link_type filter"
+  - F12: "Fetch links by from_id (requires links from F3-F9): query links table with from_id filter"
+  - F13: "Fetch links by to_id (requires links from F3-F9): query links table with to_id filter"
+  - F14: "Fetch links with combined filters (requires links from F3-F9): query with multiple filter keys"
+  - F15: "Update link (requires existing link from F3): Set with existing link ID updates fields"
+  - F16: "Delete link (requires existing link from F3): remove a link and verify ErrNotFound on subsequent Get"
+  - F17: "Delete nonexistent link (independent error path): verify ErrNotFound returned"
+  - F18: "Verify uniqueness (requires existing link from F3): attempt duplicate link creation with same link_type+from_id+to_id"
   - F19: "Detach the cupboard: call cupboard.Detach()"
 touchpoints:
   - T1: "Cupboard interface: Attach, Detach, GetTable (prd001-cupboard-core R2)"
@@ -41,16 +41,21 @@ touchpoints:
   - T10: "scoped_to link type: stash→trail scope (prd008-stash-interface R13)"
   - T11: "Link table indexes: idx_links_type_from, idx_links_type_to (prd002-sqlite-backend R3.3)"
 success_criteria:
-  - S1: Link created via Table.Set generates UUID v7 for LinkID
-  - S2: belongs_to link associates crumb with trail (from_id=crumb_id, to_id=trail_id)
-  - S3: child_of link establishes crumb hierarchy (from_id=child, to_id=parent)
-  - S4: branches_from link indicates trail branch point (from_id=trail_id, to_id=crumb_id)
-  - S5: scoped_to link scopes stash to trail (from_id=stash_id, to_id=trail_id)
-  - S6: Fetch with link_type filter returns only links of that type
-  - S7: Fetch with from_id filter returns links originating from that entity
-  - S8: Fetch with to_id filter returns links targeting that entity
-  - S9: "Delete removes link; subsequent Get returns ErrNotFound"
-  - S10: Delete of nonexistent link returns ErrNotFound
+  - id: S1
+    criterion: All four link types (belongs_to, child_of, branches_from, scoped_to) create and retrieve correctly through the uniform Table interface, confirming that the links table handles all cross-entity relationship semantics
+    traces:
+      - prd007-links-interface AC2
+      - prd007-links-interface AC4
+  - id: S2
+    criterion: Filter-based queries return correct subsets; link_type, from_id, and to_id filters narrow results independently, and combined filters AND correctly — confirming the filter map works across all link types
+    traces:
+      - prd007-links-interface AC5
+      - prd007-links-interface AC6
+  - id: S3
+    criterion: Delete removes link permanently with subsequent Get returning ErrNotFound, and delete of nonexistent link also returns ErrNotFound — confirming link lifecycle consistency
+    traces:
+      - prd007-links-interface AC4
+      - prd007-links-interface AC9
 out_of_scope:
   - Trail cascade behavior on Complete/Abandon (see rel03.0-uc001)
   - Graph traversal or cycle detection (R10 ValidateDAG)

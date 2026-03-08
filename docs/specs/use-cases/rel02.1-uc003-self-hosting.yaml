@@ -13,14 +13,14 @@ actor: Coding agent (e.g., Claude Code) working on the crumbs codebase via do-wo
 trigger: Cupboard CLI providing the issue-tracking commands that scripts need
 flow:
   - F1: "Implement issue-tracking CLI commands: ready, create, update, close, show, list, comments"
-  - F2: "Support JSON output: the --json flag outputs JSON for script consumption; without it, output is human-readable"
-  - F3: "Handle crumb creation options: cupboard create accepts --type, --title, --description, --parent, --labels"
-  - F4: "Follow state transitions: draft, pending, ready, taken, pebble, dust (prd003-crumbs-interface R2)"
-  - F5: "Integrate do-work.sh script: use cupboard commands to pick a task, claim it, and close it after completion"
-  - F6: "Integrate make-work.sh script: use cupboard commands to list existing issues and create new ones"
-  - F7: "Handle JSONL sync: no explicit sync command needed; SQLite backend syncs on every write using immediate sync strategy (prd002-sqlite-backend R5, R16)"
-  - F8: "Reference cupboard commands in agent workflow rule: .claude/rules/ references cupboard commands for interactive use"
-  - F9: "Commit JSONL files to git: per eng01-git-integration, JSONL files are committed as part of session completion"
+  - F2: "Support JSON output (parallel to F1): the --json flag outputs JSON for script consumption; without it, output is human-readable"
+  - F3: "Handle crumb creation options (requires create command from F1): cupboard create accepts --type, --title, --description, --parent, --labels"
+  - F4: "Follow state transitions (requires update/close from F1): draft, pending, ready, taken, pebble, dust (prd003-crumbs-interface R2)"
+  - F5: "Integrate do-work.sh script (requires commands from F1-F4): use cupboard commands to pick a task, claim it, and close it after completion"
+  - F6: "Integrate make-work.sh script (requires commands from F1-F3): use cupboard commands to list existing issues and create new ones"
+  - F7: "Handle JSONL sync (exercised by F5-F6): no explicit sync command needed; SQLite backend syncs on every write using immediate sync strategy (prd002-sqlite-backend R5, R16)"
+  - F8: "Reference cupboard commands in agent workflow rule (requires commands from F1): .claude/rules/ references cupboard commands for interactive use"
+  - F9: "Commit JSONL files to git (after F5/F6 complete): per eng01-git-integration, JSONL files are committed as part of session completion"
 touchpoints:
   - T1: "cupboard CLI (cmd/cupboard): issue-tracking commands ready, create, close, update, show, list, comments (prd003-crumbs-interface R3, R4, R10)"
   - T2: "Cupboard library (pkg/types): Cupboard interface with GetTable, Table interface for CRUD, Crumb/Property entities (prd001-cupboard-core R2, R3; prd003-crumbs-interface R1)"
@@ -29,13 +29,17 @@ touchpoints:
   - T5: "make-work.sh: work creation (Set), issue import (prd003-crumbs-interface R3; prd001-cupboard-core R3.3)"
   - T6: ".claude/rules/: agent workflow instructions (eng01-git-integration)"
 success_criteria:
-  - S1: cupboard ready returns available tasks as JSON
-  - S2: "cupboard create --type task --title 'Test' --description '...' creates a crumb"
-  - S3: cupboard update <id> --status in_progress transitions crumb state
-  - S4: cupboard close <id> marks crumb as closed
-  - S5: cupboard list --json returns all crumbs as JSON
-  - S6: do-work.sh runs a full cycle (pick, worktree, Claude, merge, close) using cupboard
-  - S7: make-work.sh creates issues via cupboard and commits JSONL changes
+  - id: S1
+    criterion: do-work.sh completes a full cycle (pick task via ready, claim via update, close after completion) using issue-tracking CLI commands, confirming that cupboard serves as a working issue tracker for agent workflows with properties and state transitions
+    traces:
+      - prd009-cupboard-cli AC3
+      - prd003-crumbs-interface AC3
+      - prd003-crumbs-interface AC4
+  - id: S2
+    criterion: make-work.sh creates issues via cupboard create with type, title, and description, and the resulting JSONL files can be committed to git, confirming the create-and-commit workflow for agent task creation with properties
+    traces:
+      - prd009-cupboard-cli AC3
+      - prd002-sqlite-backend AC1
 out_of_scope:
   - Multi-agent coordination (single agent self-hosting)
   - Remote backends (SQLite only)

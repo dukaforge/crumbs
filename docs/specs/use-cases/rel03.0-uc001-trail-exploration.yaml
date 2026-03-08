@@ -10,19 +10,19 @@ trigger: Uncertainty about the best approach to a task, requiring exploratory wo
 flow:
   - F1: "Create cupboard and get tables: construct a Cupboard via sqlite.NewBackend(), call Attach(config), and get trails, crumbs, and links tables"
   - F2: "Create a parent crumb (optional): create a task that the trail will explore approaches for"
-  - F3: "Create a trail: call trailsTable.Set with a new Trail (defaults to draft state if no state specified)"
-  - F4: "Transition trail to active: call trail.SetState('active') then Table.Set to start exploration"
-  - F5: "Link branch point (optional): create a branches_from link to indicate the branch point"
-  - F6: "Verify trail state and branch point: retrieve the trail and confirm active state, query links table to verify the branches_from link"
-  - F7: "Add exploration crumbs: create crumbs and associate them with the trail via belongs_to links"
-  - F8: "Add more crumbs to trail: repeat step F7 for additional exploration"
-  - F9: "List crumbs on trail: query links table for belongs_to links where to_id equals the trail ID"
-  - F10: "Remove a crumb from trail: delete the belongs_to link to disassociate without deleting the crumb"
-  - F11: "Abandon the trail: call trail.Abandon() then Table.Set; backend deletes crumbs that belong to this trail but leaves removed crumbs intact"
-  - F12: "Verify cleanup: confirm deleted crumb returns ErrNotFound, removed crumb still exists"
-  - F13: "Create another trail and complete it: create trail, add crumbs, call trail.Complete() then Table.Set; backend removes belongs_to links and crumbs become permanent"
-  - F14: "Verify completion: confirm completed trail crumbs still exist and are queryable"
-  - F15: "Filter crumbs by trail: query links for completed trail returns empty (links removed on complete)"
+  - F3: "Create a trail (requires tables from F1): call trailsTable.Set with a new Trail (defaults to draft state if no state specified)"
+  - F4: "Transition trail to active (requires trail from F3): call trail.SetState('active') then Table.Set to start exploration"
+  - F5: "Link branch point (optional, requires trail from F3 and crumb from F2): create a branches_from link to indicate the branch point"
+  - F6: "Verify trail state and branch point (requires active trail from F4): retrieve the trail and confirm active state, query links table to verify the branches_from link"
+  - F7: "Add exploration crumbs (requires active trail from F4): create crumbs and associate them with the trail via belongs_to links"
+  - F8: "Add more crumbs to trail (repeats F7): repeat step F7 for additional exploration"
+  - F9: "List crumbs on trail (requires links from F7-F8): query links table for belongs_to links where to_id equals the trail ID"
+  - F10: "Remove a crumb from trail (requires linked crumb from F7): delete the belongs_to link to disassociate without deleting the crumb"
+  - F11: "Abandon the trail (requires active trail with crumbs from F7-F8): call trail.Abandon() then Table.Set; backend deletes crumbs that belong to this trail but leaves removed crumbs intact"
+  - F12: "Verify cleanup (requires abandonment from F11 and removal from F10): confirm deleted crumb returns ErrNotFound, removed crumb still exists"
+  - F13: "Create another trail and complete it (separate path from F11): create trail, add crumbs, call trail.Complete() then Table.Set; backend removes belongs_to links and crumbs become permanent"
+  - F14: "Verify completion (requires completion from F13): confirm completed trail crumbs still exist and are queryable"
+  - F15: "Filter crumbs by trail (requires completion from F13): query links for completed trail returns empty (links removed on complete)"
   - F16: "Detach the cupboard: call cupboard.Detach()"
 touchpoints:
   - T1: "Cupboard interface: Attach, Detach, GetTable (prd001-cupboard-core R2)"
@@ -36,16 +36,21 @@ touchpoints:
   - T9: "Trail abandonment deletes associated crumbs atomically (prd006-trails-interface R6)"
   - T10: "Link-based querying for trail membership (prd002-sqlite-backend R12, R13)"
 success_criteria:
-  - S1: Trail created via Table.Set starts in draft state by default; can be transitioned to active via SetState
-  - S2: belongs_to links associate crumbs with trails
-  - S3: Querying links table with belongs_to filter returns crumbs on that trail
-  - S4: Deleting belongs_to link disassociates without deleting the crumb
-  - S5: trail.Abandon() then Table.Set deletes trail crumbs atomically
-  - S6: Crumbs removed from trail before abandon survive
-  - S7: trail.Complete() then Table.Set removes belongs_to links
-  - S8: Completed trail crumbs remain queryable
-  - S9: Trail state is completed or abandoned after respective operations
-  - S10: No orphan crumbs or links after abandonment
+  - id: S1
+    criterion: Trail lifecycle completes with both outcomes; completion makes crumbs permanent by removing belongs_to links while crumbs persist, and abandonment deletes associated crumbs atomically — confirming the dual lifecycle paths work through the Table interface
+    traces:
+      - prd006-trails-interface AC5
+      - prd006-trails-interface AC7
+  - id: S2
+    criterion: Crumbs removed from a trail before abandonment survive the cascade; only currently-linked crumbs are deleted, while previously disassociated crumbs remain — confirming selective cleanup based on link state
+    traces:
+      - prd006-trails-interface AC8
+      - prd007-links-interface AC4
+  - id: S3
+    criterion: Link-based trail queries return correct membership; belongs_to filter on links table enumerates trail crumbs during active state, and completed trail query returns empty — confirming link lifecycle coupling with trail state
+    traces:
+      - prd007-links-interface AC5
+      - prd006-trails-interface AC6
 out_of_scope:
   - Nested trails (trails containing trails)
   - Trail merging or splitting

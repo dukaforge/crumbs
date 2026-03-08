@@ -17,16 +17,16 @@ flow:
   - F3: Verify JSONL files exist and contain the data
   - F4: Commit the JSONL files to git
   - F5: Verify SQLite database exists (pre-deletion baseline)
-  - F6: Delete SQLite database to simulate fresh clone or branch switch
-  - F7: Re-attach by running a cupboard command
-  - F8: Verify all crumbs are intact
-  - F9: Verify queries work correctly
-  - F10: Modify data and verify JSONL is updated
-  - F11: Commit the updated JSONL files
-  - F12: "Repeat the roundtrip: delete database, re-attach, verify"
-  - F13: "Test on_close sync strategy: verify JSONL deferred until Detach"
-  - F14: "Test batch sync strategy: verify flush at BatchSize threshold"
-  - F15: "Test immediate sync strategy (default): verify every write persists"
+  - F6: "Delete SQLite database to simulate fresh clone or branch switch"
+  - F7: "Re-attach by running a cupboard command (triggers startup sequence from prd002 R4 to rebuild from JSONL)"
+  - F8: "Verify all crumbs are intact (requires rebuilt database from F7)"
+  - F9: "Verify queries work correctly (requires rebuilt database from F7)"
+  - F10: "Modify data and verify JSONL is updated"
+  - F11: "Commit the updated JSONL files (requires updated JSONL from F10)"
+  - F12: "Repeat the roundtrip (same sequence as F6-F9): delete database, re-attach, verify"
+  - F13: "Test on_close sync strategy (separate from default path): verify JSONL deferred until Detach"
+  - F14: "Test batch sync strategy (separate from default path): verify flush at BatchSize threshold"
+  - F15: "Test immediate sync strategy (default, validated by F1-F12): verify every write persists"
 touchpoints:
   - T1: "SQLite backend startup sequence: delete db, create schema, load JSONL (prd002-sqlite-backend R4)"
   - T2: "SQLite backend JSONL as source of truth: cupboard.db is ephemeral (prd002-sqlite-backend R1.2)"
@@ -40,20 +40,21 @@ touchpoints:
   - T10: "SQLite backend batch sync strategy: flush at BatchSize or BatchInterval (prd002-sqlite-backend R16.4-R16.6)"
   - T11: "SQLite backend sync strategy dispatch: backend reads SyncStrategy from config (prd002-sqlite-backend R16.1)"
 success_criteria:
-  - S1: git init and .gitignore setup completes with cupboard.db gitignored
-  - S2: cupboard create produces crumbs with JSON output including crumb_id
-  - S3: cat data/crumbs.jsonl shows one crumb per line
-  - S4: ls data/cupboard.db confirms SQLite database exists
-  - S5: git add data/*.jsonl and git commit succeeds with JSONL files tracked
-  - S6: rm data/cupboard.db successfully deletes database
-  - S7: cupboard list after database deletion returns correct count (data intact)
-  - S8: cupboard show after rebuild displays correct title, state, and type
-  - S9: ls data/cupboard.db confirms database regenerated on attach
-  - S10: cupboard update persists state changes to JSONL
-  - S11: State changes survive additional database deletion and rebuild cycles
-  - S12: on_close strategy defers all JSONL writes until Detach
-  - S13: batch strategy flushes at BatchSize threshold
-  - S14: immediate strategy (default) persists every write immediately
+  - id: S1
+    criterion: Full git roundtrip completes; crumbs created via CLI persist to JSONL, JSONL committed to git, cupboard.db deleted, and all data is intact after re-attach — confirming JSONL is the source of truth and the startup sequence rebuilds state correctly
+    traces:
+      - prd002-sqlite-backend AC1
+      - prd002-sqlite-backend AC3
+      - prd010-configuration-directories AC5
+  - id: S2
+    criterion: Data survives multiple delete-rebuild cycles; state changes made between roundtrips persist through repeated database deletions, confirming the roundtrip is repeatable
+    traces:
+      - prd002-sqlite-backend AC3
+      - prd002-sqlite-backend AC4
+  - id: S3
+    criterion: All three sync strategies (immediate, on_close, batch) produce correct JSONL for git commit; immediate persists every write, on_close defers until Detach, and batch flushes at the BatchSize threshold
+    traces:
+      - prd002-sqlite-backend AC16
 out_of_scope:
   - Merge conflict resolution when JSONL files diverge between branches (eng01-git-integration describes this but not validated here)
   - Trail-scoped worktrees (eng01-git-integration Trails as Worktrees)

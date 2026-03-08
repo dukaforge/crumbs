@@ -13,13 +13,13 @@ actor: Developer running the cupboard CLI on Linux, macOS, or Windows
 trigger: Invoking any cupboard command that requires backend access
 flow:
   - F1: "Determine platform defaults: on Linux use XDG paths, on macOS use Library/Application Support, on Windows use AppData"
-  - F2: "Check environment overrides: CRUMBS_CONFIG_DIR and CRUMBS_DATA_DIR override platform defaults"
-  - F3: "Resolve configuration directory: apply precedence (flag > env > platform default)"
-  - F4: "Load config.yaml: read from config directory if exists, use defaults otherwise"
-  - F5: "Resolve data directory: apply precedence (flag > config.yaml data_dir > platform default)"
-  - F6: "Create config.yaml on first run: if config directory exists but config.yaml does not, create default config.yaml"
-  - F7: "Pass resolved paths to Cupboard: construct Config struct with Backend and DataDir, call Attach"
-  - F8: "Verify operations work: run a command that exercises the resolved paths (e.g., cupboard init, cupboard list crumbs)"
+  - F2: "Check environment overrides (applied after F1 defaults): CRUMBS_CONFIG_DIR and CRUMBS_DATA_DIR override platform defaults"
+  - F3: "Resolve configuration directory (flag > env from F2 > default from F1): apply precedence chain"
+  - F4: "Load config.yaml (requires resolved config directory from F3): read from config directory if exists, use defaults otherwise"
+  - F5: "Resolve data directory (flag > config.yaml from F4 > default from F1): apply precedence chain"
+  - F6: "Create config.yaml on first run (triggered during F4 if file missing): if config directory exists but config.yaml does not, create default config.yaml"
+  - F7: "Pass resolved paths to Cupboard (requires both directories from F3 and F5): construct Config struct with Backend and DataDir, call Attach"
+  - F8: "Verify operations work (requires attached Cupboard from F7): run a command that exercises the resolved paths (e.g., cupboard init, cupboard list crumbs)"
 touchpoints:
   - T1: "internal/paths.DefaultConfigDir: platform-specific config directory (prd010-configuration-directories R1.2)"
   - T2: "internal/paths.DefaultDataDir: platform-specific data directory (prd010-configuration-directories R2.2)"
@@ -28,15 +28,17 @@ touchpoints:
   - T5: "cmd/cupboard/config.loadConfig: Viper-based config loading (prd010-configuration-directories R7)"
   - T6: Global flags --config-dir and --data-dir (prd009-cupboard-cli R6.2, R6.3)
 success_criteria:
-  - S1: Platform defaults return correct paths (XDG on Linux, Library on macOS, AppData on Windows)
-  - S2: CRUMBS_CONFIG_DIR environment variable overrides config directory
-  - S3: CRUMBS_DATA_DIR environment variable overrides data directory (via config.yaml or directly)
-  - S4: --config-dir flag overrides environment variable and platform default
-  - S5: --data-dir flag overrides config.yaml and platform default
-  - S6: Missing config.yaml uses defaults without error
-  - S7: config.yaml data_dir value is respected when no flag is provided
-  - S8: Config directory is created on first run if it does not exist
-  - S9: Commands work correctly with each override method
+  - id: S1
+    criterion: Full precedence chain resolves correctly for both config and data directories; flag overrides environment variable, environment variable overrides config.yaml, config.yaml overrides platform default
+    traces:
+      - prd010-configuration-directories AC1
+      - prd010-configuration-directories AC2
+      - prd010-configuration-directories AC8
+  - id: S2
+    criterion: First-run experience works without pre-existing configuration; missing config.yaml uses defaults, config directory is created if absent, and CLI operations succeed immediately
+    traces:
+      - prd010-configuration-directories AC1
+      - prd010-configuration-directories AC8
 out_of_scope:
   - Configuration file encryption or secrets management
   - Multi-workspace support (multiple data directories)
