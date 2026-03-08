@@ -60,9 +60,21 @@ non_goals:
   commit; it requires only that JSONL not be isolated to task branches.
 
 acceptance_criteria:
-- Data directory path is fixed and resolved from configuration, not from the current branch name
-- JSONL files are committed to main on every issue state change
-- No task-branch naming scheme is defined or required by the system
-- Abandoning a code branch leaves issue state intact on main
-- SQLite database remains gitignored and ephemeral
-- Commit message references to crumb IDs are supported for reverse traceability
+  - id: AC1
+    criterion: Data directory path is fixed and resolved from configuration, not from the current branch name
+    traces: [R1.1, R1.2]
+  - id: AC2
+    criterion: JSONL files are committed to main on every issue state change
+    traces: [R1.3, R2.1, R2.2, R2.3]
+  - id: AC3
+    criterion: No task-branch naming scheme is defined or required by the system
+    traces: [R3.1, R3.2, R3.3, R3.4]
+  - id: AC4
+    criterion: Abandoning a code branch leaves issue state intact on main
+    traces: [R3.3]
+  - id: AC5
+    criterion: SQLite database remains gitignored and ephemeral
+    traces: [R1.4]
+  - id: AC6
+    criterion: Commit message references to crumb IDs are supported for reverse traceability
+    traces: [R4.1, R4.2, R4.3]

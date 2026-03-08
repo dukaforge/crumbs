@@ -5,6 +5,7 @@ releases:
   - version: "01.0"
     name: Core Storage with SQLite Backend
     status: specs_done
+    depends_on: []
     description: |
       Implement the Cupboard and Table interfaces with SQLite backend. An agent
       can create, query, and manage crumbs via the Table interface.
@@ -28,6 +29,7 @@ releases:
   - version: "01.1"
     name: Post-Core Validation
     status: specs_done
+    depends_on: ["01.0"]
     description: |
       Validate the core storage layer with installation, persistence, and
       round-trip scenarios. Depends on rel01.0 (Cupboard, Table, SQLite backend).
@@ -51,6 +53,7 @@ releases:
   - version: "02.0"
     name: Properties with Enforcement
     status: specs_done
+    depends_on: ["01.0"]
     description: |
       Implement the property system with automatic initialization and backfill.
       Every crumb always has a value for every defined property.
@@ -66,6 +69,7 @@ releases:
   - version: "02.1"
     name: Issue-Tracking and Self-Hosting
     status: specs_done
+    depends_on: ["02.0"]
     description: |
       Validate cupboard as an issue tracker with CLI commands, benchmarks, and
       self-hosting. Depends on rel02.0 (properties for type, priority, labels).
@@ -86,6 +90,7 @@ releases:
   - version: "03.0"
     name: Trails and Stashes
     status: specs_done
+    depends_on: ["01.0"]
     description: |
       Implement trail lifecycle for exploratory workflows and stash for shared
       state coordination. An agent can explore implementation approaches with
@@ -108,6 +113,7 @@ releases:
   - version: "03.1"
     name: Post-Trails Validation
     status: specs_done
+    depends_on: ["03.0"]
     description: |
       Validate trails functionality with self-hosting scenarios. Agents create
       trails as epics, add crumbs as tasks, and use trail lifecycle to finalize
@@ -120,6 +126,7 @@ releases:
   - version: "04.0"
     name: Branch-Independent Data Persistence
     status: not_started
+    depends_on: ["01.1"]
     description: |
       Validate that JSONL files always live on main, independent of code branches.
       Issue state is accessible from any branch and survives branch abandonment.
@@ -132,6 +139,7 @@ releases:
   - version: "99.0"
     name: Unscheduled
     status: not started
+    depends_on: []
     description: |
       Use cases not yet assigned to a release. These will be scheduled as the
       roadmap evolves.

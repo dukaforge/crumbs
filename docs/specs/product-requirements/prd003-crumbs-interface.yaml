@@ -151,19 +151,51 @@ non_goals:
 - This PRD does not define property validation at the entity method level. Property methods may defer validation to Table.Set
   for simplicity
 acceptance_criteria:
-- Crumb struct defined with CrumbID, Name, State, CreatedAt, UpdatedAt, Properties fields
-- State values documented (draft, pending, ready, taken, pebble, dust)
-- State transition methods defined (SetState, Pebble, Dust)
-- State transition validation rules documented (Pebble requires taken state)
-- Property methods defined (SetProperty, GetProperty, GetProperties, ClearProperty)
-- Property method behavior documented (validation, defaults, UpdatedAt)
-- Crumb creation via Table.Set specified (ID generation, state initialization, property initialization)
-- Crumb retrieval via Table.Get specified (type assertion to *Crumb)
-- Crumb update pattern documented (Get, modify, Set)
-- Crumb deletion via Table.Delete specified (hard delete, cascade)
-- Soft delete via Dust method documented
-- Filter map defined with states, trail_id, parent_id, properties, limit, offset
-- Query via Table.Fetch specified (filter map, type assertion, pagination)
-- Error types documented (including ErrInvalidTransition)
-- R0.1 and R0.2 design decisions present; R4.0 ordering requirement present; R6.0 table accessor group marker present
-- All requirements numbered and specific
+  - id: AC1
+    criterion: Crumb struct defined with CrumbID, Name, State, CreatedAt, UpdatedAt, Properties fields
+    traces: [R1.1, R1.2, R1.3, R1.4, R1.5, R1.6]
+  - id: AC2
+    criterion: State values documented (draft, pending, ready, taken, pebble, dust)
+    traces: [R2.1, R2.2, R2.3, R2.4]
+  - id: AC3
+    criterion: State transition methods defined (SetState, Pebble, Dust)
+    traces: [R4.1]
+  - id: AC4
+    criterion: State transition validation rules documented (Pebble requires taken state)
+    traces: [R4.5]
+  - id: AC5
+    criterion: Property methods defined (SetProperty, GetProperty, GetProperties, ClearProperty)
+    traces: [R5.1, R5.2, R5.3, R5.4]
+  - id: AC6
+    criterion: Property method behavior documented (validation, defaults, UpdatedAt)
+    traces: [R5.2, R5.3, R5.6]
+  - id: AC7
+    criterion: Crumb creation via Table.Set specified (ID generation, state initialization, property initialization)
+    traces: [R3.1, R3.2, R3.4, R3.5]
+  - id: AC8
+    criterion: Crumb retrieval via Table.Get specified (type assertion to *Crumb)
+    traces: [R6.1, R6.2, R6.3, R6.4]
+  - id: AC9
+    criterion: Crumb update pattern documented (Get, modify, Set)
+    traces: [R7.1, R7.2, R7.3, R7.4]
+  - id: AC10
+    criterion: Crumb deletion via Table.Delete specified (hard delete, cascade)
+    traces: [R8.1, R8.2, R8.4, R8.5]
+  - id: AC11
+    criterion: Soft delete via Dust method documented
+    traces: [R8.1, R8.7]
+  - id: AC12
+    criterion: Filter map defined with states, trail_id, parent_id, properties, limit, offset
+    traces: [R9.1, R9.2, R9.3, R9.5, R9.6]
+  - id: AC13
+    criterion: Query via Table.Fetch specified (filter map, type assertion, pagination)
+    traces: [R10.1, R10.2, R10.3, R10.4, R10.5, R10.6]
+  - id: AC14
+    criterion: Error types documented (including ErrInvalidTransition)
+    traces: [R11.1, R11.2]
+  - id: AC15
+    criterion: "R0.1 and R0.2 design decisions present; R4.0 ordering requirement present; R6.0 table accessor group marker present"
+    traces: [R0.1, R0.2, R4.0, R6.0]
+  - id: AC16
+    criterion: All requirements numbered and specific
+    traces: []

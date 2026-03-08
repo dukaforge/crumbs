@@ -89,14 +89,36 @@ non_goals:
 - This PRD does not define link update operations. Links are immutable; delete and recreate to modify
 - This PRD does not change the existing Link implementation
 acceptance_criteria:
-- Link struct defined with LinkID, LinkType, FromID, ToID, CreatedAt
-- Link types documented (belongs_to, child_of, branches_from, scoped_to)
-- Link type constants defined in pkg/constants
-- CRUD operations specified via Table interface
-- Filter keys documented (LinkID, LinkType, FromID, ToID, CreatedAt)
-- AND semantics for multiple filter keys documented
-- Uniqueness constraint documented (link_type + from_id + to_id)
-- Cardinality rules consolidated from other PRDs
-- Error types documented (ErrNotFound, ErrInvalidID, ErrInvalidData, ErrCupboardDetached)
-- Graph audit functions documented (ValidateDAG, ValidateReferences, etc.)
-- All requirements numbered and specific
+  - id: AC1
+    criterion: Link struct defined with LinkID, LinkType, FromID, ToID, CreatedAt
+    traces: [R1.1, R1.2, R1.3, R1.4, R1.5]
+  - id: AC2
+    criterion: Link types documented (belongs_to, child_of, branches_from, scoped_to)
+    traces: [R2.1, R2.3, R2.4]
+  - id: AC3
+    criterion: Link type constants defined in pkg/constants
+    traces: [R2.2]
+  - id: AC4
+    criterion: CRUD operations specified via Table interface
+    traces: [R3.1, R3.2, R3.3, R3.4, R3.5, R3.6]
+  - id: AC5
+    criterion: Filter keys documented (LinkID, LinkType, FromID, ToID, CreatedAt)
+    traces: [R4.1, R4.4]
+  - id: AC6
+    criterion: AND semantics for multiple filter keys documented
+    traces: [R4.2, R4.3]
+  - id: AC7
+    criterion: Uniqueness constraint documented (link_type + from_id + to_id)
+    traces: [R5.1, R5.2, R5.3, R5.4, R5.5]
+  - id: AC8
+    criterion: Cardinality rules consolidated from other PRDs
+    traces: [R6.1, R6.2, R6.3, R6.4, R6.5]
+  - id: AC9
+    criterion: Error types documented (ErrNotFound, ErrInvalidID, ErrInvalidData, ErrCupboardDetached)
+    traces: [R7.1, R7.2, R7.3]
+  - id: AC10
+    criterion: Graph audit functions documented (ValidateDAG, ValidateReferences)
+    traces: [R8.1, R8.2, R8.3, R8.4, R8.5]
+  - id: AC11
+    criterion: All requirements numbered and specific
+    traces: []

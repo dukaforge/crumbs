@@ -119,14 +119,36 @@ non_goals:
 - This PRD does not define schema enforcement. ContentType is advisory; content is stored as-is.
 - This PRD does not define batch operations for metadata (e.g., bulk add, bulk delete).
 acceptance_criteria:
-- Metadata struct defined with MetadataID, CrumbID, TableName, Content, PropertyID, CreatedAt
-- Schema struct defined with SchemaName, Description, ContentType
-- Built-in schemas documented (comments, attachments)
-- Schema registration approach documented
-- Metadata creation via Table.Set specified (ID generation, validation)
-- Metadata retrieval via Table.Get specified (type assertion to *Metadata)
-- Metadata lifecycle documented (append-only convention, cascading delete)
-- Filter map defined with schema, crumb_id, property_id, content_contains, limit, offset
-- Query via Table.Fetch specified (filter map, type assertion, pagination)
-- Error types documented
-- All requirements numbered and specific
+  - id: AC1
+    criterion: Metadata struct defined with MetadataID, CrumbID, TableName, Content, PropertyID, CreatedAt
+    traces: [R1.1, R1.2, R1.3, R1.4, R1.5, R1.6]
+  - id: AC2
+    criterion: Schema struct defined with SchemaName, Description, ContentType
+    traces: [R2.1, R2.2, R2.3, R2.4, R2.5]
+  - id: AC3
+    criterion: Built-in schemas documented (comments, attachments)
+    traces: [R3.1, R3.2, R3.3, R3.4, R3.5, R3.6]
+  - id: AC4
+    criterion: Schema registration approach documented
+    traces: [R9.1, R9.2, R9.3, R9.4, R9.5, R9.6]
+  - id: AC5
+    criterion: Metadata creation via Table.Set specified (ID generation, validation)
+    traces: [R4.1, R4.2, R4.3, R4.4, R4.5]
+  - id: AC6
+    criterion: Metadata retrieval via Table.Get specified (type assertion to *Metadata)
+    traces: [R5.1, R5.2, R5.3, R5.4]
+  - id: AC7
+    criterion: Metadata lifecycle documented (append-only convention, cascading delete)
+    traces: [R6.1, R6.2, R6.3, R6.4, R6.5, R6.6]
+  - id: AC8
+    criterion: Filter map defined with schema, crumb_id, property_id, content_contains, limit, offset
+    traces: [R7.1, R7.2, R7.3, R7.4, R7.5, R7.6]
+  - id: AC9
+    criterion: Query via Table.Fetch specified (filter map, type assertion, pagination)
+    traces: [R8.1, R8.2, R8.3, R8.4, R8.5, R8.6]
+  - id: AC10
+    criterion: Error types documented
+    traces: [R10.1, R10.2]
+  - id: AC11
+    criterion: All requirements numbered and specific
+    traces: []

@@ -259,21 +259,54 @@ non_goals:
 - This PRD does not define cross-process locking. Single-process access is assumed
 - This PRD does not define backup or migration utilities
 acceptance_criteria:
-- JSONL file format specified for all entity types (R2)
-- SQLite schema specified with all tables and indexes (R3)
-- 'Startup sequence specified: create, load, validate (R4); R0.3 and R0.2 design decisions present; R4.0 ordering
-  requirement present'
-- 'Write operation pattern specified: transaction, persist, atomicity (R5)'
-- Trail cascade behavior documented for Table.Set (R5.6, R5.7)
-- Shutdown sequence specified (R6)
-- Error handling specified for all failure modes (R7)
-- Concurrency model specified (R8)
-- Built-in properties and categories specified (R9)
-- Graph audit functions specified (R10)
-- Cupboard interface implementation specified (R11)
-- Table name routing documented (R12)
-- Table interface implementation specified (R13)
-- Entity hydration pattern documented (R14); R0.1 design decision present; R14.0 ordering requirement present; R14.1 and R14.2
-  sub-groups defined
-- Entity persistence pattern documented (R15); R15.9 and R15.10 sub-groups defined
-- JSONL sync strategy options documented (R16)
+  - id: AC1
+    criterion: Directory layout specified with DataDir structure and file creation behavior
+    traces: [R1.1, R1.2, R1.3, R1.4]
+  - id: AC2
+    criterion: JSONL file format specified for all entity types
+    traces: [R2.1, R2.2, R2.3, R2.4, R2.5, R2.6, R2.7, R2.8, R2.9, R2.10, R2.11, R2.12]
+  - id: AC3
+    criterion: SQLite schema specified with all tables and indexes
+    traces: [R3.1, R3.2, R3.3, R3.4]
+  - id: AC4
+    criterion: "Startup sequence specified: create, load, validate; R0.3 and R0.2 design decisions present; R4.0 ordering requirement present"
+    traces: [R0.2, R0.3, R4.0, R4.2, R4.3]
+  - id: AC5
+    criterion: "Write operation pattern specified: transaction, persist, atomicity"
+    traces: [R5.3, R5.4, R5.5]
+  - id: AC6
+    criterion: Trail cascade behavior documented for Table.Set
+    traces: [R5.6, R5.7]
+  - id: AC7
+    criterion: Shutdown sequence specified
+    traces: [R6.2, R6.3]
+  - id: AC8
+    criterion: Error handling specified for all failure modes
+    traces: [R7.1, R7.2, R7.3, R7.4, R7.5]
+  - id: AC9
+    criterion: Concurrency model specified
+    traces: [R8.1, R8.2, R8.3, R8.4, R8.5]
+  - id: AC10
+    criterion: Built-in properties and categories specified
+    traces: [R9.1, R9.2, R9.3, R9.4]
+  - id: AC11
+    criterion: Graph audit functions specified
+    traces: [R10.1, R10.2, R10.4, R10.5]
+  - id: AC12
+    criterion: Cupboard interface implementation specified
+    traces: [R11.1, R11.3, R11.5]
+  - id: AC13
+    criterion: Table name routing documented
+    traces: [R12.1, R12.2, R12.3, R12.4]
+  - id: AC14
+    criterion: Table interface implementation specified
+    traces: [R13.1, R13.6]
+  - id: AC15
+    criterion: "Entity hydration pattern documented; R0.1 design decision present; R14.0 ordering requirement present; R14.1 and R14.2 sub-groups defined"
+    traces: [R0.1, R14.0, R14.1, R14.2, R14.3, R14.4, R14.5, R14.6, R14.7, R14.8, R14.9]
+  - id: AC16
+    criterion: "Entity persistence pattern documented; R15.9 and R15.10 sub-groups defined"
+    traces: [R15.1, R15.2, R15.3, R15.4, R15.5, R15.6, R15.7, R15.8, R15.9, R15.10]
+  - id: AC17
+    criterion: JSONL sync strategy options documented
+    traces: [R16.1, R16.2, R16.3, R16.5, R16.6, R16.7, R16.8]

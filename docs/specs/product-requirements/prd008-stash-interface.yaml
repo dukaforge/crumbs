@@ -158,18 +158,48 @@ non_goals:
 - This PRD does not define history compaction or pruning. History grows unbounded
 - This PRD does not define blocking lock acquisition with timeout. Callers implement retry loops
 acceptance_criteria:
-- Stash struct defined with StashID, Name, StashType, Value, Version, CreatedAt fields
-- Stash types documented (resource, artifact, context, counter, lock)
-- Entity methods defined for value access (SetValue, GetValue)
-- Entity methods defined for counter operations (Increment)
-- Entity methods defined for lock operations (Acquire, Release)
-- StashHistoryEntry struct documented for backend history tracking
-- History operation constants documented (create, set, increment, acquire, release)
-- Stash creation via Table.Set specified (ID generation, version initialization)
-- Stash retrieval via Table.Get specified (type assertion to *Stash)
-- Filter map defined with stash_type, name, limit, offset
-- Query via Table.Fetch specified (filter map, type assertion)
-- Stash deletion via Table.Delete specified (cascade to history)
-- Stash scoping semantics documented (scoped_to link, one per stash)
-- Error types documented
-- All requirements numbered and specific
+  - id: AC1
+    criterion: Stash struct defined with StashID, Name, StashType, Value, Version, CreatedAt fields
+    traces: [R1.1, R1.2, R1.3, R1.4, R1.5, R1.6, R1.7]
+  - id: AC2
+    criterion: Stash types documented (resource, artifact, context, counter, lock)
+    traces: [R2.1, R2.2, R2.3, R2.4]
+  - id: AC3
+    criterion: Entity methods defined for value access (SetValue, GetValue)
+    traces: [R4.1, R4.2, R4.4]
+  - id: AC4
+    criterion: Entity methods defined for counter operations (Increment)
+    traces: [R5.1, R5.2, R5.3]
+  - id: AC5
+    criterion: Entity methods defined for lock operations (Acquire, Release)
+    traces: [R6.1, R6.2, R6.3, R6.4, R6.5]
+  - id: AC6
+    criterion: StashHistoryEntry struct documented for backend history tracking
+    traces: [R7.1, R7.2, R7.5, R7.6]
+  - id: AC7
+    criterion: History operation constants documented (create, set, increment, acquire, release)
+    traces: [R7.3]
+  - id: AC8
+    criterion: Stash creation via Table.Set specified (ID generation, version initialization)
+    traces: [R3.1, R3.2, R3.3, R3.4]
+  - id: AC9
+    criterion: Stash retrieval via Table.Get specified (type assertion to *Stash)
+    traces: [R8.1, R8.2, R8.3, R8.4]
+  - id: AC10
+    criterion: Filter map defined with stash_type, name, limit, offset
+    traces: [R9.1, R9.2, R9.3, R9.5, R9.6]
+  - id: AC11
+    criterion: Query via Table.Fetch specified (filter map, type assertion)
+    traces: [R10.1, R10.2, R10.3]
+  - id: AC12
+    criterion: Stash deletion via Table.Delete specified (cascade to history)
+    traces: [R11.1, R11.2, R11.3, R11.4, R11.5]
+  - id: AC13
+    criterion: Stash scoping semantics documented (scoped_to link, one per stash)
+    traces: [R13.1, R13.2, R13.3, R13.4, R13.5, R13.6]
+  - id: AC14
+    criterion: Error types documented
+    traces: [R12.1, R12.2, R12.3]
+  - id: AC15
+    criterion: All requirements numbered and specific
+    traces: []
