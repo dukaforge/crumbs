@@ -11,14 +11,14 @@ actor: Developer or CI pipeline validating performance
 trigger: Code change that could affect Table operation latency, such as modifying the SQLite backend, changing entity hydration, or altering JSONL persistence
 flow:
   - F1: "Create benchmark test files: add crumbs_bench_test.go in internal/sqlite package"
-  - F2: "Implement Get benchmarks at different scales: BenchmarkCrumbsGet10, Get100, Get1000, Get10000"
-  - F3: "Implement Set benchmarks for create: BenchmarkCrumbsSetCreate10, SetCreate1000"
-  - F4: "Implement Set benchmarks for update: BenchmarkCrumbsSetUpdate10, SetUpdate1000"
-  - F5: "Implement Delete benchmarks: BenchmarkCrumbsDelete10, Delete1000"
-  - F6: "Implement Fetch benchmarks with filters: FetchAll, FetchState, FetchProperties, FetchLimit"
-  - F7: "Implement property operation benchmarks: BenchmarkCrumbSetProperty, GetProperty at 10 and 1000 scale"
-  - F8: "Run benchmarks and capture baseline: go test -bench=. -benchmem ./internal/sqlite/..."
-  - F9: "Compare against baseline on code changes: use benchstat for statistical comparison"
+  - F2: "Implement Get benchmarks at different scales (requires test file from F1): BenchmarkCrumbsGet10, Get100, Get1000, Get10000"
+  - F3: "Implement Set benchmarks for create (requires test file from F1): BenchmarkCrumbsSetCreate10, SetCreate1000"
+  - F4: "Implement Set benchmarks for update (requires test file from F1): BenchmarkCrumbsSetUpdate10, SetUpdate1000"
+  - F5: "Implement Delete benchmarks (requires test file from F1): BenchmarkCrumbsDelete10, Delete1000"
+  - F6: "Implement Fetch benchmarks with filters (requires test file from F1): FetchAll, FetchState, FetchProperties, FetchLimit"
+  - F7: "Implement property operation benchmarks (requires test file from F1): BenchmarkCrumbSetProperty, GetProperty at 10 and 1000 scale"
+  - F8: "Run benchmarks and capture baseline (requires all benchmarks from F2-F7): go test -bench=. -benchmem ./internal/sqlite/..."
+  - F9: "Compare against baseline on code changes (requires baseline from F8): use benchstat for statistical comparison"
 touchpoints:
   - T1: "Table interface: Get, Set, Delete, Fetch (prd001-cupboard-core R3)"
   - T2: "SQLite backend: entity hydration from rows (prd002-sqlite-backend R14)"
@@ -29,15 +29,16 @@ touchpoints:
   - T7: "Crumb table: filter map queries (prd003-crumbs-interface R9)"
   - T8: "SQLite backend: idx_crumbs_state index (prd002-sqlite-backend R3.3)"
 success_criteria:
-  - S1: go test -bench=BenchmarkCrumbsGet -benchmem ./internal/sqlite/... runs without error
-  - S2: go test -bench=BenchmarkCrumbsSet -benchmem ./internal/sqlite/... completes for create and update benchmarks
-  - S3: go test -bench=BenchmarkCrumbsFetch -benchmem ./internal/sqlite/... completes for all filter types
-  - S4: go test -bench=. -benchmem ./internal/sqlite/... > baseline.txt captures full benchmark suite to file
-  - S5: baseline.txt contains all benchmarks reporting ns/op, B/op, allocs/op
-  - S6: All benchmark functions execute without error
-  - S7: Each benchmark reports consistent ns/op across multiple runs (variance under 10%)
-  - S8: Memory allocations (B/op, allocs/op) are captured for regression tracking
-  - S9: Baseline file is committed to the repository for future comparison
+  - id: S1
+    criterion: Full benchmark suite completes without error and captures baseline; all Get, Set, Delete, Fetch, and property benchmarks at multiple scales produce ns/op, B/op, and allocs/op output committed as baseline.txt for regression tracking
+    traces:
+      - prd001-cupboard-core AC4
+      - prd002-sqlite-backend AC14
+  - id: S2
+    criterion: Benchmark results are consistent and cover multi-scale data sizes; each benchmark reports variance under 10% across runs, and the suite spans 10 to 10000 entity scales to catch scaling regressions
+    traces:
+      - prd002-sqlite-backend AC14
+      - prd002-sqlite-backend AC15
 out_of_scope:
   - Concurrent access benchmarks (prd002-sqlite-backend R8 describes single-writer model)
   - Network latency (SQLite backend is local; no network overhead)

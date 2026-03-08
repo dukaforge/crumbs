@@ -9,23 +9,23 @@ actor: Developer or automated test harness
 trigger: Need to validate that the property system enforces the invariant that every crumb has a value for every defined property, with no gaps or partial state
 flow:
   - F1: "Create cupboard with seeded properties: Construct a Cupboard and call Attach(config) with a SQLite backend. The backend seeds built-in properties (priority, type, description, owner, labels) during initialization."
-  - F2: "Verify built-in properties: Call cupboard.GetTable(\"properties\") and use table.Fetch(nil) to list all properties. Confirm the five built-in properties exist with correct value types."
-  - F3: "Add a crumb: Get the crumbs table, construct a Crumb, and call table.Set(\"\", crumb). The operation creates the crumb and auto-initializes all five built-in properties with their default values."
-  - F4: "Verify property initialization: Call crumb.GetProperties() to get all properties. Confirm it returns all five properties with default values (empty strings for text, empty lists for list types, null for categorical)."
-  - F5: "Set a property value: Call crumb.SetProperty(propertyID, value) then persist with table.Set. Verify UpdatedAt changes."
-  - F6: "Get a property value: Call crumb.GetProperty(propertyID). Verify it returns the value set in the previous step."
-  - F7: "Define a custom property: Construct a Property and call propsTable.Set(\"\", prop). The operation creates the property and backfills all existing crumbs with the default value (0 for integer)."
-  - F8: "Verify backfill occurred: Retrieve the crumb and call crumb.GetProperties(). Confirm the crumb now has six properties including \"estimate\" with value 0."
-  - F9: "Add another crumb after property definition: Create another crumb. Verify the new crumb has all six properties (five built-in plus estimate) auto-initialized."
-  - F10: "Update custom property: Call crumb.SetProperty(propertyID, value) then persist to set the estimate to 5."
-  - F11: "Clear property to default: Call crumb.ClearProperty(propertyID) then persist. Verify the estimate resets to 0 (the default), not null or unset."
-  - F12: "Verify invariant holds: Retrieve both crumbs and call GetProperties(). Confirm each has exactly six properties with no gaps."
-  - F13: "Retrieve crumb by ID with properties: Call Table.Get(crumbID) and verify the returned Crumb has its Properties map populated with all defined properties and their current values."
-  - F14: "Modify property on fetched crumb: Retrieve a crumb via Table.Get, call SetProperty to update a value, persist with Table.Set, then re-fetch the crumb via Table.Get and verify the updated value persists."
-  - F15: "Define categories for a categorical property: Retrieve the priority property, call DefineCategory with name and ordinal for each category (e.g., highest:0, high:1, medium:2, low:3, lowest:4). Verify each call returns a Category with populated CategoryID."
-  - F16: "Retrieve categories and verify ordering: Call GetCategories on the priority property. Verify categories are returned ordered by ordinal ascending, then name ascending for ties."
-  - F17: "Verify category uniqueness: Attempt to define a duplicate category name on the same property. Verify ErrDuplicateName is returned."
-  - F18: "Verify value type validation: Attempt to call DefineCategory on a text property. Verify ErrInvalidValueType is returned."
+  - F2: "Verify built-in properties (requires attached backend from F1): Call cupboard.GetTable(\"properties\") and use table.Fetch(nil) to list all properties. Confirm the five built-in properties exist with correct value types."
+  - F3: "Add a crumb (requires properties table from F2 to validate auto-init): Get the crumbs table, construct a Crumb, and call table.Set(\"\", crumb). The operation creates the crumb and auto-initializes all five built-in properties with their default values."
+  - F4: "Verify property initialization (requires crumb from F3): Call crumb.GetProperties() to get all properties. Confirm it returns all five properties with default values (empty strings for text, empty lists for list types, null for categorical)."
+  - F5: "Set a property value (requires crumb from F3): Call crumb.SetProperty(propertyID, value) then persist with table.Set. Verify UpdatedAt changes."
+  - F6: "Get a property value (requires set from F5): Call crumb.GetProperty(propertyID). Verify it returns the value set in the previous step."
+  - F7: "Define a custom property (requires existing crumbs from F3 to test backfill): Construct a Property and call propsTable.Set(\"\", prop). The operation creates the property and backfills all existing crumbs with the default value (0 for integer)."
+  - F8: "Verify backfill occurred (requires property definition from F7): Retrieve the crumb and call crumb.GetProperties(). Confirm the crumb now has six properties including \"estimate\" with value 0."
+  - F9: "Add another crumb after property definition (requires custom property from F7): Create another crumb. Verify the new crumb has all six properties (five built-in plus estimate) auto-initialized."
+  - F10: "Update custom property (requires crumb from F9 and property from F7): Call crumb.SetProperty(propertyID, value) then persist to set the estimate to 5."
+  - F11: "Clear property to default (requires set property from F10): Call crumb.ClearProperty(propertyID) then persist. Verify the estimate resets to 0 (the default), not null or unset."
+  - F12: "Verify invariant holds (requires both crumbs from F3 and F9): Retrieve both crumbs and call GetProperties(). Confirm each has exactly six properties with no gaps."
+  - F13: "Retrieve crumb by ID with properties (requires crumb from F3): Call Table.Get(crumbID) and verify the returned Crumb has its Properties map populated with all defined properties and their current values."
+  - F14: "Modify property on fetched crumb (requires crumb from F13): Retrieve a crumb via Table.Get, call SetProperty to update a value, persist with Table.Set, then re-fetch the crumb via Table.Get and verify the updated value persists."
+  - F15: "Define categories for a categorical property (requires built-in priority property from F2): Retrieve the priority property, call DefineCategory with name and ordinal for each category (e.g., highest:0, high:1, medium:2, low:3, lowest:4). Verify each call returns a Category with populated CategoryID."
+  - F16: "Retrieve categories and verify ordering (requires categories from F15): Call GetCategories on the priority property. Verify categories are returned ordered by ordinal ascending, then name ascending for ties."
+  - F17: "Verify category uniqueness (requires categories from F15): Attempt to define a duplicate category name on the same property. Verify ErrDuplicateName is returned."
+  - F18: "Verify value type validation (requires text property from F2): Attempt to call DefineCategory on a text property. Verify ErrInvalidValueType is returned."
   - F19: "Detach the cupboard: Call cupboard.Detach()."
 touchpoints:
   - T1: "Cupboard interface: Attach, Detach, GetTable (prd001-cupboard-core R2)"
@@ -38,21 +38,27 @@ touchpoints:
   - T8: "Property definition with backfill to existing crumbs (prd004-properties-interface R4)"
   - T9: "Category entity: struct fields, persistence to SQLite and JSONL (prd004-properties-interface R2, R7)"
 success_criteria:
-  - S1: properties table Fetch returns five built-in properties after initialization
-  - S2: Newly added crumbs have all defined properties with default values
-  - S3: SetProperty updates value and changes UpdatedAt
-  - S4: GetProperty returns the current value
-  - S5: Creating a Property via Table.Set backfills existing crumbs
-  - S6: GetProperties() returns all properties (never partial) for any crumb
-  - S7: ClearProperty resets value to default, not null or unset
-  - S8: Crumbs added after property definition have the new property auto-initialized
-  - S9: No crumb ever has fewer properties than are defined
-  - S10: Table.Get returns crumb with Properties map containing all defined properties
-  - S11: Properties survive round-trip (create, get, verify, modify via SetProperty, get, verify updated value)
-  - S12: DefineCategory creates category accessible via GetCategories
-  - S13: GetCategories returns categories ordered by ordinal ascending, then name ascending
-  - S14: DefineCategory returns ErrDuplicateName for duplicate category names within a property
-  - S15: DefineCategory and GetCategories return ErrInvalidValueType for non-categorical properties
+  - id: S1
+    criterion: Property auto-initialization works on crumb creation and post-definition backfill; a crumb created after Attach has all built-in properties with defaults, and a crumb created before a custom property definition receives the new property via backfill
+    traces:
+      - prd004-properties-interface AC5
+      - prd003-crumbs-interface AC7
+  - id: S2
+    criterion: Property CRUD round-trips correctly; SetProperty persists a value retrievable by GetProperty, ClearProperty resets to the default (not null), and GetProperties returns the full set after each mutation
+    traces:
+      - prd003-crumbs-interface AC5
+      - prd003-crumbs-interface AC6
+  - id: S3
+    criterion: GetProperties never returns a partial set; at every point in the flow (after creation, after backfill, after set, after clear) every crumb has exactly as many properties as are defined, with no gaps
+    traces:
+      - prd004-properties-interface AC5
+      - prd003-crumbs-interface AC5
+  - id: S4
+    criterion: Category operations enforce constraints; DefineCategory creates ordered categories retrievable via GetCategories, ErrDuplicateName rejects duplicate names within a property, and ErrInvalidValueType rejects category operations on non-categorical properties
+    traces:
+      - prd004-properties-interface AC8
+      - prd004-properties-interface AC9
+      - prd004-properties-interface AC12
 out_of_scope:
   - Core CRUD operations (Get, Set, Delete, Fetch) - see rel01.0-uc003
   - Property deletion or renaming (not supported per prd004-properties-interface)
