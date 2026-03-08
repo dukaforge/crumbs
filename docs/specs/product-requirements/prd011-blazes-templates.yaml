@@ -341,26 +341,51 @@ non_goals:
 - This PRD does not define Go struct definitions. Go structs will be defined in a subsequent code
   task. This PRD specifies the contract
 acceptance_criteria:
-- Blaze template YAML schema fully specified with field names, types, required/optional status, and
-  an example template file (R1)
-- BlazeParameter schema fully specified with name, description, type, and default fields (R2)
-- Parameter types documented (text, integer, boolean, list) with Go equivalents and defaults (R2.6)
-- Template directory discovery specified with precedence chain (explicit > config > well-known path)
-  (R3)
-- Well-known path defined as .crumbs/blazes/ relative to DataDir (R3.3)
-- Template listing specified (enumerate .yaml/.yml files, no recursion, alphabetical order) (R4)
-- Metadata parsing specified (extract fields, skip malformed files with warning, ignore unknown
-  fields) (R5)
-- BlazeMetadata struct documented with all fields (R5.7)
-- Tag-based matching specified with exact match and semantic match definitions, match threshold,
-  and scoring (R6)
-- Template selection specified for single match, multiple match with specificity, and ambiguous
-  tie-breaking (R7)
-- SelectionResult struct documented with Selected, Tied, Ambiguous, NoMatch fields (R7.7)
-- Parameter extraction specified with required vs optional classification, context inference rules,
-  and ExtractedParameter struct (R8)
-- Error types defined (ErrTemplateDirNotFound, ErrTemplateDirNotReadable, ErrTemplateNotFound,
-  ErrMalformedTemplate, ErrNoMatch) following sentinel error pattern from prd001-cupboard-core (R9)
-- All errors checkable with errors.Is (R9.3)
-- Every use case success criterion (S1-S7 from rel99.0-uc001) maps to at least one requirement
-- All requirements numbered and specific
+  - id: AC1
+    criterion: Blaze template YAML schema fully specified with field names, types, required/optional status, and an example template file
+    traces: [R1.1, R1.2, R1.3, R1.4, R1.5, R1.6, R1.7, R1.8, R1.9, R1.10, R1.11, R1.12]
+  - id: AC2
+    criterion: BlazeParameter schema fully specified with name, description, type, and default fields
+    traces: [R2.1, R2.2, R2.3, R2.4, R2.5, R2.7, R2.8, R2.9]
+  - id: AC3
+    criterion: Parameter types documented (text, integer, boolean, list) with Go equivalents and defaults
+    traces: [R2.6]
+  - id: AC4
+    criterion: Template directory discovery specified with precedence chain (explicit > config > well-known path)
+    traces: [R3.1, R3.2, R3.4, R3.5, R3.6]
+  - id: AC5
+    criterion: Well-known path defined as .crumbs/blazes/ relative to DataDir
+    traces: [R3.3]
+  - id: AC6
+    criterion: Template listing specified (enumerate .yaml/.yml files, no recursion, alphabetical order)
+    traces: [R4.1, R4.2, R4.3, R4.4, R4.5, R4.6]
+  - id: AC7
+    criterion: Metadata parsing specified (extract fields, skip malformed files with warning, ignore unknown fields)
+    traces: [R5.1, R5.2, R5.3, R5.4, R5.5, R5.6, R5.8]
+  - id: AC8
+    criterion: BlazeMetadata struct documented with all fields
+    traces: [R5.7]
+  - id: AC9
+    criterion: Tag-based matching specified with exact match and semantic match definitions, match threshold, and scoring
+    traces: [R6.1, R6.2, R6.3, R6.4, R6.5, R6.6, R6.7, R6.8]
+  - id: AC10
+    criterion: Template selection specified for single match, multiple match with specificity, and ambiguous tie-breaking
+    traces: [R7.1, R7.2, R7.3, R7.4, R7.5, R7.6]
+  - id: AC11
+    criterion: SelectionResult struct documented with Selected, Tied, Ambiguous, NoMatch fields
+    traces: [R7.7]
+  - id: AC12
+    criterion: Parameter extraction specified with required vs optional classification, context inference rules, and ExtractedParameter struct
+    traces: [R8.1, R8.2, R8.3, R8.4, R8.5, R8.6, R8.7, R8.8]
+  - id: AC13
+    criterion: Error types defined (ErrTemplateDirNotFound, ErrTemplateDirNotReadable, ErrTemplateNotFound, ErrMalformedTemplate, ErrNoMatch) following sentinel error pattern
+    traces: [R9.1, R9.2, R9.4, R9.5, R9.6, R9.7, R9.8, R9.9]
+  - id: AC14
+    criterion: All errors checkable with errors.Is
+    traces: [R9.3]
+  - id: AC15
+    criterion: Every use case success criterion maps to at least one requirement
+    traces: []
+  - id: AC16
+    criterion: All requirements numbered and specific
+    traces: []
