@@ -18,12 +18,12 @@ trigger: Agent encountering a task that matches a known workflow category; inste
   template
 flow:
   - F1: "Discover template directory: locate the template directory configured via Cupboard or a well-known path such as .crumbs/blazes/"
-  - F2: "List available templates: read the directory and enumerate all .yaml or .yml files, each representing one blaze"
-  - F3: "Read template metadata: parse each template YAML and extract name, description, tags, and parameters without parsing the full trail definition"
-  - F4: "Match task to template: compare current task context against template metadata using tags for semantic matching (e.g., task fix the login bug matches templates tagged with bug-fix, debugging)"
-  - F5: "Select template: choose the best-matching template; if multiple match, prompt user or select based on priority or specificity"
-  - F6: "Extract parameters: read the parameters section with name, description, type, and optional default; determine which can be inferred from context and which require user input"
-  - F7: "Present selection: display selected template name, description, and required parameters to the user for confirmation"
+  - F2: "List available templates (requires directory from F1): read the directory and enumerate all .yaml or .yml files, each representing one blaze"
+  - F3: "Read template metadata (requires file list from F2): parse each template YAML and extract name, description, tags, and parameters without parsing the full trail definition"
+  - F4: "Match task to template (requires metadata from F3): compare current task context against template metadata using tags for semantic matching (e.g., task fix the login bug matches templates tagged with bug-fix, debugging)"
+  - F5: "Select template (requires matches from F4): choose the best-matching template; if multiple match, prompt user or select based on priority or specificity"
+  - F6: "Extract parameters (requires selected template from F5): read the parameters section with name, description, type, and optional default; determine which can be inferred from context and which require user input"
+  - F7: "Present selection (requires template and parameters from F5-F6): display selected template name, description, and required parameters to the user for confirmation"
 touchpoints:
   - T1: "prd011-blazes-templates R4: template directory discovery at well-known or configured path"
   - T2: "prd011-blazes-templates R5: template file enumeration from directory"
@@ -34,13 +34,17 @@ touchpoints:
   - T7: "prd003-crumbs-interface R1: Crumb struct fields referenced in template trail definition"
   - T8: "prd006-trails-interface R3: trail creation referenced for future instantiation"
 success_criteria:
-  - S1: Agent discovers template directory at configured or well-known path
-  - S2: Agent lists all .yaml/.yml files in the directory
-  - S3: Agent parses template metadata (name, description, tags, parameters) without error
-  - S4: Agent matches a task description to template tags
-  - S5: Agent selects the best-matching template
-  - S6: Agent extracts parameter definitions (name, type, description, default)
-  - S7: Agent presents selected template and parameters to user
+  - id: S1
+    criterion: Template discovery and metadata parsing work end-to-end; agent locates template directory, lists .yaml files, and extracts name, description, tags, and parameters from each — confirming the template pipeline from file system to structured metadata
+    traces:
+      - prd011-blazes-templates AC4
+      - prd011-blazes-templates AC6
+      - prd011-blazes-templates AC7
+  - id: S2
+    criterion: Tag-based matching selects the correct template; task context matches template tags semantically, and the best-matching template is presented with its parameter definitions — confirming selection and parameter extraction compose correctly
+    traces:
+      - prd011-blazes-templates AC9
+      - prd011-blazes-templates AC10
 out_of_scope:
   - Trail instantiation from template (requires prd-blazes-instantiation)
   - Parameter value binding and placeholder expansion (requires prd-blazes-instantiation)

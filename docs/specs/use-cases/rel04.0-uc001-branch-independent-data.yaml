@@ -11,16 +11,16 @@ summary: |
 actor: Developer or coding agent working on a feature branch in a git repository with cupboard configured
 trigger: Developer begins work on a code feature branch while issue tracking is active on main
 flow:
-  - F1: Developer is on main with JSONL files committed and cupboard configured
-  - F2: Developer creates a new issue using cupboard; JSONL changes appear in the data directory
-  - F3: Developer commits the JSONL changes to main (not to a feature branch)
-  - F4: Developer creates and checks out a feature branch for code changes
-  - F5: Developer runs cupboard commands from the feature branch; cupboard reads the same data directory
-  - F6: Developer updates an issue status using cupboard from the feature branch
-  - F7: Developer commits JSONL changes to main while still on the feature branch
-  - F8: Developer switches back to main and verifies issue state is identical
-  - F9: Developer abandons the feature branch without merging
-  - F10: Developer verifies all issues are intact on main after branch abandonment
+  - F1: "Developer is on main with JSONL files committed and cupboard configured"
+  - F2: "Developer creates a new issue using cupboard (requires configured cupboard from F1); JSONL changes appear in the data directory"
+  - F3: "Developer commits the JSONL changes to main (requires JSONL from F2, not to a feature branch)"
+  - F4: "Developer creates and checks out a feature branch for code changes (requires committed state from F3)"
+  - F5: "Developer runs cupboard commands from the feature branch (requires same data directory as F1); cupboard reads the same data directory"
+  - F6: "Developer updates an issue status using cupboard from the feature branch (requires issue from F2)"
+  - F7: "Developer commits JSONL changes to main while still on the feature branch (requires update from F6)"
+  - F8: "Developer switches back to main and verifies issue state is identical (requires commit from F7)"
+  - F9: "Developer abandons the feature branch without merging (requires branch from F4)"
+  - F10: "Developer verifies all issues are intact on main after branch abandonment (requires abandonment from F9)"
 touchpoints:
   - T1: Data directory is a fixed path resolved from configuration, not from branch name (prd012-branch-independent-data R1.1, R1.2)
   - T2: JSONL files committed to main independent of feature branch (prd012-branch-independent-data R2.1, R2.2)
@@ -30,14 +30,16 @@ touchpoints:
   - T6: Commit message references crumb IDs for traceability (prd012-branch-independent-data R4.1)
   - T7: Cupboard CLI resolves data directory from configuration (prd010-configuration-directories R1, R2)
 success_criteria:
-  - S1: cupboard create on main produces a crumb; JSONL file in data directory contains the new record
-  - S2: git commit of JSONL to main succeeds; cupboard.db is not included in the commit
-  - S3: git checkout -b feature-branch succeeds; cupboard list from feature branch returns the same issues as on main
-  - S4: cupboard update on a feature branch changes issue state; JSONL updated in data directory
-  - S5: git commit of JSONL to main from feature branch succeeds without merging code changes
-  - S6: git checkout main shows issue state identical to what was committed from the feature branch
-  - S7: git branch -D feature-branch (abandonment without merge) succeeds; all issues remain visible on main
-  - S8: cupboard list after branch abandonment returns the same count and state as before abandonment
+  - id: S1
+    criterion: Issue state persists across branch operations; crumbs created and updated from any branch are visible from main after JSONL commit, and switching branches does not affect issue data — confirming the data directory is branch-independent
+    traces:
+      - prd012-branch-independent-data AC1
+      - prd012-branch-independent-data AC2
+  - id: S2
+    criterion: Abandoning a code branch leaves all issue state intact on main; cupboard list after branch deletion returns identical count and state — confirming complete decoupling of issue lifecycle from git branch lifecycle
+    traces:
+      - prd012-branch-independent-data AC4
+      - prd012-branch-independent-data AC5
 out_of_scope:
   - Conflict resolution if JSONL is modified on two branches simultaneously
   - CI/CD automation of JSONL commits to main
