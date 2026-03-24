@@ -1,0 +1,111 @@
+id: prd014-entity-lifecycle-helpers
+title: Entity Lifecycle Helpers
+problem: |
+  Every table accessor in the SQLite backend repeats the same entity creation scaffolding:
+  generate a UUID v7, capture the current UTC time, assign both to the entity struct, then
+  branch between INSERT and UPDATE based on whether a row with that ID already exists. The
+  Delete method repeats a similar pattern: validate the ID, check existence, begin a
+  transaction, execute the delete within the transaction, commit, then persist to JSONL.
+
+  In the previous generation (commit 3745256), these patterns accounted for approximately
+  217 lines of duplication across 2,772 total lines of table code. Each table accessor
+  independently generated UUIDs, checked existence, and managed transaction scaffolding.
+  The Set method's INSERT-vs-UPDATE branching alone was 15-20 lines repeated in all seven
+  table files.
+
+  We extract these entity lifecycle operations into a shared package. Table accessors call
+  shared functions for ID generation, existence-based upsert scaffolding, and delete
+  scaffolding, then add entity-specific logic within callbacks.
+
+goals:
+- G1: Eliminate duplicated UUID v7 generation and timestamp initialization across table accessors
+- G2: Eliminate duplicated INSERT-vs-UPDATE existence check and transaction scaffolding
+- G3: Eliminate duplicated Delete existence check and transaction scaffolding
+
+requirements:
+  D:
+    title: Design Decisions
+    items:
+    - R0.1: The entity lifecycle helpers package lives at internal/persistence/lifecycle. It
+        has no dependency on entity types (pkg/schema) or on specific table implementations.
+        It operates on *sql.DB and callback functions.
+    - R0.2: Table accessors in internal/persistence/ import lifecycle. The lifecycle package
+        must not import any package under internal/persistence/ except itself.
+    - R0.3: Lifecycle helpers manage the transaction and existence-check scaffolding but do
+        not execute entity-specific SQL. Entity-specific INSERT, UPDATE, and DELETE statements
+        remain in each table accessor, passed as callbacks.
+  R1:
+    title: Entity ID Generation
+    items:
+    - R1.1: Provide NewEntityID that generates a UUID v7 string and returns the current UTC
+        time alongside it. Returns an error if UUID generation fails
+    - R1.2: The returned time is used by callers to set CreatedAt and UpdatedAt fields
+        consistently from a single time.Now call
+  R2:
+    title: Upsert Scaffolding
+    items:
+    - R2.1: Provide UpsertInTx that checks whether a row with the given ID exists, begins
+        a transaction, and calls either an insert callback or an update callback depending
+        on the existence check result
+    - R2.2: UpsertInTx accepts the database, a check query (e.g., "SELECT 1 FROM crumbs
+        WHERE crumb_id = ?"), the ID, an insert callback func(tx *sql.Tx) error, and an
+        update callback func(tx *sql.Tx) error
+    - R2.3: UpsertInTx must defer tx.Rollback and call tx.Commit only if the callback
+        succeeds. The deferred Rollback is a no-op after Commit
+    - R2.4: Return the open transaction's commit error or the callback error, whichever
+        occurs first
+    - R2.5: UpsertInTx must return a boolean indicating whether the operation was an insert
+        (true) or update (false), so callers can perform post-commit actions like JSONL
+        persistence that differ by operation type
+  R3:
+    title: Delete Scaffolding
+    items:
+    - R3.1: Provide DeleteInTx that validates the ID is non-empty (returns ErrInvalidID),
+        checks existence (returns ErrNotFound if missing), begins a transaction, and calls
+        a delete callback
+    - R3.2: DeleteInTx accepts the database, a check query, the ID, and a delete callback
+        func(tx *sql.Tx) error
+    - R3.3: DeleteInTx must defer tx.Rollback and call tx.Commit only if the callback
+        succeeds
+    - R3.4: Callers use the delete callback to execute entity-specific CASCADE deletes
+        (e.g., deleting a crumb's properties, metadata, and links within the same transaction)
+
+non_goals:
+- This PRD does not define JSONL persistence after commit. Table accessors handle JSONL
+    writes after the transaction completes, since JSONL file selection varies by entity type
+- This PRD does not define cascade logic. Cascade operations (trail complete/abandon) remain
+    in the table accessor's callback functions
+- This PRD does not define entity-specific validation. Name validation, state transition
+    checks, and type assertions remain in each table accessor
+
+acceptance_criteria:
+  - id: AC1
+    criterion: "Package lives at internal/persistence/lifecycle with no dependency on pkg/schema, engine, mapping, or queryutil; entity-specific logic passed via callbacks"
+    traces: [R0.1, R0.2, R0.3]
+  - id: AC2
+    criterion: NewEntityID generates UUID v7 and returns UTC timestamp in a single call
+    traces: [R1.1, R1.2]
+  - id: AC3
+    criterion: UpsertInTx checks existence, begins transaction, calls insert or update callback, commits
+    traces: [R2.1, R2.2, R2.3, R2.4, R2.5]
+  - id: AC4
+    criterion: DeleteInTx validates ID, checks existence, begins transaction, calls delete callback, commits
+    traces: [R3.1, R3.2, R3.3, R3.4]
+
+package_contract:
+  exports:
+    - name: NewEntityID
+      signature: "func NewEntityID() (string, time.Time, error)"
+    - name: UpsertInTx
+      signature: "func UpsertInTx(db *sql.DB, checkQuery string, id string, onInsert func(tx *sql.Tx) error, onUpdate func(tx *sql.Tx) error) (inserted bool, err error)"
+    - name: DeleteInTx
+      signature: "func DeleteInTx(db *sql.DB, checkQuery string, id string, onDelete func(tx *sql.Tx) error) error"
+  imports:
+    - "database/sql"
+    - "github.com/google/uuid"
+    - "pkg/api"
+  import_constraints:
+    - "internal/persistence/lifecycle must not import pkg/schema"
+    - "internal/persistence/lifecycle must not import internal/persistence/engine"
+    - "internal/persistence/lifecycle must not import internal/persistence/mapping"
+    - "internal/persistence/lifecycle must not import internal/persistence/queryutil"
