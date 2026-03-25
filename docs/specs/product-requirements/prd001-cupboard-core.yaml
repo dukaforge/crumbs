@@ -1,11 +1,11 @@
-id: prd001-cupboard-core
+id: "prd001-cupboard-core"
 title: Cupboard Core Interface
 problem: |
   Applications using Crumbs need a consistent way to initialize storage, access data tables, and manage the cupboard lifecycle. Without a well-defined core interface, each application must handle backend initialization differently, leading to duplicated setup code and inconsistent error handling. We need a single entry point that accepts configuration, provides uniform table access, and cleanly releases resources when done.
 
   This PRD defines the cupboard lifecycle interface: configuration, table access, and shutdown. It establishes the contract that all backends must implement.
 goals:
-- G1: Define a Config struct that selects backends and provides backend-specific parameters
+- G1: "Define a Config struct that selects backends and provides backend-specific parameters"
 - G2: Define the Cupboard interface with uniform table access via GetTable
 - G3: Define the Table interface that all data tables implement
 - G4: Define Attach and Detach lifecycle operations
@@ -15,116 +15,223 @@ requirements:
   R1:
     title: Configuration
     items:
-    - R1.1: The Config struct must include the following fields
-    - R1.2: Config validation must fail if Backend is empty or unrecognized
-    - R1.3: Config validation must fail if DataDir is empty when Backend is "sqlite"
-    - R1.4: Config validation errors must be defined in config.go
+    - R1.1:
+        text: The Config struct must include the following fields
+        weight: 1
+    - R1.2:
+        text: Config validation must fail if Backend is empty or unrecognized
+        weight: 1
+    - R1.3:
+        text: "Config validation must fail if DataDir is empty when Backend is \"sqlite\""
+        weight: 1
+    - R1.4:
+        text: Config validation errors must be defined in config.go
+        weight: 1
   R2:
     title: Cupboard Interface
     items:
-    - R2.1: The Cupboard interface must define the core contract for storage access and lifecycle management
-    - R2.2: The Cupboard interface must include GetTable, Attach, and Detach methods
-    - R2.3: GetTable must return a Table interface for the specified table name
-    - R2.4: GetTable must return ErrTableNotFound if the table name is not recognized
-    - R2.5: Standard table names are defined in the following table
-    - R2.6: Backends must support all standard table names
+    - R2.1:
+        text: The Cupboard interface must define the core contract for storage access and lifecycle management
+        weight: 2
+    - R2.2:
+        text: "The Cupboard interface must include GetTable, Attach, and Detach methods"
+        weight: 1
+    - R2.3:
+        text: GetTable must return a Table interface for the specified table name
+        weight: 1
+    - R2.4:
+        text: GetTable must return ErrTableNotFound if the table name is not recognized
+        weight: 1
+    - R2.5:
+        text: Standard table names are defined in the following table
+        weight: 1
+    - R2.6:
+        text: Backends must support all standard table names
+        weight: 2
   R3:
     title: Table Interface
     items:
-    - R3.1: The Table interface provides uniform CRUD operations for all entity types
-    - R3.2: Get retrieves an entity by its ID and returns the entity object or ErrNotFound
-    - R3.3: Set persists an entity object. If the id parameter is empty, generates a new UUID v7 and creates the entity. If
-        the id parameter is provided, updates the existing entity or creates it if not found. Returns the actual ID (generated
-        or provided) and any error
-    - R3.4: Delete removes an entity by ID. It must return ErrNotFound if the entity does not exist
-    - R3.5: Fetch queries entities matching the filter. The filter map keys are field names; values are the required field
-        values. An empty filter returns all entities in the table
-    - R3.6: All entity types returned by Get and Fetch are concrete structs (Crumb, Trail, Property, etc.), not interfaces.
-        Callers use type assertions to access entity-specific fields
-    - R3.7: Entity structs are defined in their respective interface PRDs (Crumb in prd003-crumbs-interface, Trail in prd006-trails-interface,
-        Property in prd004-properties-interface, Metadata in prd005-metadata-interface, Link in prd002-sqlite-backend, Stash
-        in prd008-stash-interface)
+    - R3.1:
+        text: The Table interface provides uniform CRUD operations for all entity types
+        weight: 5
+    - R3.2:
+        text: Get retrieves an entity by its ID and returns the entity object or ErrNotFound
+        weight: 2
+    - R3.3:
+        text: "Set persists an entity object. If the id parameter is empty, generates a new UUID v7 and creates the entity.\
+          \ If the id parameter is provided, updates the existing entity or creates it if not found. Returns the actual ID\
+          \ (generated or provided) and any error"
+        weight: 3
+    - R3.4:
+        text: Delete removes an entity by ID. It must return ErrNotFound if the entity does not exist
+        weight: 2
+    - R3.5:
+        text: Fetch queries entities matching the filter. The filter map keys are field names; values are the required field
+          values. An empty filter returns all entities in the table
+        weight: 3
+    - R3.6:
+        text: "All entity types returned by Get and Fetch are concrete structs (Crumb, Trail, Property, etc.), not interfaces.\
+          \ Callers use type assertions to access entity-specific fields"
+        weight: 5
+    - R3.7:
+        text: "Entity structs are defined in their respective interface PRDs (Crumb in prd003-crumbs-interface, Trail in prd006-trails-interface,\
+          \ Property in prd004-properties-interface, Metadata in prd005-metadata-interface, Link in prd002-sqlite-backend,\
+          \ Stash in prd008-stash-interface)"
+        weight: 1
   R4:
     title: Attach
     items:
-    - R4.1: Attach must accept a Config and initialize the backend connection
-    - R4.2: Attach must validate the config before initializing the backend
-    - R4.3: Attach must return an error if backend initialization fails (e.g., cannot create DataDir, cannot initialize SQLite)
-    - R4.4: Attach must be idempotent; calling Attach on an already-attached cupboard must return ErrAlreadyAttached
-    - R4.5: After successful Attach, GetTable calls must succeed for standard table names
+    - R4.1:
+        text: Attach must accept a Config and initialize the backend connection
+        weight: 2
+    - R4.2:
+        text: Attach must validate the config before initializing the backend
+        weight: 2
+    - R4.3:
+        text: "Attach must return an error if backend initialization fails (e.g., cannot create DataDir, cannot initialize\
+          \ SQLite)"
+        weight: 2
+    - R4.4:
+        text: "Attach must be idempotent; calling Attach on an already-attached cupboard must return ErrAlreadyAttached"
+        weight: 2
+    - R4.5:
+        text: "After successful Attach, GetTable calls must succeed for standard table names"
+        weight: 1
   R5:
     title: Detach
     items:
-    - R5.1: Detach must release all resources held by the cupboard (connections, file handles, goroutines)
-    - R5.2: Detach must be idempotent; calling Detach multiple times must not error
-    - R5.3: Detach must block until all in-flight operations complete or a reasonable timeout elapses
+    - R5.1:
+        text: "Detach must release all resources held by the cupboard (connections, file handles, goroutines)"
+        weight: 1
+    - R5.2:
+        text: Detach must be idempotent; calling Detach multiple times must not error
+        weight: 2
+    - R5.3:
+        text: "Detach must block until all in-flight operations complete or a reasonable timeout elapses"
+        weight: 2
   R6:
     title: Error Handling After Detach
     items:
-    - R6.1: All Cupboard operations must return ErrCupboardDetached if invoked after Detach
-    - R6.2: ErrCupboardDetached must be a sentinel error that callers can check with errors.Is
-    - R6.3: Backends must track attached/detached state and check it at the start of each operation
+    - R6.1:
+        text: All Cupboard operations must return ErrCupboardDetached if invoked after Detach
+        weight: 1
+    - R6.2:
+        text: ErrCupboardDetached must be a sentinel error that callers can check with errors.Is
+        weight: 1
+    - R6.3:
+        text: Backends must track attached/detached state and check it at the start of each operation
+        weight: 1
   R7:
     title: Standard Error Types
     items:
-    - R7.1: Cupboard lifecycle errors must be defined in cupboard.go
-    - R7.2: Table operation errors must be defined in table.go
-    - R7.3: Entity method errors must be defined in table.go
-    - R7.4: Backends may define additional backend-specific errors but must use these standard errors where applicable
+    - R7.1:
+        text: Cupboard lifecycle errors must be defined in cupboard.go
+        weight: 1
+    - R7.2:
+        text: Table operation errors must be defined in table.go
+        weight: 1
+    - R7.3:
+        text: Entity method errors must be defined in table.go
+        weight: 1
+    - R7.4:
+        text: "Backends may define additional backend-specific errors but must use these standard errors where applicable"
+        weight: 1
   R8:
     title: Entity ID Generation
     items:
-    - R8.1: All entity IDs must be UUID v7 (time-ordered UUIDs per RFC 9562)
-    - R8.2: Backends generate UUIDs when Set is called with an empty id parameter
-    - R8.3: UUID v7 provides sortability by creation time without separate timestamp columns
+    - R8.1:
+        text: "All entity IDs must be UUID v7 (time-ordered UUIDs per RFC 9562)"
+        weight: 1
+    - R8.2:
+        text: Backends generate UUIDs when Set is called with an empty id parameter
+        weight: 1
+    - R8.3:
+        text: UUID v7 provides sortability by creation time without separate timestamp columns
+        weight: 1
 package_contract:
   exports:
-    - name: Config
-      signature: "type Config struct { Backend string; DataDir string }"
-    - name: Cupboard
-      signature: "type Cupboard interface { GetTable(string) (Table, error); Attach(Config) error; Detach() error }"
-    - name: Table
-      signature: "type Table interface { Get(string) (any, error); Set(string, any) (string, error); Delete(string) error; Fetch(map[string]any) ([]any, error) }"
-    - name: ErrAlreadyAttached
-    - name: ErrCupboardDetached
-    - name: ErrTableNotFound
-    - name: ErrNotFound
-    - name: ErrInvalidID
+  - name: Config
+    signature: "type Config struct { Backend string; DataDir string }"
+  - name: Cupboard
+    signature: "type Cupboard interface { GetTable(string) (Table, error); Attach(Config) error; Detach() error }"
+  - name: Table
+    signature: "type Table interface { Get(string) (any, error); Set(string, any) (string, error); Delete(string) error; Fetch(map[string]any)\
+      \ ([]any, error) }"
+  - name: ErrAlreadyAttached
+  - name: ErrCupboardDetached
+  - name: ErrTableNotFound
+  - name: ErrNotFound
+  - name: ErrInvalidID
   import_constraints:
-    - "pkg/api must not import pkg/schema, internal/, or cmd/"
+  - "pkg/api must not import pkg/schema, internal/, or cmd/"
 non_goals:
-- This PRD does not define entity-specific schemas or operations. Entity types are defined in their respective interface PRDs
-  (prd003-crumbs-interface, prd006-trails-interface, etc.).
-- This PRD does not define backend-specific behavior. Backends may add optional methods beyond the interface.
+- "This PRD does not define entity-specific schemas or operations. Entity types are defined in their respective interface\
+  \ PRDs (prd003-crumbs-interface, prd006-trails-interface, etc.)."
+- "This PRD does not define backend-specific behavior. Backends may add optional methods beyond the interface."
 - This PRD does not define HTTP/RPC wrappers around the Cupboard interface. Applications define their own APIs.
 - This PRD does not define connection pooling or retry policies. Backends may implement these internally.
-- This PRD does not define specialized query operations beyond Fetch. Entity-specific PRDs may specify additional query requirements
-  that backends implement via filter conventions.
+- "This PRD does not define specialized query operations beyond Fetch. Entity-specific PRDs may specify additional query requirements\
+  \ that backends implement via filter conventions."
 acceptance_criteria:
-  - id: AC1
-    criterion: Config struct defined with Backend and DataDir fields
-    traces: [R1.1, R1.2, R1.3, R1.4]
-  - id: AC2
-    criterion: Cupboard interface defined with GetTable, Attach, Detach methods
-    traces: [R2.1, R2.2, R2.3, R2.4]
-  - id: AC3
-    criterion: Table interface defined with Get, Set (returning string, error), Delete, Fetch methods
-    traces: [R3.1, R3.2, R3.3, R3.4, R3.5, R3.6, R3.7]
-  - id: AC4
-    criterion: Standard table names documented in a table
-    traces: [R2.5, R2.6]
-  - id: AC5
-    criterion: Attach method behavior documented (idempotent, validates config)
-    traces: [R4.1, R4.2, R4.3, R4.4, R4.5]
-  - id: AC6
-    criterion: Detach method behavior documented (idempotent, blocks until complete)
-    traces: [R5.1, R5.2, R5.3]
-  - id: AC7
-    criterion: Standard error types defined (cupboard lifecycle errors, table operation errors, and entity method errors)
-    traces: [R6.1, R6.2, R6.3, R7.1, R7.2, R7.3, R7.4]
-  - id: AC8
-    criterion: UUID v7 requirement for entity IDs documented
-    traces: [R8.1, R8.2, R8.3]
-  - id: AC9
-    criterion: All requirements numbered and specific
-    traces: []
+- id: AC1
+  criterion: Config struct defined with Backend and DataDir fields
+  traces:
+  - R1.1
+  - R1.2
+  - R1.3
+  - R1.4
+- id: AC2
+  criterion: "Cupboard interface defined with GetTable, Attach, Detach methods"
+  traces:
+  - R2.1
+  - R2.2
+  - R2.3
+  - R2.4
+- id: AC3
+  criterion: "Table interface defined with Get, Set (returning string, error), Delete, Fetch methods"
+  traces:
+  - R3.1
+  - R3.2
+  - R3.3
+  - R3.4
+  - R3.5
+  - R3.6
+  - R3.7
+- id: AC4
+  criterion: Standard table names documented in a table
+  traces:
+  - R2.5
+  - R2.6
+- id: AC5
+  criterion: "Attach method behavior documented (idempotent, validates config)"
+  traces:
+  - R4.1
+  - R4.2
+  - R4.3
+  - R4.4
+  - R4.5
+- id: AC6
+  criterion: "Detach method behavior documented (idempotent, blocks until complete)"
+  traces:
+  - R5.1
+  - R5.2
+  - R5.3
+- id: AC7
+  criterion: "Standard error types defined (cupboard lifecycle errors, table operation errors, and entity method errors)"
+  traces:
+  - R6.1
+  - R6.2
+  - R6.3
+  - R7.1
+  - R7.2
+  - R7.3
+  - R7.4
+- id: AC8
+  criterion: UUID v7 requirement for entity IDs documented
+  traces:
+  - R8.1
+  - R8.2
+  - R8.3
+- id: AC9
+  criterion: All requirements numbered and specific
+  traces: []

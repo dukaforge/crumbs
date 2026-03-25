@@ -1,4 +1,4 @@
-id: prd013-table-query-helpers
+id: "prd013-table-query-helpers"
 title: Table Query Helpers
 problem: |
   Every table accessor in the SQLite backend (crumbs, trails, links, stashes, properties,
@@ -18,119 +18,165 @@ problem: |
 
   We extract these patterns into a shared query helpers package within internal/persistence.
   Table accessors call shared functions instead of reimplementing the same logic.
-
 goals:
-- G1: Eliminate duplicated query-building logic across table accessors
-- G2: Eliminate duplicated result-handling logic across table accessors
+- G1: "Eliminate duplicated query-building logic across table accessors"
+- G2: "Eliminate duplicated result-handling logic across table accessors"
 - G3: Eliminate duplicated hydration function pairs across table accessors
-- G4: Provide a shared Get-by-ID pattern that all table accessors use
-
+- G4: "Provide a shared Get-by-ID pattern that all table accessors use"
 requirements:
   D:
     title: Design Decisions
     items:
-    - R0.1: The query helpers package lives at internal/persistence/queryutil. It has no
-        dependency on entity types (pkg/schema) or on specific table implementations. It
-        operates on generic SQL types and callback functions.
-    - R0.2: Table accessors in internal/persistence/ import queryutil. The queryutil package
-        must not import any package under internal/persistence/ except itself.
+    - R0.1:
+        text: The query helpers package lives at internal/persistence/queryutil. It has no dependency on entity types (pkg/schema)
+          or on specific table implementations. It operates on generic SQL types and callback functions.
+        weight: 1
+    - R0.2:
+        text: Table accessors in internal/persistence/ import queryutil. The queryutil package must not import any package
+          under internal/persistence/ except itself.
+        weight: 1
   R1:
     title: Scanner Interface
     items:
-    - R1.1: Define a Scanner interface with a single method Scan(dest ...any) error
-    - R1.2: Both *sql.Row and *sql.Rows satisfy this interface without adapters
-    - R1.3: All hydration functions accept Scanner instead of *sql.Row or *sql.Rows, eliminating
-        the need for separate hydrate and hydrateFromRows functions per entity type
+    - R1.1:
+        text: Define a Scanner interface with a single method Scan(dest ...any) error
+        weight: 1
+    - R1.2:
+        text: "Both *sql.Row and *sql.Rows satisfy this interface without adapters"
+        weight: 1
+    - R1.3:
+        text: "All hydration functions accept Scanner instead of *sql.Row or *sql.Rows, eliminating the need for separate\
+          \ hydrate and hydrateFromRows functions per entity type"
+        weight: 3
   R2:
     title: Filter Building
     items:
-    - R2.1: Provide AddStringFilter that extracts a string value from the filter map by a given
-        field name, appends a WHERE condition for the mapped column name, and appends the value
-        to the args slice. Returns ErrInvalidFilter if the value is not a string
-    - R2.2: Provide AddIntFilter that does the same for integer filter values
-    - R2.3: Filter functions accept pointers to the conditions slice and args slice, mutating
-        them in place
+    - R2.1:
+        text: "Provide AddStringFilter that extracts a string value from the filter map by a given field name, appends a WHERE\
+          \ condition for the mapped column name, and appends the value to the args slice. Returns ErrInvalidFilter if the\
+          \ value is not a string"
+        weight: 3
+    - R2.2:
+        text: Provide AddIntFilter that does the same for integer filter values
+        weight: 2
+    - R2.3:
+        text: "Filter functions accept pointers to the conditions slice and args slice, mutating them in place"
+        weight: 1
   R3:
     title: Pagination
     items:
-    - R3.1: Provide ApplyLimitOffset that extracts "limit" and "offset" from the filter map
-        and appends LIMIT and OFFSET clauses to the query string
-    - R3.2: Return ErrInvalidFilter if limit or offset values are present but not integers
-    - R3.3: Ignore limit or offset values that are zero or negative
+    - R3.1:
+        text: "Provide ApplyLimitOffset that extracts \"limit\" and \"offset\" from the filter map and appends LIMIT and OFFSET\
+          \ clauses to the query string"
+        weight: 3
+    - R3.2:
+        text: Return ErrInvalidFilter if limit or offset values are present but not integers
+        weight: 3
+    - R3.3:
+        text: Ignore limit or offset values that are zero or negative
+        weight: 3
   R4:
     title: Result Iteration
     items:
-    - R4.1: Provide FetchRows that executes a query, iterates the result set, calls a
-        caller-provided hydration function for each row, and returns a slice of any
-    - R4.2: FetchRows must close the rows when done and check rows.Err after iteration
-    - R4.3: FetchRows must return an empty non-nil slice (not nil) when no rows match
+    - R4.1:
+        text: "Provide FetchRows that executes a query, iterates the result set, calls a caller-provided hydration function\
+          \ for each row, and returns a slice of any"
+        weight: 3
+    - R4.2:
+        text: FetchRows must close the rows when done and check rows.Err after iteration
+        weight: 3
+    - R4.3:
+        text: "FetchRows must return an empty non-nil slice (not nil) when no rows match"
+        weight: 3
   R5:
     title: Get By ID
     items:
-    - R5.1: Provide GetByID that validates the id is non-empty (returns ErrInvalidID),
-        executes a QueryRow, calls a caller-provided hydration function, and maps
-        sql.ErrNoRows to ErrNotFound
-    - R5.2: GetByID accepts the query string and the hydration function as parameters
+    - R5.1:
+        text: "Provide GetByID that validates the id is non-empty (returns ErrInvalidID), executes a QueryRow, calls a caller-provided\
+          \ hydration function, and maps sql.ErrNoRows to ErrNotFound"
+        weight: 3
+    - R5.2:
+        text: GetByID accepts the query string and the hydration function as parameters
+        weight: 3
   R6:
     title: Existence Check
     items:
-    - R6.1: Provide CheckExists that runs a SELECT 1 query for a given ID and returns
-        ErrNotFound if no row exists
-    - R6.2: Provide CheckUnique that runs a uniqueness query and returns ErrDuplicateName
-        if a matching row exists (excluding the current entity's ID)
-
+    - R6.1:
+        text: Provide CheckExists that runs a SELECT 1 query for a given ID and returns ErrNotFound if no row exists
+        weight: 2
+    - R6.2:
+        text: "Provide CheckUnique that runs a uniqueness query and returns ErrDuplicateName if a matching row exists (excluding\
+          \ the current entity's ID)"
+        weight: 2
 non_goals:
-- This PRD does not define entity-specific hydration logic. Each table accessor still defines
-    its own hydration function; this PRD provides the Scanner interface they accept
-- This PRD does not define transaction management. Transaction begin/commit/rollback remains
-    in each table accessor
+- "This PRD does not define entity-specific hydration logic. Each table accessor still defines its own hydration function;\
+  \ this PRD provides the Scanner interface they accept"
+- This PRD does not define transaction management. Transaction begin/commit/rollback remains in each table accessor
 - This PRD does not define JSONL persistence helpers. JSONL operations remain in the engine package
-
 acceptance_criteria:
-  - id: AC1
-    criterion: "Package lives at internal/persistence/queryutil with no dependency on pkg/schema, engine, or mapping; table accessors import queryutil"
-    traces: [R0.1, R0.2]
-  - id: AC2
-    criterion: Scanner interface defined and used by all hydration functions instead of *sql.Row/*sql.Rows pairs
-    traces: [R1.1, R1.2, R1.3]
-  - id: AC3
-    criterion: AddStringFilter and AddIntFilter extract filter values and build WHERE conditions
-    traces: [R2.1, R2.2, R2.3]
-  - id: AC4
-    criterion: ApplyLimitOffset extracts pagination from filter map and appends SQL clauses
-    traces: [R3.1, R3.2, R3.3]
-  - id: AC5
-    criterion: FetchRows executes query, iterates with hydration callback, returns non-nil empty slice on no results
-    traces: [R4.1, R4.2, R4.3]
-  - id: AC6
-    criterion: GetByID validates ID, hydrates single row, maps ErrNoRows to ErrNotFound
-    traces: [R5.1, R5.2]
-  - id: AC7
-    criterion: CheckExists and CheckUnique provide reusable existence and uniqueness validation
-    traces: [R6.1, R6.2]
-
+- id: AC1
+  criterion: "Package lives at internal/persistence/queryutil with no dependency on pkg/schema, engine, or mapping; table\
+    \ accessors import queryutil"
+  traces:
+  - R0.1
+  - R0.2
+- id: AC2
+  criterion: "Scanner interface defined and used by all hydration functions instead of *sql.Row/*sql.Rows pairs"
+  traces:
+  - R1.1
+  - R1.2
+  - R1.3
+- id: AC3
+  criterion: AddStringFilter and AddIntFilter extract filter values and build WHERE conditions
+  traces:
+  - R2.1
+  - R2.2
+  - R2.3
+- id: AC4
+  criterion: ApplyLimitOffset extracts pagination from filter map and appends SQL clauses
+  traces:
+  - R3.1
+  - R3.2
+  - R3.3
+- id: AC5
+  criterion: "FetchRows executes query, iterates with hydration callback, returns non-nil empty slice on no results"
+  traces:
+  - R4.1
+  - R4.2
+  - R4.3
+- id: AC6
+  criterion: "GetByID validates ID, hydrates single row, maps ErrNoRows to ErrNotFound"
+  traces:
+  - R5.1
+  - R5.2
+- id: AC7
+  criterion: CheckExists and CheckUnique provide reusable existence and uniqueness validation
+  traces:
+  - R6.1
+  - R6.2
 package_contract:
   exports:
-    - name: Scanner
-      signature: "type Scanner interface { Scan(dest ...any) error }"
-    - name: AddStringFilter
-      signature: "func AddStringFilter(filter map[string]any, key string, column string, conditions *[]string, args *[]any) error"
-    - name: AddIntFilter
-      signature: "func AddIntFilter(filter map[string]any, key string, column string, conditions *[]string, args *[]any) error"
-    - name: ApplyLimitOffset
-      signature: "func ApplyLimitOffset(query *string, filter map[string]any) error"
-    - name: FetchRows
-      signature: "func FetchRows(db *sql.DB, query string, args []any, hydrate func(Scanner) (any, error)) ([]any, error)"
-    - name: GetByID
-      signature: "func GetByID(db *sql.DB, query string, id string, hydrate func(Scanner) (any, error)) (any, error)"
-    - name: CheckExists
-      signature: "func CheckExists(db *sql.DB, query string, id string) error"
-    - name: CheckUnique
-      signature: "func CheckUnique(db *sql.DB, query string, args ...any) error"
+  - name: Scanner
+    signature: "type Scanner interface { Scan(dest ...any) error }"
+  - name: AddStringFilter
+    signature: "func AddStringFilter(filter map[string]any, key string, column string, conditions *[]string, args *[]any)\
+      \ error"
+  - name: AddIntFilter
+    signature: "func AddIntFilter(filter map[string]any, key string, column string, conditions *[]string, args *[]any) error"
+  - name: ApplyLimitOffset
+    signature: "func ApplyLimitOffset(query *string, filter map[string]any) error"
+  - name: FetchRows
+    signature: "func FetchRows(db *sql.DB, query string, args []any, hydrate func(Scanner) (any, error)) ([]any, error)"
+  - name: GetByID
+    signature: "func GetByID(db *sql.DB, query string, id string, hydrate func(Scanner) (any, error)) (any, error)"
+  - name: CheckExists
+    signature: "func CheckExists(db *sql.DB, query string, id string) error"
+  - name: CheckUnique
+    signature: "func CheckUnique(db *sql.DB, query string, args ...any) error"
   imports:
-    - "database/sql"
-    - "pkg/api"
+  - database/sql
+  - pkg/api
   import_constraints:
-    - "internal/persistence/queryutil must not import pkg/schema"
-    - "internal/persistence/queryutil must not import internal/persistence/engine"
-    - "internal/persistence/queryutil must not import internal/persistence/mapping"
+  - internal/persistence/queryutil must not import pkg/schema
+  - internal/persistence/queryutil must not import internal/persistence/engine
+  - internal/persistence/queryutil must not import internal/persistence/mapping
