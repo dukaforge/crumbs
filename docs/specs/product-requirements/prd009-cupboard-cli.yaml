@@ -1,4 +1,4 @@
-id: prd009-cupboard-cli
+id: "prd009-cupboard-cli"
 title: Cupboard CLI Interface
 problem: |
   The CLI design is scattered across multiple documents. prd001-cupboard-core defines the Cupboard and Table interfaces but does not specify CLI commands. prd010-configuration-directories defines configuration flags but not command structure. prd003-crumbs-interface defines the Crumb entity but not crumb-specific CLI commands. eng02-beads-migration lists issue-tracking commands but not their full specification.
@@ -7,128 +7,295 @@ problem: |
 goals:
 - G1: Consolidate all CLI commands into one specification
 - G2: Define generic table commands that expose the Table interface
-- G3: Define crumb-specific commands with entity-aware flags
-- G4: Define issue-tracking commands for the beads migration
-- G5: Specify output formats for human-readable and JSON modes
+- G3: "Define crumb-specific commands with entity-aware flags"
+- G4: "Define issue-tracking commands for the beads migration"
+- G5: "Specify output formats for human-readable and JSON modes"
 - G6: Define exit codes and error message conventions
 - G7: Document global flags for configuration and data directory overrides
 requirements:
   R1:
     title: Command Structure
     items:
-    - R1.1: The CLI executable must be named "cupboard"
-    - R1.2: Commands must follow a two-tier structure
-    - R1.3: Generic table commands (get, set, delete, list) must accept any table name and work uniformly across all tables
-    - R1.4: Entity-specific commands (crumb, trail, etc.) must provide friendly flags and validation for that entity type
-    - R1.5: The CLI must use cobra for command parsing and viper for configuration management
+    - R1.1:
+        text: "The CLI executable must be named \"cupboard\""
+        weight: 1
+    - R1.2:
+        text: "Commands must follow a two-tier structure"
+        weight: 1
+    - R1.3:
+        text: "Generic table commands (get, set, delete, list) must accept any table name and work uniformly across all tables"
+        weight: 2
+    - R1.4:
+        text: "Entity-specific commands (crumb, trail, etc.) must provide friendly flags and validation for that entity type"
+        weight: 2
+    - R1.5:
+        text: The CLI must use cobra for command parsing and viper for configuration management
+        weight: 1
   R2:
     title: Root Commands
     items:
-    - R2.1: cupboard init must initialize the cupboard storage and print confirmation
-    - R2.2: cupboard version must print the version string
+    - R2.1:
+        text: cupboard init must initialize the cupboard storage and print confirmation
+        weight: 1
+    - R2.2:
+        text: cupboard version must print the version string
+        weight: 1
   R3:
     title: Generic Table Commands
     items:
-    - R3.1: cupboard get <table> <id> must retrieve an entity by ID from the specified table
-    - R3.2: cupboard set <table> <id> <json> must create or update an entity
-    - R3.3: cupboard delete <table> <id> must remove an entity by ID
-    - R3.4: cupboard list <table> [filter...] must query entities with optional filters
+    - R3.1:
+        text: "cupboard get <table> <id> must retrieve an entity by ID from the specified table"
+        weight: 2
+    - R3.2:
+        text: "cupboard set <table> <id> <json> must create or update an entity"
+        weight: 2
+    - R3.3:
+        text: "cupboard delete <table> <id> must remove an entity by ID"
+        weight: 2
+    - R3.4:
+        text: "cupboard list <table> [filter...] must query entities with optional filters"
+        weight: 1
   R4:
     title: Crumb Commands
     items:
-    - R4.1: Crumb commands must be grouped under "cupboard crumb"
-    - R4.2: All crumb commands must support the --json flag for JSON output
-    - R4.3: cupboard crumb add must create a new crumb with entity-specific flags
-    - R4.4: cupboard crumb get <id> must retrieve a crumb with human-readable or JSON output
-    - R4.5: cupboard crumb list must query crumbs with optional state filter
-    - R4.6: cupboard crumb delete <id> must remove a crumb by ID
+    - R4.1:
+        text: "Crumb commands must be grouped under \"cupboard crumb\""
+        weight: 1
+    - R4.2:
+        text: "All crumb commands must support the --json flag for JSON output"
+        weight: 2
+    - R4.3:
+        text: "cupboard crumb add must create a new crumb with entity-specific flags"
+        weight: 2
+    - R4.4:
+        text: "cupboard crumb get <id> must retrieve a crumb with human-readable or JSON output"
+        weight: 2
+    - R4.5:
+        text: cupboard crumb list must query crumbs with optional state filter
+        weight: 1
+    - R4.6:
+        text: "cupboard crumb delete <id> must remove a crumb by ID"
+        weight: 2
   R5:
-    title: Issue-Tracking Commands
+    title: "Issue-Tracking Commands"
     items:
-    - R5.1: Issue-tracking commands must provide parity with the beads (bd) CLI for migration purposes
-    - R5.2: cupboard ready must list crumbs that are ready for work
-    - R5.3: cupboard create must create a new crumb with issue-tracking fields
-    - R5.4: cupboard show <id> must display a crumb with full details
-    - R5.5: cupboard update <id> must modify crumb fields
-    - R5.6: cupboard close <id> must transition a crumb to completed state
-    - R5.7: cupboard comments add <id> <text> must add a comment to a crumb
+    - R5.1:
+        text: "Issue-tracking commands must provide parity with the beads (bd) CLI for migration purposes"
+        weight: 2
+    - R5.2:
+        text: cupboard ready must list crumbs that are ready for work
+        weight: 1
+    - R5.3:
+        text: "cupboard create must create a new crumb with issue-tracking fields"
+        weight: 2
+    - R5.4:
+        text: "cupboard show <id> must display a crumb with full details"
+        weight: 1
+    - R5.5:
+        text: "cupboard update <id> must modify crumb fields"
+        weight: 1
+    - R5.6:
+        text: "cupboard close <id> must transition a crumb to completed state"
+        weight: 1
+    - R5.7:
+        text: "cupboard comments add <id> <text> must add a comment to a crumb"
+        weight: 1
   R6:
     title: Global Flags
     items:
-    - R6.1: All commands must inherit global flags from the root command
-    - R6.2: --config-dir must override the configuration directory
-    - R6.3: --data-dir must override the data directory
-    - R6.4: --help must print usage information for any command
-    - R6.5: --version (on root command) must be an alias for cupboard version
+    - R6.1:
+        text: All commands must inherit global flags from the root command
+        weight: 1
+    - R6.2:
+        text: "--config-dir must override the configuration directory"
+        weight: 1
+    - R6.3:
+        text: "--data-dir must override the data directory"
+        weight: 1
+    - R6.4:
+        text: "--help must print usage information for any command"
+        weight: 1
+    - R6.5:
+        text: "--version (on root command) must be an alias for cupboard version"
+        weight: 1
   R7:
     title: Output Formats
     items:
-    - R7.1: Commands must support two output modes
-    - R7.2: Human-readable output must use tabwriter for aligned columns
-    - R7.3: JSON output must be pretty-printed with 2-space indentation
-    - R7.4: Error messages must be written to stderr, not stdout
-    - R7.5: Successful output must be written to stdout
-    - R7.6: JSON output for single entities must be an object; for multiple entities must be an array
-    - R7.7: Empty results must output an empty array [] in JSON mode, or "No <entity> found." in human-readable mode
+    - R7.1:
+        text: Commands must support two output modes
+        weight: 2
+    - R7.2:
+        text: "Human-readable output must use tabwriter for aligned columns"
+        weight: 1
+    - R7.3:
+        text: "JSON output must be pretty-printed with 2-space indentation"
+        weight: 1
+    - R7.4:
+        text: "Error messages must be written to stderr, not stdout"
+        weight: 1
+    - R7.5:
+        text: Successful output must be written to stdout
+        weight: 1
+    - R7.6:
+        text: JSON output for single entities must be an object; for multiple entities must be an array
+        weight: 1
+    - R7.7:
+        text: "Empty results must output an empty array [] in JSON mode, or \"No <entity> found.\" in human-readable mode"
+        weight: 1
   R8:
     title: Exit Codes
     items:
-    - R8.1: The CLI must use the following exit codes
-    - R8.2: Exit code 0 must be returned for successful operations, including empty query results
-    - R8.3: Exit code 1 must be returned for user-correctable errors (bad input, missing entity)
-    - R8.4: Exit code 2 must be returned for system errors that require investigation
+    - R8.1:
+        text: The CLI must use the following exit codes
+        weight: 1
+    - R8.2:
+        text: "Exit code 0 must be returned for successful operations, including empty query results"
+        weight: 1
+    - R8.3:
+        text: "Exit code 1 must be returned for user-correctable errors (bad input, missing entity)"
+        weight: 1
+    - R8.4:
+        text: Exit code 2 must be returned for system errors that require investigation
+        weight: 1
   R9:
     title: Error Messages
     items:
-    - R9.1: 'Error messages must follow the pattern "context: details"'
-    - R9.2: Error messages must not include stack traces in normal operation
-    - R9.3: Error messages must include the entity ID or table name when relevant
-    - R9.4: Validation errors must explain what was expected
+    - R9.1:
+        text: "Error messages must follow the pattern \"context: details\""
+        weight: 1
+    - R9.2:
+        text: Error messages must not include stack traces in normal operation
+        weight: 1
+    - R9.3:
+        text: Error messages must include the entity ID or table name when relevant
+        weight: 1
+    - R9.4:
+        text: Validation errors must explain what was expected
+        weight: 1
   R10:
     title: Init Command
     items:
-    - R10.1: cupboard init must initialize the storage backend
-    - R10.2: Init must create the data directory if it does not exist
-    - R10.3: Init must create empty JSONL files if they do not exist
-    - R10.4: Init must seed built-in properties (priority, type, description, owner, labels) per prd004-properties-interface
-        R8
-    - R10.5: Init must be idempotent (running init twice must not error or duplicate data)
-    - R10.6: Init must print "Cupboard initialized successfully" on completion
+    - R10.1:
+        text: cupboard init must initialize the storage backend
+        weight: 1
+    - R10.2:
+        text: Init must create the data directory if it does not exist
+        weight: 2
+    - R10.3:
+        text: Init must create empty JSONL files if they do not exist
+        weight: 2
+    - R10.4:
+        text: "Init must seed built-in properties (priority, type, description, owner, labels) per prd004-properties-interface\
+          \ R8"
+        weight: 5
+    - R10.5:
+        text: Init must be idempotent (running init twice must not error or duplicate data)
+        weight: 2
+    - R10.6:
+        text: "Init must print \"Cupboard initialized successfully\" on completion"
+        weight: 1
 non_goals:
 - This PRD does not define a graphical user interface (GUI) or terminal user interface (TUI)
-- This PRD does not define shell completion scripts (bash, zsh, fish)
+- "This PRD does not define shell completion scripts (bash, zsh, fish)"
 - This PRD does not define a plugin system for custom commands
-- This PRD does not define remote backend support (HTTP, gRPC)
+- "This PRD does not define remote backend support (HTTP, gRPC)"
 - This PRD does not define batch operations beyond what the generic table commands provide
 - This PRD does not define interactive mode or REPL functionality
 acceptance_criteria:
-  - id: AC1
-    criterion: All implemented commands documented (init, version, get, set, delete, list, crumb add/get/list/delete)
-    traces: [R1.1, R1.2, R1.3, R1.4, R1.5, R2.1, R2.2, R3.1, R3.2, R3.3, R3.4, R4.1, R4.2, R4.3, R4.4, R4.5, R4.6]
-  - id: AC2
-    criterion: All planned issue-tracking commands documented (ready, create, show, update, close, comments add)
-    traces: [R5.1, R5.2, R5.3, R5.4, R5.5, R5.6, R5.7]
-  - id: AC3
-    criterion: Generic table commands specify table argument, ID argument, and output format
-    traces: [R3.1, R3.2, R3.3, R3.4]
-  - id: AC4
-    criterion: Crumb commands specify entity-specific flags (--name, --state, --limit)
-    traces: [R4.1, R4.2, R4.3, R4.4, R4.5, R4.6]
-  - id: AC5
-    criterion: Issue-tracking commands specify flags for beads migration parity (--type, --title, --description, --status)
-    traces: [R5.1, R5.2, R5.3, R5.4, R5.5, R5.6, R5.7]
-  - id: AC6
-    criterion: Global flags documented (--config-dir, --data-dir, --help, --version)
-    traces: [R6.1, R6.2, R6.3, R6.4, R6.5]
-  - id: AC7
-    criterion: Output format specified for each command (human-readable and JSON)
-    traces: [R7.1, R7.2, R7.3, R7.4, R7.5, R7.6, R7.7]
-  - id: AC8
-    criterion: Exit codes defined (0 success, 1 user error, 2 system error)
-    traces: [R8.1, R8.2, R8.3, R8.4]
-  - id: AC9
-    criterion: Error message format defined with examples
-    traces: [R9.1, R9.2, R9.3, R9.4]
-  - id: AC10
-    criterion: Init command behavior documented (directory creation, property seeding, idempotence)
-    traces: [R10.1, R10.2, R10.3, R10.4, R10.5, R10.6]
+- id: AC1
+  criterion: "All implemented commands documented (init, version, get, set, delete, list, crumb add/get/list/delete)"
+  traces:
+  - R1.1
+  - R1.2
+  - R1.3
+  - R1.4
+  - R1.5
+  - R2.1
+  - R2.2
+  - R3.1
+  - R3.2
+  - R3.3
+  - R3.4
+  - R4.1
+  - R4.2
+  - R4.3
+  - R4.4
+  - R4.5
+  - R4.6
+- id: AC2
+  criterion: "All planned issue-tracking commands documented (ready, create, show, update, close, comments add)"
+  traces:
+  - R5.1
+  - R5.2
+  - R5.3
+  - R5.4
+  - R5.5
+  - R5.6
+  - R5.7
+- id: AC3
+  criterion: "Generic table commands specify table argument, ID argument, and output format"
+  traces:
+  - R3.1
+  - R3.2
+  - R3.3
+  - R3.4
+- id: AC4
+  criterion: "Crumb commands specify entity-specific flags (--name, --state, --limit)"
+  traces:
+  - R4.1
+  - R4.2
+  - R4.3
+  - R4.4
+  - R4.5
+  - R4.6
+- id: AC5
+  criterion: "Issue-tracking commands specify flags for beads migration parity (--type, --title, --description, --status)"
+  traces:
+  - R5.1
+  - R5.2
+  - R5.3
+  - R5.4
+  - R5.5
+  - R5.6
+  - R5.7
+- id: AC6
+  criterion: "Global flags documented (--config-dir, --data-dir, --help, --version)"
+  traces:
+  - R6.1
+  - R6.2
+  - R6.3
+  - R6.4
+  - R6.5
+- id: AC7
+  criterion: "Output format specified for each command (human-readable and JSON)"
+  traces:
+  - R7.1
+  - R7.2
+  - R7.3
+  - R7.4
+  - R7.5
+  - R7.6
+  - R7.7
+- id: AC8
+  criterion: "Exit codes defined (0 success, 1 user error, 2 system error)"
+  traces:
+  - R8.1
+  - R8.2
+  - R8.3
+  - R8.4
+- id: AC9
+  criterion: Error message format defined with examples
+  traces:
+  - R9.1
+  - R9.2
+  - R9.3
+  - R9.4
+- id: AC10
+  criterion: "Init command behavior documented (directory creation, property seeding, idempotence)"
+  traces:
+  - R10.1
+  - R10.2
+  - R10.3
+  - R10.4
+  - R10.5
+  - R10.6
