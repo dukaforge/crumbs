@@ -1,4 +1,4 @@
-id: "prd010-configuration-directories"
+id: "srd010-configuration-directories"
 title: Configuration Directory Structure
 problem: |
   The Cupboard CLI needs two distinct directory locations: one for application settings (backend selection, defaults) and one for backend data (crumbs, trails, links). These serve different purposes and have different lifecycles. Configuration is set once and rarely changes; data changes constantly. Separating them clarifies what to version-control versus what to treat as runtime state, and simplifies backup strategies.
@@ -110,7 +110,7 @@ requirements:
     title: Write Operations
     items:
     - R6.1:
-        text: "Write operations persist to JSONL according to the sync strategy defined in prd002-sqlite-backend R16 (immediate,\
+        text: "Write operations persist to JSONL according to the sync strategy defined in srd002-sqlite-backend R16 (immediate,\
           \ on_close, or batch)"
         weight: 3
     - R6.2:
@@ -164,11 +164,11 @@ requirements:
           a Config struct to pass to Attach
         weight: 1
 non_goals:
-- This PRD does not define configuration file encryption or secrets management.
-- "This PRD does not define multi-workspace support (multiple data directories). One CLI instance operates on one data directory\
+- This SRD does not define configuration file encryption or secrets management.
+- "This SRD does not define multi-workspace support (multiple data directories). One CLI instance operates on one data directory\
   \ at a time."
-- "This PRD does not define network-based configuration (e.g., fetching config from a server)."
-- This PRD does not define Windows support.
+- "This SRD does not define network-based configuration (e.g., fetching config from a server)."
+- This SRD does not define Windows support.
 acceptance_criteria:
 - id: AC1
   criterion: CLI configuration directory default and override mechanism defined

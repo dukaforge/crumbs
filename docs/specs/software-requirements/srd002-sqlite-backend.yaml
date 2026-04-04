@@ -1,11 +1,11 @@
-id: "prd002-sqlite-backend"
+id: "srd002-sqlite-backend"
 title: SQLite Backend
 problem: |
-  The SQLite backend needs a detailed specification for how JSONL files and SQLite interact. prd001-cupboard-core establishes that JSONL is the source of truth and SQLite serves as a query engine, but it does not specify the JSONL file format, SQLite schema, sync lifecycle, or error handling. Without this detail, implementation will make ad-hoc decisions that may not align with project goals.
+  The SQLite backend needs a detailed specification for how JSONL files and SQLite interact. srd001-cupboard-core establishes that JSONL is the source of truth and SQLite serves as a query engine, but it does not specify the JSONL file format, SQLite schema, sync lifecycle, or error handling. Without this detail, implementation will make ad-hoc decisions that may not align with project goals.
 
-  The backend must also implement the uniform Table interface defined in prd001-cupboard-core. Applications access data through `cupboard.GetTable("crumbs").Get(id)`, not through entity-specific methods. The backend must hydrate table rows into entity objects and persist entity objects back to rows. This ORM-style pattern keeps the interface consistent while allowing each entity type to have its own struct.
+  The backend must also implement the uniform Table interface defined in srd001-cupboard-core. Applications access data through `cupboard.GetTable("crumbs").Get(id)`, not through entity-specific methods. The backend must hydrate table rows into entity objects and persist entity objects back to rows. This ORM-style pattern keeps the interface consistent while allowing each entity type to have its own struct.
 
-  This PRD specifies the SQLite backend internals: JSONL file layout, SQLite schema, startup loading, write persistence, shutdown flushing, error recovery, concurrency model, and the ORM layer that maps between Table operations and entity types.
+  This SRD specifies the SQLite backend internals: JSONL file layout, SQLite schema, startup loading, write persistence, shutdown flushing, error recovery, concurrency model, and the ORM layer that maps between Table operations and entity types.
 
   We store data as a directed acyclic graph (DAG). Crumbs and trails are nodes; relationships are edges stored in link tables. This separates how we store data from how we access it, enabling efficient queries for both.
 
@@ -261,7 +261,7 @@ requirements:
     title: Cupboard Interface Implementation
     items:
     - R11.1:
-        text: "The SQLite backend implements the Cupboard interface defined in prd001-cupboard-core"
+        text: "The SQLite backend implements the Cupboard interface defined in srd001-cupboard-core"
         weight: 1
     - R11.3:
         text: Attach must store the Config and mark the cupboard as attached. Subsequent Attach calls return ErrAlreadyAttached
@@ -433,9 +433,9 @@ package_contract:
   - "internal/persistence/engine must not import pkg/schema (entity-agnostic)"
   - internal/persistence/mapping must not import internal/persistence/engine
 non_goals:
-- "This PRD does not define the Cupboard interface operations. Those are in prd001-cupboard-core and the interface PRDs"
-- "This PRD does not define cross-process locking. Single-process access is assumed"
-- This PRD does not define backup or migration utilities
+- "This SRD does not define the Cupboard interface operations. Those are in srd001-cupboard-core and the interface SRDs"
+- "This SRD does not define cross-process locking. Single-process access is assumed"
+- This SRD does not define backup or migration utilities
 acceptance_criteria:
 - id: AC1
   criterion: Directory layout specified with DataDir structure and file creation behavior

@@ -18,7 +18,7 @@ flow:
   - F4: Commit the JSONL files to git
   - F5: Verify SQLite database exists (pre-deletion baseline)
   - F6: "Delete SQLite database to simulate fresh clone or branch switch"
-  - F7: "Re-attach by running a cupboard command (triggers startup sequence from prd002 R4 to rebuild from JSONL)"
+  - F7: "Re-attach by running a cupboard command (triggers startup sequence from srd002 R4 to rebuild from JSONL)"
   - F8: "Verify all crumbs are intact (requires rebuilt database from F7)"
   - F9: "Verify queries work correctly (requires rebuilt database from F7)"
   - F10: "Modify data and verify JSONL is updated"
@@ -28,37 +28,37 @@ flow:
   - F14: "Test batch sync strategy (separate from default path): verify flush at BatchSize threshold"
   - F15: "Test immediate sync strategy (default, validated by F1-F12): verify every write persists"
 touchpoints:
-  - T1: "SQLite backend startup sequence: delete db, create schema, load JSONL (prd002-sqlite-backend R4)"
-  - T2: "SQLite backend JSONL as source of truth: cupboard.db is ephemeral (prd002-sqlite-backend R1.2)"
-  - T3: SQLite backend atomic write pattern for JSONL (prd002-sqlite-backend R5.2)
-  - T4: SQLite backend immediate sync strategy (prd002-sqlite-backend R16.2)
-  - T5: SQLite backend entity hydration from SQLite rows (prd002-sqlite-backend R14)
-  - T6: "Cupboard interface: Attach initializes backend (prd001-cupboard-core R4)"
+  - T1: "SQLite backend startup sequence: delete db, create schema, load JSONL (srd002-sqlite-backend R4)"
+  - T2: "SQLite backend JSONL as source of truth: cupboard.db is ephemeral (srd002-sqlite-backend R1.2)"
+  - T3: SQLite backend atomic write pattern for JSONL (srd002-sqlite-backend R5.2)
+  - T4: SQLite backend immediate sync strategy (srd002-sqlite-backend R16.2)
+  - T5: SQLite backend entity hydration from SQLite rows (srd002-sqlite-backend R14)
+  - T6: "Cupboard interface: Attach initializes backend (srd001-cupboard-core R4)"
   - T7: "Git integration: JSONL files committed, cupboard.db gitignored (eng01-git-integration)"
   - T8: "Git integration: Commit JSONL alongside code changes (eng01-git-integration)"
-  - T9: "SQLite backend on_close sync strategy: defer writes until Detach (prd002-sqlite-backend R16.3)"
-  - T10: "SQLite backend batch sync strategy: flush at BatchSize or BatchInterval (prd002-sqlite-backend R16.4-R16.6)"
-  - T11: "SQLite backend sync strategy dispatch: backend reads SyncStrategy from config (prd002-sqlite-backend R16.1)"
+  - T9: "SQLite backend on_close sync strategy: defer writes until Detach (srd002-sqlite-backend R16.3)"
+  - T10: "SQLite backend batch sync strategy: flush at BatchSize or BatchInterval (srd002-sqlite-backend R16.4-R16.6)"
+  - T11: "SQLite backend sync strategy dispatch: backend reads SyncStrategy from config (srd002-sqlite-backend R16.1)"
 success_criteria:
   - id: S1
     criterion: Full git roundtrip completes; crumbs created via CLI persist to JSONL, JSONL committed to git, cupboard.db deleted, and all data is intact after re-attach — confirming JSONL is the source of truth and the startup sequence rebuilds state correctly
     traces:
-      - prd002-sqlite-backend AC1
-      - prd002-sqlite-backend AC3
-      - prd010-configuration-directories AC5
+      - srd002-sqlite-backend AC1
+      - srd002-sqlite-backend AC3
+      - srd010-configuration-directories AC5
   - id: S2
     criterion: Data survives multiple delete-rebuild cycles; state changes made between roundtrips persist through repeated database deletions, confirming the roundtrip is repeatable
     traces:
-      - prd002-sqlite-backend AC3
-      - prd002-sqlite-backend AC4
+      - srd002-sqlite-backend AC3
+      - srd002-sqlite-backend AC4
   - id: S3
     criterion: All three sync strategies (immediate, on_close, batch) produce correct JSONL for git commit; immediate persists every write, on_close defers until Detach, and batch flushes at the BatchSize threshold
     traces:
-      - prd002-sqlite-backend AC16
+      - srd002-sqlite-backend AC16
 out_of_scope:
   - Merge conflict resolution when JSONL files diverge between branches (eng01-git-integration describes this but not validated here)
   - Trail-scoped worktrees (eng01-git-integration Trails as Worktrees)
-  - Corrupt JSONL recovery (prd002-sqlite-backend R7 describes error handling but this use case assumes valid files)
-  - Cross-process access (prd002-sqlite-backend R8.5 explicitly does not support this)
+  - Corrupt JSONL recovery (srd002-sqlite-backend R7 describes error handling but this use case assumes valid files)
+  - Cross-process access (srd002-sqlite-backend R8.5 explicitly does not support this)
   - Batch interval timer edge cases (rapid attach/detach cycles, timer races)
 test_suite: test-rel01.1

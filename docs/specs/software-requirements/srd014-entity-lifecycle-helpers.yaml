@@ -1,4 +1,4 @@
-id: "prd014-entity-lifecycle-helpers"
+id: "srd014-entity-lifecycle-helpers"
 title: Entity Lifecycle Helpers
 problem: |
   Every table accessor in the SQLite backend repeats the same entity creation scaffolding:
@@ -87,11 +87,11 @@ requirements:
           \ metadata, and links within the same transaction)"
         weight: 5
 non_goals:
-- "This PRD does not define JSONL persistence after commit. Table accessors handle JSONL writes after the transaction completes,\
+- "This SRD does not define JSONL persistence after commit. Table accessors handle JSONL writes after the transaction completes,\
   \ since JSONL file selection varies by entity type"
-- "This PRD does not define cascade logic. Cascade operations (trail complete/abandon) remain in the table accessor's callback\
+- "This SRD does not define cascade logic. Cascade operations (trail complete/abandon) remain in the table accessor's callback\
   \ functions"
-- "This PRD does not define entity-specific validation. Name validation, state transition checks, and type assertions remain\
+- "This SRD does not define entity-specific validation. Name validation, state transition checks, and type assertions remain\
   \ in each table accessor"
 acceptance_criteria:
 - id: AC1

@@ -29,33 +29,33 @@ flow:
   - F18: "Verify uniqueness (requires existing link from F3): attempt duplicate link creation with same link_type+from_id+to_id"
   - F19: "Detach the cupboard: call cupboard.Detach()"
 touchpoints:
-  - T1: "Cupboard interface: Attach, Detach, GetTable (prd001-cupboard-core R2)"
-  - T2: "Table (links): Get, Set, Delete, Fetch (prd007-links-interface R3, R4)"
-  - T3: "Table (crumbs): Set for creating prerequisite crumbs (prd001-cupboard-core R3)"
-  - T4: "Table (trails): Set for creating prerequisite trails (prd001-cupboard-core R3)"
-  - T5: "Table (stashes): Set for creating prerequisite stashes (prd001-cupboard-core R3)"
-  - T6: "Link entity: LinkID, LinkType, FromID, ToID, CreatedAt fields (prd002-sqlite-backend R14.6)"
-  - T7: "belongs_to link type: crumb→trail membership (prd006-trails-interface R7)"
-  - T8: "child_of link type: crumb→crumb hierarchy (prd007-links-interface R2.1)"
-  - T9: "branches_from link type: trail→crumb branch point (prd006-trails-interface R9)"
-  - T10: "scoped_to link type: stash→trail scope (prd008-stash-interface R13)"
-  - T11: "Link table indexes: idx_links_type_from, idx_links_type_to (prd002-sqlite-backend R3.3)"
+  - T1: "Cupboard interface: Attach, Detach, GetTable (srd001-cupboard-core R2)"
+  - T2: "Table (links): Get, Set, Delete, Fetch (srd007-links-interface R3, R4)"
+  - T3: "Table (crumbs): Set for creating prerequisite crumbs (srd001-cupboard-core R3)"
+  - T4: "Table (trails): Set for creating prerequisite trails (srd001-cupboard-core R3)"
+  - T5: "Table (stashes): Set for creating prerequisite stashes (srd001-cupboard-core R3)"
+  - T6: "Link entity: LinkID, LinkType, FromID, ToID, CreatedAt fields (srd002-sqlite-backend R14.6)"
+  - T7: "belongs_to link type: crumb→trail membership (srd006-trails-interface R7)"
+  - T8: "child_of link type: crumb→crumb hierarchy (srd007-links-interface R2.1)"
+  - T9: "branches_from link type: trail→crumb branch point (srd006-trails-interface R9)"
+  - T10: "scoped_to link type: stash→trail scope (srd008-stash-interface R13)"
+  - T11: "Link table indexes: idx_links_type_from, idx_links_type_to (srd002-sqlite-backend R3.3)"
 success_criteria:
   - id: S1
     criterion: All four link types (belongs_to, child_of, branches_from, scoped_to) create and retrieve correctly through the uniform Table interface, confirming that the links table handles all cross-entity relationship semantics
     traces:
-      - prd007-links-interface AC2
-      - prd007-links-interface AC4
+      - srd007-links-interface AC2
+      - srd007-links-interface AC4
   - id: S2
     criterion: Filter-based queries return correct subsets; link_type, from_id, and to_id filters narrow results independently, and combined filters AND correctly — confirming the filter map works across all link types
     traces:
-      - prd007-links-interface AC5
-      - prd007-links-interface AC6
+      - srd007-links-interface AC5
+      - srd007-links-interface AC6
   - id: S3
     criterion: Delete removes link permanently with subsequent Get returning ErrNotFound, and delete of nonexistent link also returns ErrNotFound — confirming link lifecycle consistency
     traces:
-      - prd007-links-interface AC4
-      - prd007-links-interface AC9
+      - srd007-links-interface AC4
+      - srd007-links-interface AC9
 out_of_scope:
   - Trail cascade behavior on Complete/Abandon (see rel03.0-uc001)
   - Graph traversal or cycle detection (R10 ValidateDAG)

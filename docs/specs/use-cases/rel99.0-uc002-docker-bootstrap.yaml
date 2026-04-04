@@ -10,8 +10,8 @@ flow:
   - F1: "Build Docker image: create an image with Go toolchain and Claude Code installed, no crumbs source code"
   - F2: "Start container (requires image from F1): mount only the docs/ directory from the host"
   - F3: "Verify environment (requires running container from F2): confirm Go and Claude are available, confirm no existing source code"
-  - F4: "Read documentation (requires docs mount from F2): read VISION.md, ARCHITECTURE.md, road-map.yaml, PRDs, and use cases from the mounted docs directory"
-  - F5: "Plan work items (requires understanding from F4): create a work plan for release 01.0 based on road-map.yaml covering core interfaces from prd001-cupboard-core and SQLite backend from prd002-sqlite-backend"
+  - F4: "Read documentation (requires docs mount from F2): read VISION.md, ARCHITECTURE.md, road-map.yaml, SRDs, and use cases from the mounted docs directory"
+  - F5: "Plan work items (requires understanding from F4): create a work plan for release 01.0 based on road-map.yaml covering core interfaces from srd001-cupboard-core and SQLite backend from srd002-sqlite-backend"
   - F6: "Implement release 01.0 (requires plan from F5): implement pkg/types (Cupboard, Table, Crumb, Config), internal/sqlite (backend, JSONL, directory layout), cmd/crumbs (CLI with config loading)"
   - F7: "Validate use cases (requires implementation from F6): verify success criteria for rel01.0-uc001 (Cupboard lifecycle), rel01.0-uc002 (SQLite CRUD), rel01.0-uc003 (Core CRUD)"
   - F8: "Build and test (requires implementation from F6): compile crumbs and run tests with go build and go test"
@@ -25,25 +25,25 @@ flow:
 touchpoints:
   - T1: "Docker: isolated build environment"
   - T2: "docs/ directory: source of truth for implementation"
-  - T3: "crumbs CLI: work tracking and self-hosting (prd010-configuration-directories R7)"
-  - T4: "Cupboard interface: core storage abstraction with Attach/Detach lifecycle (prd001-cupboard-core R2, R4, R5)"
-  - T5: "Table interface: uniform CRUD operations Get, Set, Delete, Fetch (prd001-cupboard-core R3)"
-  - T6: "Config struct: backend selection and data directory (prd001-cupboard-core R1, prd010-configuration-directories R8)"
-  - T7: "SQLite backend: storage implementation with JSONL source of truth (prd002-sqlite-backend R1-R16)"
-  - T8: "Crumb entity: work item with state lifecycle and properties (prd003-crumbs-interface R1-R11)"
-  - T9: "JSONL files: line-delimited JSON for data persistence (prd010-configuration-directories R3-R4)"
+  - T3: "crumbs CLI: work tracking and self-hosting (srd010-configuration-directories R7)"
+  - T4: "Cupboard interface: core storage abstraction with Attach/Detach lifecycle (srd001-cupboard-core R2, R4, R5)"
+  - T5: "Table interface: uniform CRUD operations Get, Set, Delete, Fetch (srd001-cupboard-core R3)"
+  - T6: "Config struct: backend selection and data directory (srd001-cupboard-core R1, srd010-configuration-directories R8)"
+  - T7: "SQLite backend: storage implementation with JSONL source of truth (srd002-sqlite-backend R1-R16)"
+  - T8: "Crumb entity: work item with state lifecycle and properties (srd003-crumbs-interface R1-R11)"
+  - T9: "JSONL files: line-delimited JSON for data persistence (srd010-configuration-directories R3-R4)"
 success_criteria:
   - id: S1
     criterion: Agent builds a working cupboard from documentation alone inside a fresh container; Attach/Detach lifecycle, Table CRUD, Crumb state transitions, and JSONL persistence all function without pre-existing source code — confirming documentation sufficiency for regeneration
     traces:
-      - prd001-cupboard-core AC1
-      - prd002-sqlite-backend AC1
-      - prd003-crumbs-interface AC1
+      - srd001-cupboard-core AC1
+      - srd002-sqlite-backend AC1
+      - srd003-crumbs-interface AC1
   - id: S2
     criterion: The built cupboard tracks its own remaining work; agent creates crumbs for releases 02.0+ and manages them through state lifecycle using the CLI — confirming self-hosting capability from a documentation-only bootstrap
     traces:
-      - prd009-cupboard-cli AC1
-      - prd010-configuration-directories AC4
+      - srd009-cupboard-cli AC1
+      - srd010-configuration-directories AC4
 out_of_scope:
   - Multi-agent coordination (single agent bootstrap)
   - Continuous integration setup

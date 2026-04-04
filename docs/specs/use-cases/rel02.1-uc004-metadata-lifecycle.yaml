@@ -31,29 +31,29 @@ flow:
   - F13: "Verify cascade delete (requires deletion from F12): call table.Fetch with crumb_id filter for the deleted crumb; the result is empty, confirming all metadata was removed"
   - F14: "Detach: call cupboard.Detach() to release resources"
 touchpoints:
-  - T1: "Cupboard interface: Attach, GetTable, Detach (prd001-cupboard-core R2)"
-  - T2: "Table interface: Get, Set, Delete, Fetch (prd001-cupboard-core R3)"
-  - T3: "Metadata struct: MetadataID, CrumbID, TableName, Content, PropertyID, CreatedAt (prd005-metadata-interface R1)"
-  - T4: "Built-in schemas: comments (text), attachments (json) (prd005-metadata-interface R3)"
-  - T5: "Metadata creation via Table.Set: UUID v7 generation, timestamp (prd005-metadata-interface R4)"
-  - T6: "Metadata retrieval via Table.Get: type assertion to *Metadata (prd005-metadata-interface R5)"
-  - T7: "Filter map: schema, crumb_id filters (prd005-metadata-interface R7)"
-  - T8: "Cascade delete: metadata removed when crumb deleted (prd005-metadata-interface R6.5)"
-  - T9: "Error types: ErrNotFound, ErrInvalidID (prd005-metadata-interface R10)"
+  - T1: "Cupboard interface: Attach, GetTable, Detach (srd001-cupboard-core R2)"
+  - T2: "Table interface: Get, Set, Delete, Fetch (srd001-cupboard-core R3)"
+  - T3: "Metadata struct: MetadataID, CrumbID, TableName, Content, PropertyID, CreatedAt (srd005-metadata-interface R1)"
+  - T4: "Built-in schemas: comments (text), attachments (json) (srd005-metadata-interface R3)"
+  - T5: "Metadata creation via Table.Set: UUID v7 generation, timestamp (srd005-metadata-interface R4)"
+  - T6: "Metadata retrieval via Table.Get: type assertion to *Metadata (srd005-metadata-interface R5)"
+  - T7: "Filter map: schema, crumb_id filters (srd005-metadata-interface R7)"
+  - T8: "Cascade delete: metadata removed when crumb deleted (srd005-metadata-interface R6.5)"
+  - T9: "Error types: ErrNotFound, ErrInvalidID (srd005-metadata-interface R10)"
 success_criteria:
   - id: S1
     criterion: Additive metadata accumulation and filter composition work end-to-end; multiple comments and attachments accumulate on a crumb, schema and crumb_id filters return correct subsets, and combined filters AND correctly — confirming the append-only pattern and query system integrate across the metadata table
     traces:
-      - prd005-metadata-interface AC5
-      - prd005-metadata-interface AC7
-      - prd005-metadata-interface AC9
+      - srd005-metadata-interface AC5
+      - srd005-metadata-interface AC7
+      - srd005-metadata-interface AC9
   - id: S2
     criterion: Cascade delete maintains referential integrity; deleting a crumb removes all its metadata entries, and subsequent Fetch with crumb_id filter returns empty — confirming cross-table lifecycle coupling between crumbs and metadata
     traces:
-      - prd005-metadata-interface AC7
-      - prd003-crumbs-interface AC10
+      - srd005-metadata-interface AC7
+      - srd003-crumbs-interface AC10
 out_of_scope:
-  - Schema registration for custom metadata types (see prd005-metadata-interface R9)
+  - Schema registration for custom metadata types (see srd005-metadata-interface R9)
   - PropertyID linking for property-specific metadata
   - Content validation (content_contains filter, JSON validation)
   - Limit and offset pagination

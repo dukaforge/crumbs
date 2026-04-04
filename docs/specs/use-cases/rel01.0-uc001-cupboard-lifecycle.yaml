@@ -4,7 +4,7 @@ summary: |
   An application initializes a Cupboard with a typed Config struct, attaches
   to a SQLite backend, accesses tables for data operations, and detaches to
   release resources. This tracer bullet validates the configuration workflow
-  and cupboard lifecycle management defined in prd001-cupboard-core.
+  and cupboard lifecycle management defined in srd001-cupboard-core.
 actor: Developer integrating the Crumbs library into their application
 trigger: Application startup requiring backend connection and data operations
 flow:
@@ -19,30 +19,30 @@ flow:
   - F9: "Detach from backend (after F8 completes): when the application shuts down call Detach(); blocks until in-flight operations complete then closes database connections"
   - F10: "Verify detach (after F9): after Detach any Cupboard operation returns ErrCupboardDetached; the application must create a new Cupboard instance to reconnect"
 touchpoints:
-  - T1: "Config struct: construction with Backend and DataDir fields (prd001-cupboard-core R1)"
-  - T2: "Cupboard interface: Attach, Detach, GetTable (prd001-cupboard-core R2)"
-  - T3: "Table interface: Fetch for connection verification (prd001-cupboard-core R2)"
-  - T4: "Attach idempotency and validation (prd001-cupboard-core R4)"
-  - T5: "Detach resource release and idempotency (prd001-cupboard-core R5)"
-  - T6: "Error handling after detach (prd001-cupboard-core R6)"
-  - T7: "Standard error types: ErrAlreadyAttached, ErrCupboardDetached, ErrTableNotFound (prd001-cupboard-core R7)"
+  - T1: "Config struct: construction with Backend and DataDir fields (srd001-cupboard-core R1)"
+  - T2: "Cupboard interface: Attach, Detach, GetTable (srd001-cupboard-core R2)"
+  - T3: "Table interface: Fetch for connection verification (srd001-cupboard-core R2)"
+  - T4: "Attach idempotency and validation (srd001-cupboard-core R4)"
+  - T5: "Detach resource release and idempotency (srd001-cupboard-core R5)"
+  - T6: "Error handling after detach (srd001-cupboard-core R6)"
+  - T7: "Standard error types: ErrAlreadyAttached, ErrCupboardDetached, ErrTableNotFound (srd001-cupboard-core R7)"
 success_criteria:
   - id: S1
     criterion: Full attach-operate-detach lifecycle completes without error; Config with Backend=sqlite produces a working Cupboard, GetTable returns a Table, a Fetch operation on that Table succeeds, and Detach releases resources
     traces:
-      - prd001-cupboard-core AC1
-      - prd001-cupboard-core AC5
-      - prd001-cupboard-core AC6
+      - srd001-cupboard-core AC1
+      - srd001-cupboard-core AC5
+      - srd001-cupboard-core AC6
   - id: S2
     criterion: After Detach, all Cupboard and Table operations return ErrCupboardDetached; the sentinel is checkable with errors.Is
     traces:
-      - prd001-cupboard-core AC6
-      - prd001-cupboard-core AC7
+      - srd001-cupboard-core AC6
+      - srd001-cupboard-core AC7
   - id: S3
     criterion: Error boundaries enforce lifecycle state; Attach on an already-attached cupboard returns ErrAlreadyAttached, and GetTable for an unknown table name returns ErrTableNotFound
     traces:
-      - prd001-cupboard-core AC5
-      - prd001-cupboard-core AC7
+      - srd001-cupboard-core AC5
+      - srd001-cupboard-core AC7
 out_of_scope:
   - Connection pooling or retry policies
   - File-based configuration loading (JSON/YAML parsing)

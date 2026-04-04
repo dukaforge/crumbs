@@ -1,22 +1,22 @@
-id: eng07-prd-release-scoping
-title: PRD-to-Release Scoping
+id: eng07-srd-release-scoping
+title: SRD-to-Release Scoping
 introduction: |
-  Crumbs PRDs span multiple releases because the architecture is layered: the same
+  Crumbs SRDs span multiple releases because the architecture is layered: the same
   interfaces (Cupboard, Table, entity structs) grow incrementally across releases. This
-  differs from projects like go-unix-utils where each PRD maps to exactly one utility and
+  differs from projects like go-unix-utils where each SRD maps to exactly one utility and
   one release. This guideline documents why the layered pattern exists, its impact on AI
   agent effectiveness, and conventions for managing it.
 sections:
-- title: Structural Difference from Per-Release PRDs
+- title: Structural Difference from Per-Release SRDs
   content: |
-    In go-unix-utils, each PRD describes one Unix utility. A utility is self-contained:
-    its requirements, tests, and implementation belong to a single release. The PRD-to-release
+    In go-unix-utils, each SRD describes one Unix utility. A utility is self-contained:
+    its requirements, tests, and implementation belong to a single release. The SRD-to-release
     mapping is 1:1.
 
     Crumbs has a layered architecture where a small number of interfaces serve all releases.
-    prd001-cupboard-core defines Attach, GetTable, and Detach -- used by every release from
-    rel01.0 onward. prd002-sqlite-backend defines schema creation, JSONL sync, and hydration
-    -- consumed by every use case that touches persistence. A single PRD like prd002 contains
+    srd001-cupboard-core defines Attach, GetTable, and Detach -- used by every release from
+    rel01.0 onward. srd002-sqlite-backend defines schema creation, JSONL sync, and hydration
+    -- consumed by every use case that touches persistence. A single SRD like srd002 contains
     requirements exercised by rel01.0 (basic schema), rel02.0 (property tables), rel03.0
     (trail and link tables), and rel04.0 (branch-independent JSONL).
 
@@ -25,36 +25,36 @@ sections:
 
 - title: Impact on AI Agent Effectiveness
   content: |
-    The multi-release PRD pattern affects the measure agent in two ways.
+    The multi-release SRD pattern affects the measure agent in two ways.
 
-    First, when measure reads a PRD to propose tasks for a release, it sees requirements
+    First, when measure reads a SRD to propose tasks for a release, it sees requirements
     from all releases. Without guidance, it may propose tasks for requirements that belong
     to a later release. The mitigation is touchpoint specificity: each use case cites the
-    exact PRD requirement IDs it exercises. The measure agent should scope work to the
-    requirements cited by the current release's use cases, not the full PRD.
+    exact SRD requirement IDs it exercises. The measure agent should scope work to the
+    requirements cited by the current release's use cases, not the full SRD.
 
-    Second, the analyze warning "PRDs spanning multiple releases" creates noise. Every run
-    reports 9 PRDs spanning releases. This is expected and should not trigger corrective
+    Second, the analyze warning "SRDs spanning multiple releases" creates noise. Every run
+    reports 9 SRDs spanning releases. This is expected and should not trigger corrective
     action. The warning exists to catch accidental cross-release coupling in projects with
-    per-release PRDs; in crumbs, it is informational.
+    per-release SRDs; in crumbs, it is informational.
 
-- title: Convention for Future PRDs
+- title: Convention for Future SRDs
   content: |
-    The layered pattern is accepted for crumbs. New PRDs should follow these conventions:
+    The layered pattern is accepted for crumbs. New SRDs should follow these conventions:
 
-    1. A PRD may span releases when it describes a shared interface or backend that grows
+    1. A SRD may span releases when it describes a shared interface or backend that grows
        incrementally. Examples: Cupboard interface, SQLite backend, Table interface.
 
-    2. A PRD should be scoped to one release when it describes a self-contained feature
-       with no cross-release growth. Example: prd012-branch-independent-data is only
+    2. A SRD should be scoped to one release when it describes a self-contained feature
+       with no cross-release growth. Example: srd012-branch-independent-data is only
        referenced by rel04.0.
 
-    3. Requirements within a multi-release PRD must use the R-number format (R1.1, R14.2)
+    3. Requirements within a multi-release SRD must use the R-number format (R1.1, R14.2)
        so that use case touchpoints can cite specific requirements per release.
 
     4. Use case touchpoints are the primary scoping mechanism. Each touchpoint must cite
-       both the PRD ID and the specific requirement numbers. Vague references like
-       "(prd002-sqlite-backend)" without requirement numbers are not acceptable.
+       both the SRD ID and the specific requirement numbers. Vague references like
+       "(srd002-sqlite-backend)" without requirement numbers are not acceptable.
 
 - title: Mitigation for Requirement Ownership
   content: |
@@ -63,7 +63,7 @@ sections:
     by tracing use case touchpoints:
 
     1. For each release, collect all touchpoints from its use cases.
-    2. The union of cited PRD requirement IDs defines the requirements owned by that release.
+    2. The union of cited SRD requirement IDs defines the requirements owned by that release.
     3. Requirements not cited by any use case touchpoint are unowned and should be reviewed
        for relevance.
 

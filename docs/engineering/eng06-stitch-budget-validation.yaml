@@ -2,12 +2,12 @@ id: eng06-stitch-budget-validation
 title: Stitch Budget Validation
 introduction: |
   This guideline documents the stitch budget analysis for GH-15 (Recurring: Generate crumbs
-  code from specifications). Before running a full generation, we validate that every PRD
+  code from specifications). Before running a full generation, we validate that every SRD
   requirement group can be decomposed into tasks within stitch's sizing budget: 300-700 LOC
   of production code per task, at most 5 files per task, and at most one new subsystem
   boundary per task.
 
-  We analyzed all releases from rel01.0 through rel03.1, covering twelve PRDs. The analysis
+  We analyzed all releases from rel01.0 through rel03.1, covering twelve SRDs. The analysis
   produced per-release sizing tables with risk assessments for each proposed task. The overall
   conclusion is PROCEED WITH CAUTION: six releases are within budget, but four HIGH-risk tasks
   require pre-generation mitigations documented below.
@@ -23,12 +23,12 @@ introduction: |
   | Entity method requires Cupboard reference | — | MEDIUM |
 
   The analysis also identified a package naming discrepancy between eng05-testing-strategy
-  (which uses pkg/schema and internal/persistence) and the PRDs (which reference pkg/crumbs,
+  (which uses pkg/schema and internal/persistence) and the SRDs (which reference pkg/crumbs,
   pkg/properties, pkg/trails, etc.). This was resolved by GH-18 (corrected pkg/types references
-  in prd007 and prd008; expanded ARCHITECTURE.yaml project_structure with per-package PRD
+  in srd007 and srd008; expanded ARCHITECTURE.yaml project_structure with per-package SRD
   mappings). The four HIGH-risk task mitigations were applied via GH-19 (design decisions
-  R0.1, R0.2, R0.3 added to prd002; R0.1, R0.2 added to prd003;
-  R0.1 added to prd004; along with ordering requirements). GH-15 may proceed.
+  R0.1, R0.2, R0.3 added to srd002; R0.1, R0.2 added to srd003;
+  R0.1 added to srd004; along with ordering requirements). GH-15 may proceed.
 sections:
 - title: Totals by Release
   content: |
@@ -55,26 +55,26 @@ sections:
 
     Table 2 rel01.0 proposed tasks
 
-    | Task | PRDs covered | LOC prod | LOC test | Risk |
+    | Task | SRDs covered | LOC prod | LOC test | Risk |
     |------|-------------|----------|----------|------|
-    | Define Cupboard and Table interfaces | prd001 R1-R3, R7-R8 | 180 | — | LOW |
-    | Define SQLite schema and JSONL constants | prd002 R1-R3 | 260 | — | LOW |
-    | Attach, Detach, startup, shutdown sequence | prd002 R4, R6-R8, R11 | 420 | — | HIGH |
-    | Atomic JSONL write and sync strategy dispatch | prd002 R5.3-R5.4, R16, prd010 R6 | 310 | — | MEDIUM |
-    | GetTable routing and base table accessor | prd002 R12-R13 | 200 | — | LOW |
-    | Entity hydration and dehydration (ORM layer) | prd002 R14-R15 | 480 | — | HIGH |
-    | Built-in property seeding and graph audit | prd002 R9-R10 | 260 | — | LOW |
-    | Define Crumb struct, state values, creation defaults | prd003 R1-R3 | 190 | — | LOW |
-    | Crumb state transitions, property methods, and table accessor | prd003 R4-R11 | 360 | — | HIGH |
-    | Define Metadata struct and Schema struct | prd005 R1-R2, R10 | 140 | — | LOW |
-    | Metadata table accessor, built-in schemas, schema registration | prd005 R3-R9 | 300 | — | MEDIUM |
-    | Test: Cupboard lifecycle and JSONL roundtrip | prd001 R4-R6, prd002 R4, R6, R16 | — | 380 | LOW |
-    | Test: Crumb lifecycle and benchmarks | prd003 R1, R3-R5, R9-R10 | — | 450 | LOW |
-    | Test: Metadata interface and schema registration | prd005 R4, R6, R9 | — | 250 | LOW |
+    | Define Cupboard and Table interfaces | srd001 R1-R3, R7-R8 | 180 | — | LOW |
+    | Define SQLite schema and JSONL constants | srd002 R1-R3 | 260 | — | LOW |
+    | Attach, Detach, startup, shutdown sequence | srd002 R4, R6-R8, R11 | 420 | — | HIGH |
+    | Atomic JSONL write and sync strategy dispatch | srd002 R5.3-R5.4, R16, srd010 R6 | 310 | — | MEDIUM |
+    | GetTable routing and base table accessor | srd002 R12-R13 | 200 | — | LOW |
+    | Entity hydration and dehydration (ORM layer) | srd002 R14-R15 | 480 | — | HIGH |
+    | Built-in property seeding and graph audit | srd002 R9-R10 | 260 | — | LOW |
+    | Define Crumb struct, state values, creation defaults | srd003 R1-R3 | 190 | — | LOW |
+    | Crumb state transitions, property methods, and table accessor | srd003 R4-R11 | 360 | — | HIGH |
+    | Define Metadata struct and Schema struct | srd005 R1-R2, R10 | 140 | — | LOW |
+    | Metadata table accessor, built-in schemas, schema registration | srd005 R3-R9 | 300 | — | MEDIUM |
+    | Test: Cupboard lifecycle and JSONL roundtrip | srd001 R4-R6, srd002 R4, R6, R16 | — | 380 | LOW |
+    | Test: Crumb lifecycle and benchmarks | srd003 R1, R3-R5, R9-R10 | — | 450 | LOW |
+    | Test: Metadata interface and schema registration | srd005 R4, R6, R9 | — | 250 | LOW |
 
     The three HIGH-risk tasks:
 
-    Entity hydration and dehydration (prd002 R14-R15) covers seven entity types (Crumb,
+    Entity hydration and dehydration (srd002 R14-R15) covers seven entity types (Crumb,
     Trail, Property, Metadata, Link, Stash, StashHistory). Each type requires both hydration
     (SQL row to struct) and dehydration (struct to SQL params). Nullable pointer handling and
     UUID v7 generation add edge cases per type. At 480 LOC this task exceeds the 400-LOC
@@ -82,13 +82,13 @@ sections:
     Crumb, Trail, and Property (three core types, ~240 LOC); (b) hydration and dehydration
     for Metadata, Link, Stash, and StashHistory (four supporting types, ~240 LOC).
 
-    Attach, Detach, startup, and shutdown (prd002 R4, R6-R8, R11) at 420 LOC is borderline
+    Attach, Detach, startup, and shutdown (srd002 R4, R6-R8, R11) at 420 LOC is borderline
     HIGH. Startup (create dir, delete stale DB, load JSONL, validate FK) and shutdown (flush,
     close) are tightly coupled to the concurrency guard (RWMutex). Splitting is not recommended
     because a partial startup sequence is untestable independently. If actual LOC approaches
     600, extract the concurrency guard into a separate task first.
 
-    Crumb state transitions and table accessor (prd003 R4-R11) crosses two subsystems: entity
+    Crumb state transitions and table accessor (srd003 R4-R11) crosses two subsystems: entity
     methods live in pkg/schema (or equivalent), while the table accessor with filter logic lives
     in internal/persistence. We recommend splitting into: (a) entity methods only (SetState,
     Pebble, Dust, property methods, ~180 LOC, pkg/schema); (b) Crumbs table accessor with
@@ -101,16 +101,16 @@ sections:
 
     Table 3 rel01.1 proposed tasks
 
-    | Task | PRDs covered | LOC prod | LOC test | Risk |
+    | Task | SRDs covered | LOC prod | LOC test | Risk |
     |------|-------------|----------|----------|------|
-    | Config.yaml loading and directory resolution | prd010 R1-R3, R8-R9 | 210 | — | LOW |
-    | Cobra root command, init, and version | prd009 R1-R2, R6, R10 | 200 | — | LOW |
-    | Generic table commands (get, set, delete, list) | prd009 R3, R7-R9 | 340 | — | LOW |
-    | Crumb-specific commands (crumb add/get/list/delete) | prd009 R4 | 280 | — | LOW |
-    | Issue-tracking commands (ready, create, show, update, close, comments add) | prd009 R5 | 300 | — | LOW |
-    | Test: CLI configuration loading | prd010 R1-R2, R8 | — | 200 | LOW |
-    | Test: Generic table and crumb commands | prd009 R3-R4, R7-R8 | — | 420 | LOW |
-    | Test: Go install and self-hosting roundtrip | prd009 R2, prd010 R5 | — | 180 | LOW |
+    | Config.yaml loading and directory resolution | srd010 R1-R3, R8-R9 | 210 | — | LOW |
+    | Cobra root command, init, and version | srd009 R1-R2, R6, R10 | 200 | — | LOW |
+    | Generic table commands (get, set, delete, list) | srd009 R3, R7-R9 | 340 | — | LOW |
+    | Crumb-specific commands (crumb add/get/list/delete) | srd009 R4 | 280 | — | LOW |
+    | Issue-tracking commands (ready, create, show, update, close, comments add) | srd009 R5 | 300 | — | LOW |
+    | Test: CLI configuration loading | srd010 R1-R2, R8 | — | 200 | LOW |
+    | Test: Generic table and crumb commands | srd009 R3-R4, R7-R8 | — | 420 | LOW |
+    | Test: Go install and self-hosting roundtrip | srd009 R2, srd010 R5 | — | 180 | LOW |
 
     rel01.1 is the lowest-risk release. Stitch can generate it cleanly in a single cycle.
 
@@ -121,25 +121,25 @@ sections:
 
     Table 4 rel02.0 proposed tasks
 
-    | Task | PRDs covered | LOC prod | LOC test | Risk |
+    | Task | SRDs covered | LOC prod | LOC test | Risk |
     |------|-------------|----------|----------|------|
-    | Define Property and Category structs | prd004 R1-R3, R10 | 170 | — | LOW |
-    | Property table accessor with backfill enforcement | prd004 R4-R6 | 360 | — | HIGH |
-    | Category accessor and DefineCategory/GetCategories methods | prd004 R7-R9 | 270 | — | HIGH |
-    | Integrate property initialization into Crumb creation | prd003 R3.2, prd004 R4.2 | 120 | — | MEDIUM |
-    | Test: Property enforcement and backfill | prd004 R4, R7, R9, prd003 R3.2 | — | 320 | LOW |
+    | Define Property and Category structs | srd004 R1-R3, R10 | 170 | — | LOW |
+    | Property table accessor with backfill enforcement | srd004 R4-R6 | 360 | — | HIGH |
+    | Category accessor and DefineCategory/GetCategories methods | srd004 R7-R9 | 270 | — | HIGH |
+    | Integrate property initialization into Crumb creation | srd003 R3.2, srd004 R4.2 | 120 | — | MEDIUM |
+    | Test: Property enforcement and backfill | srd004 R4, R7, R9, srd003 R3.2 | — | 320 | LOW |
 
-    The backfill task (prd004 R4) is HIGH because property creation must atomically initialize
+    The backfill task (srd004 R4) is HIGH because property creation must atomically initialize
     default values on all existing crumbs. This is the only write operation in the system that
     scales with crumb count. At 360 LOC it is under the threshold, but the transactional
     complexity is elevated. We recommend that stitch generate this task with an explicit
     note to the agent: backfill must run inside a single SQLite transaction that can roll back
     if interrupted.
 
-    The Category task (prd004 R7-R9) is HIGH because DefineCategory and GetCategories are
-    entity methods on Property that require a Cupboard reference (prd004 R7.9, R8.6).
+    The Category task (srd004 R7-R9) is HIGH because DefineCategory and GetCategories are
+    entity methods on Property that require a Cupboard reference (srd004 R7.9, R8.6).
     This couples pkg/schema (entity layer) to the backend API at the entity method boundary.
-    The PRD allows implementations to expose a RegisterSchema method or a dedicated schemas
+    The SRD allows implementations to expose a RegisterSchema method or a dedicated schemas
     table; we recommend that stitch generate this as two separate tasks to isolate the
     coupling: (a) Category struct and DefineCategory/GetCategories signatures (pkg/schema);
     (b) Category table accessor and persistence (internal/persistence).
@@ -150,12 +150,12 @@ sections:
 
     Table 5 rel02.1 proposed tasks
 
-    | Task | PRDs covered | LOC prod | LOC test | Risk |
+    | Task | SRDs covered | LOC prod | LOC test | Risk |
     |------|-------------|----------|----------|------|
-    | Property-aware crumb commands (type, priority, labels, owner flags) | prd009 R4-R5 | 200 | — | LOW |
-    | Test: Issue-tracking CLI with properties | prd009 R4-R5, prd004 R9 | — | 310 | LOW |
-    | Test: Table benchmarks | prd003 R9-R10, prd004 R6 | — | 150 | LOW |
-    | Test: Metadata lifecycle operations | prd005 R6, R9 | — | 200 | LOW |
+    | Property-aware crumb commands (type, priority, labels, owner flags) | srd009 R4-R5 | 200 | — | LOW |
+    | Test: Issue-tracking CLI with properties | srd009 R4-R5, srd004 R9 | — | 310 | LOW |
+    | Test: Table benchmarks | srd003 R9-R10, srd004 R6 | — | 150 | LOW |
+    | Test: Metadata lifecycle operations | srd005 R6, R9 | — | 200 | LOW |
 
     rel02.1 can run after rel02.0 is complete and all property integration tests pass.
 
@@ -167,17 +167,17 @@ sections:
 
     Table 6 rel03.0 proposed tasks
 
-    | Task | PRDs covered | LOC prod | LOC test | Risk |
+    | Task | SRDs covered | LOC prod | LOC test | Risk |
     |------|-------------|----------|----------|------|
-    | Define Trail struct and lifecycle entity methods | prd006 R1-R6, R8 | 165 | — | LOW |
-    | Trail table accessor with Complete and Abandon cascade | prd006 R5.6-R5.7, R6.6-R8, R9, prd002 R5.6-R5.7 | 430 | — | HIGH |
-    | Define shared type constants (LinkType, StashType, operation codes) | prd007 R2.2, prd008 R2, R7.3 | 80 | — | LOW |
-    | Link table accessor with cardinality and DAG validation | prd007 R1, R3-R8 | 310 | — | MEDIUM |
-    | Define Stash struct and value/counter/lock entity methods | prd008 R1-R2, R4-R7, R12-R13 | 260 | — | LOW |
-    | Stash table accessor with history tracking | prd008 R3, R8-R11 | 340 | — | MEDIUM |
-    | Test: Trail lifecycle and cascade (uc001, uc004) | prd006 R5-R7, R9 | — | 420 | LOW |
-    | Test: Link management and cardinality (uc002) | prd007 R5-R6, R8 | — | 260 | LOW |
-    | Test: Stash operations and history tracking (uc003) | prd008 R3, R5-R7, R13 | — | 310 | LOW |
+    | Define Trail struct and lifecycle entity methods | srd006 R1-R6, R8 | 165 | — | LOW |
+    | Trail table accessor with Complete and Abandon cascade | srd006 R5.6-R5.7, R6.6-R8, R9, srd002 R5.6-R5.7 | 430 | — | HIGH |
+    | Define shared type constants (LinkType, StashType, operation codes) | srd007 R2.2, srd008 R2, R7.3 | 80 | — | LOW |
+    | Link table accessor with cardinality and DAG validation | srd007 R1, R3-R8 | 310 | — | MEDIUM |
+    | Define Stash struct and value/counter/lock entity methods | srd008 R1-R2, R4-R7, R12-R13 | 260 | — | LOW |
+    | Stash table accessor with history tracking | srd008 R3, R8-R11 | 340 | — | MEDIUM |
+    | Test: Trail lifecycle and cascade (uc001, uc004) | srd006 R5-R7, R9 | — | 420 | LOW |
+    | Test: Link management and cardinality (uc002) | srd007 R5-R6, R8 | — | 260 | LOW |
+    | Test: Stash operations and history tracking (uc003) | srd008 R3, R5-R7, R13 | — | 310 | LOW |
 
     The Trail cascade task is the most complex in the project. The Abandon path deletes
     crumbs, crumb_properties, metadata, child_of links, and belongs_to links — all atomically
@@ -197,10 +197,10 @@ sections:
 
     Table 7 rel03.1 proposed tasks
 
-    | Task | PRDs covered | LOC prod | LOC test | Risk |
+    | Task | SRDs covered | LOC prod | LOC test | Risk |
     |------|-------------|----------|----------|------|
-    | Trail CLI commands (trail create, add-crumb, complete, abandon, list) | prd009 R1, prd006 R3, R5-R6 | 260 | — | LOW |
-    | Test: Self-hosting with epics via trails (uc001) | prd006 R5-R7, prd007 R6, prd009 R4 | — | 370 | LOW |
+    | Trail CLI commands (trail create, add-crumb, complete, abandon, list) | srd009 R1, srd006 R3, R5-R6 | 260 | — | LOW |
+    | Test: Self-hosting with epics via trails (uc001) | srd006 R5-R7, srd007 R6, srd009 R4 | — | 370 | LOW |
 
     rel03.1 is well within budget and requires no pre-generation mitigation.
 
@@ -212,33 +212,33 @@ sections:
 
     | Priority | Action | Blocking? | Owner |
     |----------|--------|-----------|-------|
-    | 1 | Resolve package naming discrepancy between eng05 and PRDs | RESOLVED (GH-18) | Architecture |
-    | 2 | Split entity hydration task (prd002 R14-R15) into two tasks | RESOLVED (GH-19) | Architecture |
-    | 3 | Split Crumb state+property task (prd003 R4-R11) into two tasks | RESOLVED (GH-19) | Architecture |
-    | 4 | Add transaction requirement to Property backfill task (prd004 R4) | RESOLVED (GH-19) | Architecture |
+    | 1 | Resolve package naming discrepancy between eng05 and SRDs | RESOLVED (GH-18) | Architecture |
+    | 2 | Split entity hydration task (srd002 R14-R15) into two tasks | RESOLVED (GH-19) | Architecture |
+    | 3 | Split Crumb state+property task (srd003 R4-R11) into two tasks | RESOLVED (GH-19) | Architecture |
+    | 4 | Add transaction requirement to Property backfill task (srd004 R4) | RESOLVED (GH-19) | Architecture |
 
     Resolve package naming (resolved by GH-18). ARCHITECTURE.yaml now defines an expanded
-    project_structure with per-package prds and role_detail fields. The canonical packages are
+    project_structure with per-package srds and role_detail fields. The canonical packages are
     pkg/api (interfaces), pkg/schema (all entity structs and methods), pkg/constants (all domain
     strings), internal/persistence/engine (SQLite lifecycle), internal/persistence/mapping
     (hydration/dehydration), internal/persistence/ (Table implementations), and cmd/cupboard
-    (CLI). The explicit pkg/types references in prd007 R2.2 and prd008 R7.3, R7.5, R12.1 have
+    (CLI). The explicit pkg/types references in srd007 R2.2 and srd008 R7.3, R7.5, R12.1 have
     been corrected to pkg/constants, pkg/schema, and pkg/api respectively. No package name
-    ambiguity remains across PRDs, eng05, and ARCHITECTURE.yaml.
+    ambiguity remains across SRDs, eng05, and ARCHITECTURE.yaml.
 
-    Split hydration task (prd002 R14-R15) — resolved by GH-19. Design decision R0.1 and
-    ordering requirement R14.0 added to prd002. R14 is split into R14.1 (Crumb, Trail, Property)
+    Split hydration task (srd002 R14-R15) — resolved by GH-19. Design decision R0.1 and
+    ordering requirement R14.0 added to srd002. R14 is split into R14.1 (Crumb, Trail, Property)
     and R14.2 (Metadata, Link, Stash, StashHistory). R15 is split into R15.9 and R15.10. Stitch
     will read these group labels and generate two tasks at ~240 LOC each without agent inference.
 
-    Split Crumb state+property task (prd003 R4-R11) — resolved by GH-19. Design decisions
+    Split Crumb state+property task (srd003 R4-R11) — resolved by GH-19. Design decisions
     R0.1 (entity methods in pkg/schema/crumb.go) and R0.2 (table accessor in
-    internal/persistence/crumbs_table.go) added to prd003. R4.0 ordering requirement and R6.0
+    internal/persistence/crumbs_table.go) added to srd003. R4.0 ordering requirement and R6.0
     group marker added. Stitch will generate two tasks: (a) entity methods (~180 LOC); (b)
     Crumbs table accessor (~200 LOC).
 
-    Add transaction note to Property backfill (prd004 R4) — resolved by GH-19. Design decision
-    R0.1 added to prd004. R4.3 and R4.4 specify the exact 5-step transaction algorithm
+    Add transaction note to Property backfill (srd004 R4) — resolved by GH-19. Design decision
+    R0.1 added to srd004. R4.3 and R4.4 specify the exact 5-step transaction algorithm
     and the same-transaction SELECT constraint. Stitch agents have unambiguous instructions;
     no inference required. Non-goal added to scope out incremental backfill.
 
@@ -264,9 +264,9 @@ sections:
     LOC production is comfortably below the 400-LOC HIGH threshold.
 
     Four HIGH-risk tasks existed across rel01.0, rel02.0, and rel03.0. All four have been
-    mitigated at the specification level via GH-19. Design decisions (prd002 R0.1-R0.3,
-    prd003 R0.1-R0.2, prd004 R0.1) and ordering requirements (R14.0, R4.0) are now
-    embedded in prd002, prd003, and prd004. Stitch agents read these directly; no inference
+    mitigated at the specification level via GH-19. Design decisions (srd002 R0.1-R0.3,
+    srd003 R0.1-R0.2, srd004 R0.1) and ordering requirements (R14.0, R4.0) are now
+    embedded in srd002, srd003, and srd004. Stitch agents read these directly; no inference
     about task boundaries is required.
 
     The package naming blocking action is resolved by GH-18. All four HIGH-risk mitigations

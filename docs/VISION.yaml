@@ -113,7 +113,7 @@ risks:
   - risk: Backend proliferation without clear interface boundary
     impact: High
     likelihood: Low
-    mitigation: The Cupboard interface is the single contract all backends implement. prd001-cupboard-core defines this contract precisely. Non-standard extensions must not appear in the interface.
+    mitigation: The Cupboard interface is the single contract all backends implement. srd001-cupboard-core defines this contract precisely. Non-standard extensions must not appear in the interface.
   - risk: Property schema complexity outpacing the enforcement mechanism
     impact: Medium
     likelihood: Medium

@@ -4,12 +4,12 @@ release: '99.0'
 traces:
 - rel99.0-uc001-blazes-templates
 - rel99.0-uc002-docker-bootstrap
-- prd001-cupboard-core R1, R2, R3, R4, R5
-- prd002-sqlite-backend R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16
-- prd003-crumbs-interface R1, R4, R5
-- prd006-trails-interface R3
-- prd010-configuration-directories R1, R2, R3, R4, R7, R8
-- prd011-blazes-templates R1, R4, R5, R6, R7, R8
+- srd001-cupboard-core R1, R2, R3, R4, R5
+- srd002-sqlite-backend R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16
+- srd003-crumbs-interface R1, R4, R5
+- srd006-trails-interface R3
+- srd010-configuration-directories R1, R2, R3, R4, R7, R8
+- srd011-blazes-templates R1, R4, R5, R6, R7, R8
 preconditions:
 - Template directory exists at .crumbs/blazes/ or configured path
 - At least one valid template YAML file in the directory
@@ -17,7 +17,7 @@ preconditions:
 - Agent has access to task context for semantic matching
 - Docker installed and running on host
 - Claude API access available (ANTHROPIC_API_KEY set)
-- docs/ directory contains VISION.md, ARCHITECTURE.md, road-map.yaml, PRDs, use cases
+- docs/ directory contains VISION.md, ARCHITECTURE.md, road-map.yaml, SRDs, use cases
 - No crumbs source code in container (only docs/ mounted)
 test_cases:
 - name: Discover template directory at well-known path
@@ -193,10 +193,10 @@ test_cases:
   expected:
     exit_code: 0
     stdout: releases
-- name: Read all PRDs in product-requirements
+- name: Read all SRDs in software-requirements
   inputs:
     args:
-    - ls /workspace/docs/specs/product-requirements/prd*.yaml | wc -l
+    - ls /workspace/docs/specs/software-requirements/srd*.yaml | wc -l
   expected:
     exit_code: 0
 - name: Create pkg/types directory structure
@@ -205,7 +205,7 @@ test_cases:
     - 'mkdir -p /workspace/pkg/types mkdir -p /workspace/internal/sqlite mkdir -p /workspace/cmd/crumbs '
   expected:
     exit_code: 0
-- name: Implement Cupboard interface per prd001-cupboard-core
+- name: Implement Cupboard interface per srd001-cupboard-core
   inputs:
     args:
     - 'Agent implements pkg/types/cupboard.go with: - Cupboard interface (Attach, Detach, GetTable) - Table interface (Get,
@@ -312,18 +312,18 @@ test_cases:
     - ./crumbs update ${item_id} --state ready
   expected:
     exit_code: 0
-- name: Verify Cupboard interface matches prd001-cupboard-core
+- name: Verify Cupboard interface matches srd001-cupboard-core
   inputs:
     args:
     - 'Inspect pkg/types/cupboard.go Verify Attach, Detach, GetTable methods present Verify Table interface has Get, Set,
       Delete, Fetch '
   expected: {}
-- name: Verify Crumb struct matches prd003-crumbs-interface
+- name: Verify Crumb struct matches srd003-crumbs-interface
   inputs:
     args:
-    - 'Inspect pkg/types/crumb.go Verify all fields from prd003-crumbs-interface R1 '
+    - 'Inspect pkg/types/crumb.go Verify all fields from srd003-crumbs-interface R1 '
   expected: {}
-- name: Verify SQLite backend matches prd002-sqlite-backend
+- name: Verify SQLite backend matches srd002-sqlite-backend
   inputs:
     args:
     - 'Inspect internal/sqlite/*.go Verify JSONL format, directory layout, startup loading '

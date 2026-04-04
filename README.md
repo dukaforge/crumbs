@@ -4,7 +4,7 @@ A storage system for work items with built-in support for exploratory work sessi
 
 ## About This Repository
 
-This repository does not contain released application code. The deliverables are **requirements** (PRDs, use cases, architecture docs) and **build tooling** (mage targets). Application code is generated automatically by running `mage generator:start` followed by `mage generator:run`, which invokes Claude to produce Go source code from the specifications.
+This repository does not contain released application code. The deliverables are **requirements** (SRDs, use cases, architecture docs) and **build tooling** (mage targets). Application code is generated automatically by running `mage generator:start` followed by `mage generator:run`, which invokes Claude to produce Go source code from the specifications.
 
 Each completed generation is tagged and merged into main. To see past generations and their tags, run `mage generator:list`. To check out the code from a specific generation, use `git checkout <tag>` with one of the generation tags (e.g. `generation-2026-02-10-15-04-30-merged`).
 
@@ -138,7 +138,7 @@ crumbs/
 ├── cmd/cupboard/        # CLI entry point (generated)
 ├── pkg/types/           # Public API: interfaces and types (generated)
 ├── internal/sqlite/     # SQLite backend implementation (generated)
-├── docs/                # Documentation (VISION, ARCHITECTURE, PRDs)
+├── docs/                # Documentation (VISION, ARCHITECTURE, SRDs)
 ├── magefiles/           # Mage build targets (thin wrappers over library)
 ├── configuration.yaml   # Orchestrator settings
 ├── .beads/              # Beads issue tracker (managed by bd CLI)
@@ -162,7 +162,7 @@ Invoke these commands in Claude Code by typing the command name (e.g., `/do-work
 | `/bootstrap` | Start a new project: create initial VISION.md and ARCHITECTURE.md |
 | `/make-work` | Analyze project state and propose new epics and issues |
 | `/do-work` | Pick up available work and implement it |
-| `/do-work-docs` | Work on documentation tasks (PRDs, use cases) |
+| `/do-work-docs` | Work on documentation tasks (SRDs, use cases) |
 | `/do-work-code` | Work on implementation tasks |
 
 ### Workflow
@@ -190,7 +190,7 @@ bd sync               # Sync with git
 | -------- | -------- |
 | Vision | [docs/VISION.md](docs/VISION.md) |
 | Architecture | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
-| PRDs | [docs/specs/product-requirements/](docs/specs/product-requirements/) |
+| SRDs | [docs/specs/software-requirements/](docs/specs/software-requirements/) |
 | Use Cases | [docs/specs/use-cases/](docs/specs/use-cases/) |
 
 ## License

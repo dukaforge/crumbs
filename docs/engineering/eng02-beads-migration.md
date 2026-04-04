@@ -36,5 +36,5 @@ Once scripts and the interactive workflow run on cupboard, we remove the bd depe
 ## References
 
 - eng01-git-integration (JSONL always on main, trails vs git branches)
-- prd012-branch-independent-data (requirements for branch-independent data persistence)
+- srd012-branch-independent-data (requirements for branch-independent data persistence)
 - docs/specs/use-cases/rel02.1-uc003-self-hosting.md (the use case this migration enables)

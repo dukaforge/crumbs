@@ -4,7 +4,7 @@ introduction: |
   This guideline describes how Crumbs integrates with git. The core rule is simple: JSONL
   files always live on main. Issue state is independent of code branches. Developers work
   on feature branches for code; the cupboard is always consulted from the data directory,
-  which is a fixed path resolved from configuration. See prd012-branch-independent-data
+  which is a fixed path resolved from configuration. See srd012-branch-independent-data
   for the requirements that govern this design.
 sections:
 - title: Data Directory in Git
@@ -68,8 +68,8 @@ sections:
     state. The data directory is a fixed path resolved from configuration; it is not scoped to
     a branch or worktree.
 references:
-- id: prd012-branch-independent-data
-  path: specs/product-requirements/prd012-branch-independent-data.yaml
+- id: srd012-branch-independent-data
+  path: specs/software-requirements/srd012-branch-independent-data.yaml
   note: requirements for branch-independent data persistence
 - id: ARCHITECTURE.yaml
   path: ARCHITECTURE.yaml

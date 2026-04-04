@@ -1,9 +1,9 @@
-id: "prd001-cupboard-core"
+id: "srd001-cupboard-core"
 title: Cupboard Core Interface
 problem: |
   Applications using Crumbs need a consistent way to initialize storage, access data tables, and manage the cupboard lifecycle. Without a well-defined core interface, each application must handle backend initialization differently, leading to duplicated setup code and inconsistent error handling. We need a single entry point that accepts configuration, provides uniform table access, and cleanly releases resources when done.
 
-  This PRD defines the cupboard lifecycle interface: configuration, table access, and shutdown. It establishes the contract that all backends must implement.
+  This SRD defines the cupboard lifecycle interface: configuration, table access, and shutdown. It establishes the contract that all backends must implement.
 goals:
 - G1: "Define a Config struct that selects backends and provides backend-specific parameters"
 - G2: Define the Cupboard interface with uniform table access via GetTable
@@ -74,9 +74,9 @@ requirements:
           \ Callers use type assertions to access entity-specific fields"
         weight: 5
     - R3.7:
-        text: "Entity structs are defined in their respective interface PRDs (Crumb in prd003-crumbs-interface, Trail in prd006-trails-interface,\
-          \ Property in prd004-properties-interface, Metadata in prd005-metadata-interface, Link in prd002-sqlite-backend,\
-          \ Stash in prd008-stash-interface)"
+        text: "Entity structs are defined in their respective interface SRDs (Crumb in srd003-crumbs-interface, Trail in srd006-trails-interface,\
+          \ Property in srd004-properties-interface, Metadata in srd005-metadata-interface, Link in srd002-sqlite-backend,\
+          \ Stash in srd008-stash-interface)"
         weight: 1
   R4:
     title: Attach
@@ -165,12 +165,12 @@ package_contract:
   import_constraints:
   - "pkg/api must not import pkg/schema, internal/, or cmd/"
 non_goals:
-- "This PRD does not define entity-specific schemas or operations. Entity types are defined in their respective interface\
-  \ PRDs (prd003-crumbs-interface, prd006-trails-interface, etc.)."
-- "This PRD does not define backend-specific behavior. Backends may add optional methods beyond the interface."
-- This PRD does not define HTTP/RPC wrappers around the Cupboard interface. Applications define their own APIs.
-- This PRD does not define connection pooling or retry policies. Backends may implement these internally.
-- "This PRD does not define specialized query operations beyond Fetch. Entity-specific PRDs may specify additional query requirements\
+- "This SRD does not define entity-specific schemas or operations. Entity types are defined in their respective interface\
+  \ SRDs (srd003-crumbs-interface, srd006-trails-interface, etc.)."
+- "This SRD does not define backend-specific behavior. Backends may add optional methods beyond the interface."
+- This SRD does not define HTTP/RPC wrappers around the Cupboard interface. Applications define their own APIs.
+- This SRD does not define connection pooling or retry policies. Backends may implement these internally.
+- "This SRD does not define specialized query operations beyond Fetch. Entity-specific SRDs may specify additional query requirements\
   \ that backends implement via filter conventions."
 acceptance_criteria:
 - id: AC1

@@ -1,4 +1,4 @@
-id: "prd013-table-query-helpers"
+id: "srd013-table-query-helpers"
 title: Table Query Helpers
 problem: |
   Every table accessor in the SQLite backend (crumbs, trails, links, stashes, properties,
@@ -109,10 +109,10 @@ requirements:
           \ the current entity's ID)"
         weight: 2
 non_goals:
-- "This PRD does not define entity-specific hydration logic. Each table accessor still defines its own hydration function;\
-  \ this PRD provides the Scanner interface they accept"
-- This PRD does not define transaction management. Transaction begin/commit/rollback remains in each table accessor
-- This PRD does not define JSONL persistence helpers. JSONL operations remain in the engine package
+- "This SRD does not define entity-specific hydration logic. Each table accessor still defines its own hydration function;\
+  \ this SRD provides the Scanner interface they accept"
+- This SRD does not define transaction management. Transaction begin/commit/rollback remains in each table accessor
+- This SRD does not define JSONL persistence helpers. JSONL operations remain in the engine package
 acceptance_criteria:
 - id: AC1
   criterion: "Package lives at internal/persistence/queryutil with no dependency on pkg/schema, engine, or mapping; table\

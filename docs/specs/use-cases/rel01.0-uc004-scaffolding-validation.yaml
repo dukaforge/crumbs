@@ -20,34 +20,34 @@ flow:
   - F8: "Attach and enumerate tables (requires compiled binary and working backend from F2-F6): create a Cupboard, attach with a temporary directory, and call GetTable for each of the six standard table names; each call must return a non-nil Table without error; detach afterward"
 touchpoints:
   - T1: "go.mod: module path github.com/mesh-intelligence/crumbs with local replace directive"
-  - T2: "Cupboard interface: Attach, GetTable, Detach (prd001-cupboard-core R2)"
-  - T3: "Table interface: compile-time verification of Get, Set, Delete, Fetch signatures (prd001-cupboard-core R2)"
-  - T4: "Entity types (all 7): compile-time verification of struct fields (prd003-crumbs-interface R1)"
-  - T5: "Trail entity struct fields (prd006-trails-interface R1)"
-  - T6: "Property entity struct fields (prd004-properties-interface R1)"
-  - T7: "Stash entity struct fields (prd008-stash-interface R1)"
-  - T8: "Metadata entity struct fields (prd005-metadata-interface R1)"
-  - T9: "SQLite backend: NewBackend, Attach (schema creation), Detach (prd002-sqlite-backend R4, R6)"
+  - T2: "Cupboard interface: Attach, GetTable, Detach (srd001-cupboard-core R2)"
+  - T3: "Table interface: compile-time verification of Get, Set, Delete, Fetch signatures (srd001-cupboard-core R2)"
+  - T4: "Entity types (all 7): compile-time verification of struct fields (srd003-crumbs-interface R1)"
+  - T5: "Trail entity struct fields (srd006-trails-interface R1)"
+  - T6: "Property entity struct fields (srd004-properties-interface R1)"
+  - T7: "Stash entity struct fields (srd008-stash-interface R1)"
+  - T8: "Metadata entity struct fields (srd005-metadata-interface R1)"
+  - T9: "SQLite backend: NewBackend, Attach (schema creation), Detach (srd002-sqlite-backend R4, R6)"
   - T10: "CLI (cmd/cupboard): version command with implemented use case listing"
-  - T11: "GetTable returns a Table for all six standard table names (prd001-cupboard-core R2.5)"
+  - T11: "GetTable returns a Table for all six standard table names (srd001-cupboard-core R2.5)"
 success_criteria:
   - id: S1
     criterion: CLI binary compiles and runs; go build produces a working binary through the mesh-intelligence module path, and the version command prints a version string with implemented use case list (including this use case) and exits with code 0
     traces:
-      - prd001-cupboard-core AC2
-      - prd001-cupboard-core AC3
+      - srd001-cupboard-core AC2
+      - srd001-cupboard-core AC3
   - id: S2
     criterion: Type system is complete; all seven entity structs (Crumb, Trail, Property, Category, Stash, Metadata, Link), the Table interface (Get, Set, Delete, Fetch), and the Cupboard interface (GetTable, Attach, Detach) compile with documented signatures, and the SQLite backend satisfies the Cupboard interface at compile time
     traces:
-      - prd001-cupboard-core AC2
-      - prd001-cupboard-core AC3
-      - prd002-sqlite-backend AC11
-      - prd003-crumbs-interface AC1
+      - srd001-cupboard-core AC2
+      - srd001-cupboard-core AC3
+      - srd002-sqlite-backend AC11
+      - srd003-crumbs-interface AC1
   - id: S3
     criterion: GetTable succeeds for all six standard tables (crumbs, trails, properties, metadata, links, stashes) and returns ErrTableNotFound for unknown table names, confirming the table routing layer connects all entity types
     traces:
-      - prd001-cupboard-core AC4
-      - prd002-sqlite-backend AC12
+      - srd001-cupboard-core AC4
+      - srd002-sqlite-backend AC12
 out_of_scope:
   - Creating, retrieving, or deleting entities (see rel01.0-uc002 and rel01.0-uc003)
   - State transitions or entity methods beyond compile-time existence

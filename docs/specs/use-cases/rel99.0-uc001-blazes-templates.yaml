@@ -25,33 +25,33 @@ flow:
   - F6: "Extract parameters (requires selected template from F5): read the parameters section with name, description, type, and optional default; determine which can be inferred from context and which require user input"
   - F7: "Present selection (requires template and parameters from F5-F6): display selected template name, description, and required parameters to the user for confirmation"
 touchpoints:
-  - T1: "prd011-blazes-templates R4: template directory discovery at well-known or configured path"
-  - T2: "prd011-blazes-templates R5: template file enumeration from directory"
-  - T3: "prd011-blazes-templates R1: Blaze template YAML schema with name, description, tags, parameters"
-  - T4: "prd011-blazes-templates R8: parameter extraction with context inference"
-  - T5: "prd011-blazes-templates R6: tag-based matching of task context against template tags"
-  - T6: "prd011-blazes-templates R7: template selection from matched candidates"
-  - T7: "prd003-crumbs-interface R1: Crumb struct fields referenced in template trail definition"
-  - T8: "prd006-trails-interface R3: trail creation referenced for future instantiation"
+  - T1: "srd011-blazes-templates R4: template directory discovery at well-known or configured path"
+  - T2: "srd011-blazes-templates R5: template file enumeration from directory"
+  - T3: "srd011-blazes-templates R1: Blaze template YAML schema with name, description, tags, parameters"
+  - T4: "srd011-blazes-templates R8: parameter extraction with context inference"
+  - T5: "srd011-blazes-templates R6: tag-based matching of task context against template tags"
+  - T6: "srd011-blazes-templates R7: template selection from matched candidates"
+  - T7: "srd003-crumbs-interface R1: Crumb struct fields referenced in template trail definition"
+  - T8: "srd006-trails-interface R3: trail creation referenced for future instantiation"
 success_criteria:
   - id: S1
     criterion: Template discovery and metadata parsing work end-to-end; agent locates template directory, lists .yaml files, and extracts name, description, tags, and parameters from each — confirming the template pipeline from file system to structured metadata
     traces:
-      - prd011-blazes-templates AC4
-      - prd011-blazes-templates AC6
-      - prd011-blazes-templates AC7
+      - srd011-blazes-templates AC4
+      - srd011-blazes-templates AC6
+      - srd011-blazes-templates AC7
   - id: S2
     criterion: Tag-based matching selects the correct template; task context matches template tags semantically, and the best-matching template is presented with its parameter definitions — confirming selection and parameter extraction compose correctly
     traces:
-      - prd011-blazes-templates AC9
-      - prd011-blazes-templates AC10
+      - srd011-blazes-templates AC9
+      - srd011-blazes-templates AC10
 out_of_scope:
-  - Trail instantiation from template (requires prd-blazes-instantiation)
-  - Parameter value binding and placeholder expansion (requires prd-blazes-instantiation)
-  - Creating crumbs via Table.Set per prd003-crumbs-interface R3 (requires prd-blazes-instantiation)
-  - Creating trails via Table.Set per prd006-trails-interface R3 (requires prd-blazes-instantiation)
-  - Creating belongs_to links per prd006-trails-interface R7 (requires prd-blazes-instantiation)
-  - Template validation and error handling for malformed YAML (requires prd-blazes-schema)
+  - Trail instantiation from template (requires srd-blazes-instantiation)
+  - Parameter value binding and placeholder expansion (requires srd-blazes-instantiation)
+  - Creating crumbs via Table.Set per srd003-crumbs-interface R3 (requires srd-blazes-instantiation)
+  - Creating trails via Table.Set per srd006-trails-interface R3 (requires srd-blazes-instantiation)
+  - Creating belongs_to links per srd006-trails-interface R7 (requires srd-blazes-instantiation)
+  - Template validation and error handling for malformed YAML (requires srd-blazes-schema)
   - Template versioning or inheritance
   - Remote template repositories
   - Template creation or editing workflows

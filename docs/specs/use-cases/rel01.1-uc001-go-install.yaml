@@ -19,15 +19,15 @@ flow:
   - F5: "List crumbs (requires crumb from F4): run cupboard list crumbs to confirm persistence"
 touchpoints:
   - T1: "cmd/cupboard: CLI binary built by go install"
-  - T2: "pkg/types: Config struct, entity types (prd001-cupboard-core R1)"
-  - T3: "internal/sqlite: Backend that creates JSONL files and SQLite cache (prd002-sqlite-backend R1, R4)"
-  - T4: "internal/paths: Resolves default config and data directories (prd010-configuration-directories R1, R2)"
+  - T2: "pkg/types: Config struct, entity types (srd001-cupboard-core R1)"
+  - T3: "internal/sqlite: Backend that creates JSONL files and SQLite cache (srd002-sqlite-backend R1, R4)"
+  - T4: "internal/paths: Resolves default config and data directories (srd010-configuration-directories R1, R2)"
 success_criteria:
   - id: S1
     criterion: End-to-end flow works from go install; binary installs into $GOBIN, help prints usage, init creates data directory with JSONL files, and set/list round-trips a crumb with no manual compilation steps beyond go install
     traces:
-      - prd009-cupboard-cli AC1
-      - prd010-configuration-directories AC4
+      - srd009-cupboard-cli AC1
+      - srd010-configuration-directories AC4
 out_of_scope:
   - Package managers (brew, apt, snap)
   - Docker-based installation (see rel99.0-uc002-docker-bootstrap)

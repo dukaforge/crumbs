@@ -1,4 +1,4 @@
-id: "prd012-branch-independent-data"
+id: "srd012-branch-independent-data"
 title: "Branch-Independent Data Persistence"
 problem: |
   The beads model tied issue state to git branches. JSONL files traveled with task branches,
@@ -24,7 +24,7 @@ requirements:
         text: "The data directory must be a fixed path, not scoped to any git branch or worktree"
         weight: 1
     - R1.2:
-        text: "The data directory path must be determined by configuration (see prd010-configuration-directories), not by\
+        text: "The data directory path must be determined by configuration (see srd010-configuration-directories), not by\
           \ the current branch name or worktree path"
         weight: 1
     - R1.3:
@@ -74,11 +74,11 @@ requirements:
         text: "Traceability from an issue to commits is achieved via git log --grep=\"<crumb-id>\", searching across all branches"
         weight: 1
 non_goals:
-- "This PRD does not define how agents create or manage code branches for development work. Branch conventions for code are\
-  \ outside this PRD's scope."
-- "This PRD does not define CI/CD pipelines, remote synchronization, or push behavior."
-- "This PRD does not change the JSONL format, SQLite schema, or Cupboard interface."
-- This PRD does not prohibit committing JSONL changes alongside code changes on the same commit; it requires only that JSONL
+- "This SRD does not define how agents create or manage code branches for development work. Branch conventions for code are\
+  \ outside this SRD's scope."
+- "This SRD does not define CI/CD pipelines, remote synchronization, or push behavior."
+- "This SRD does not change the JSONL format, SQLite schema, or Cupboard interface."
+- This SRD does not prohibit committing JSONL changes alongside code changes on the same commit; it requires only that JSONL
   not be isolated to task branches.
 acceptance_criteria:
 - id: AC1

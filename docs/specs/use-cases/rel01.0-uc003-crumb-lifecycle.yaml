@@ -25,29 +25,29 @@ flow:
   - F13: "Verify UpdatedAt tracks transitions (across all transitions in F4-F7): for each state transition confirm that UpdatedAt changed and is equal to or later than the previous value; CreatedAt must remain unchanged"
   - F14: "Detach (after all operations complete): call cupboard.Detach()"
 touchpoints:
-  - T1: "Table interface: Get, Set, Fetch for persistence and retrieval (prd001-cupboard-core R2)"
-  - T2: "Crumb entity: SetState, Pebble, Dust methods (prd003-crumbs-interface R2)"
-  - T3: "Crumb state machine: draft to pending to ready to taken to pebble; any to dust (prd003-crumbs-interface R2, R4, R5)"
-  - T4: "Crumb creation defaults to draft state with initialized timestamps (prd003-crumbs-interface R1, R3)"
-  - T5: "UpdatedAt advances on every state transition; CreatedAt remains constant (prd003-crumbs-interface R3)"
-  - T6: "State-based Fetch filtering correctly includes and excludes crumbs by state (prd003-crumbs-interface R9, R10)"
+  - T1: "Table interface: Get, Set, Fetch for persistence and retrieval (srd001-cupboard-core R2)"
+  - T2: "Crumb entity: SetState, Pebble, Dust methods (srd003-crumbs-interface R2)"
+  - T3: "Crumb state machine: draft to pending to ready to taken to pebble; any to dust (srd003-crumbs-interface R2, R4, R5)"
+  - T4: "Crumb creation defaults to draft state with initialized timestamps (srd003-crumbs-interface R1, R3)"
+  - T5: "UpdatedAt advances on every state transition; CreatedAt remains constant (srd003-crumbs-interface R3)"
+  - T6: "State-based Fetch filtering correctly includes and excludes crumbs by state (srd003-crumbs-interface R9, R10)"
 success_criteria:
   - id: S1
     criterion: Full success path (draft to pending to ready to taken to pebble) and full failure path (draft to dust) both complete, with UpdatedAt advancing on each transition and CreatedAt remaining constant throughout
     traces:
-      - prd003-crumbs-interface AC2
-      - prd003-crumbs-interface AC3
-      - prd003-crumbs-interface AC4
+      - srd003-crumbs-interface AC2
+      - srd003-crumbs-interface AC3
+      - srd003-crumbs-interface AC4
   - id: S2
     criterion: Dust() transitions a crumb to the dust terminal state from any non-terminal state (not only from draft), confirming the any-to-dust edge case in the state machine
     traces:
-      - prd003-crumbs-interface AC3
-      - prd003-crumbs-interface AC11
+      - srd003-crumbs-interface AC3
+      - srd003-crumbs-interface AC11
   - id: S3
     criterion: State-based Fetch filtering correctly partitions crumbs; filtering for a non-terminal state excludes pebble and dust crumbs, and filtering for pebble or dust returns only crumbs in that terminal state
     traces:
-      - prd003-crumbs-interface AC12
-      - prd003-crumbs-interface AC13
+      - srd003-crumbs-interface AC12
+      - srd003-crumbs-interface AC13
 out_of_scope:
   - Generic Table CRUD operations (create, update, delete, fetch) — see rel01.0-uc002
   - Property operations (SetProperty, GetProperty, ClearProperty) — see rel02.0-uc001

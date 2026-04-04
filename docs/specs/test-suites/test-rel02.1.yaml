@@ -6,11 +6,11 @@ traces:
 - rel02.1-uc002-table-benchmarks
 - rel02.1-uc003-self-hosting
 - rel02.1-uc004-metadata-lifecycle
-- prd001-cupboard-core R2, R3, R3.2, R3.3
-- prd002-sqlite-backend R1, R2, R2.8, R3, R3.3, R4, R5, R5.2, R12, R13, R14, R15, R16, R16.2
-- prd003-crumbs-interface R1, R2, R3, R4, R4.3, R5, R9, R10
-- prd004-properties-interface R9
-- prd005-metadata-interface R1, R3, R4, R5, R6.5, R7, R10
+- srd001-cupboard-core R2, R3, R3.2, R3.3
+- srd002-sqlite-backend R1, R2, R2.8, R3, R3.3, R4, R5, R5.2, R12, R13, R14, R15, R16, R16.2
+- srd003-crumbs-interface R1, R2, R3, R4, R4.3, R5, R9, R10
+- srd004-properties-interface R9
+- srd005-metadata-interface R1, R3, R4, R5, R6.5, R7, R10
 preconditions:
 - Cupboard binary built from cmd/cupboard
 - Fresh temp directory for config and data
@@ -20,7 +20,7 @@ preconditions:
 - Go test infrastructure available (go test command)
 - tests/integration package contains benchmark test files
 - Cupboard initialized with SQLite backend in a temp directory
-- Built-in properties seeded per prd002-sqlite-backend R9
+- Built-in properties seeded per srd002-sqlite-backend R9
 - No existing crumbs
 - Cupboard attached with SQLite backend
 - Fresh temp directory for data
@@ -252,7 +252,7 @@ test_cases:
     stdout: BenchmarkCrumbsGet10000
 - name: Set create benchmark with 10 existing crumbs
   description: 'Measure Table.Set latency for creating new crumbs (empty ID triggers UUID v7 generation). Includes JSONL sync
-    cost per prd002-sqlite-backend R5.3. '
+    cost per srd002-sqlite-backend R5.3. '
   inputs:
     args:
     - go test -bench=BenchmarkCrumbsSetCreate10 -benchmem ./tests/integration/...
@@ -267,7 +267,7 @@ test_cases:
     exit_code: 0
     stdout: BenchmarkCrumbsSetCreate1000
 - name: Set update benchmark with 10 crumbs
-  description: 'Measure Table.Set latency for updating existing crumbs. Includes JSONL sync cost per prd002-sqlite-backend
+  description: 'Measure Table.Set latency for updating existing crumbs. Includes JSONL sync cost per srd002-sqlite-backend
     R5.3. '
   inputs:
     args:
@@ -283,7 +283,7 @@ test_cases:
     exit_code: 0
     stdout: BenchmarkCrumbsSetUpdate1000
 - name: Delete benchmark with 10 crumbs
-  description: 'Measure Table.Delete latency including cascade deletion of property values, metadata, and links per prd003-crumbs-interface
+  description: 'Measure Table.Delete latency including cascade deletion of property values, metadata, and links per srd003-crumbs-interface
     R8.3. Each iteration creates then deletes a crumb. '
   inputs:
     args:
@@ -315,7 +315,7 @@ test_cases:
     exit_code: 0
     stdout: BenchmarkCrumbsFetchAll1000
 - name: Fetch with state filter benchmark 100 crumbs
-  description: 'Measure Table.Fetch with state filter. Exercises idx_crumbs_state index per prd002-sqlite-backend R3.3. '
+  description: 'Measure Table.Fetch with state filter. Exercises idx_crumbs_state index per srd002-sqlite-backend R3.3. '
   inputs:
     args:
     - go test -bench=BenchmarkCrumbsFetchState100 -benchmem ./tests/integration/...
