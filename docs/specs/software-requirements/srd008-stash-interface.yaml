@@ -1,11 +1,11 @@
-id: "prd008-stash-interface"
+id: "srd008-stash-interface"
 title: Stash Interface
 problem: |
   Crumbs are individual work items. Trails group them. But there is no mechanism for crumbs to share runtime state. When multiple agents coordinate on related tasks, they need shared resources (files, URLs, connections), artifacts (outputs from one crumb as inputs to another), context (decisions, configuration), and coordination primitives (locks, counters).
 
   Without shared state, agents must pass information through external channels or encode it in crumb properties, which conflates task attributes with coordination state. We need a dedicated entity for shared state that is scoped to a trail (or global), versioned, and auditable.
 
-  This PRD defines the Stash entity: the struct fields, stash types, entity methods for value management and coordination, and how stashes interact with the Table interface.
+  This SRD defines the Stash entity: the struct fields, stash types, entity methods for value management and coordination, and how stashes interact with the Table interface.
 goals:
 - G1: Define the Stash struct with all required fields
 - G2: Define stash types and their semantics
@@ -267,12 +267,12 @@ package_contract:
   import_constraints:
   - pkg/schema must not import pkg/api or internal/
 non_goals:
-- This PRD does not define queue or channel stash types. These may be added in a future version
-- "This PRD does not define stash replication or cross-cupboard sharing"
-- This PRD does not define TTL or automatic expiration for stashes
-- This PRD does not define access control or permissions on stashes
-- This PRD does not define history compaction or pruning. History grows unbounded
-- This PRD does not define blocking lock acquisition with timeout. Callers implement retry loops
+- This SRD does not define queue or channel stash types. These may be added in a future version
+- "This SRD does not define stash replication or cross-cupboard sharing"
+- This SRD does not define TTL or automatic expiration for stashes
+- This SRD does not define access control or permissions on stashes
+- This SRD does not define history compaction or pruning. History grows unbounded
+- This SRD does not define blocking lock acquisition with timeout. Callers implement retry loops
 acceptance_criteria:
 - id: AC1
   criterion: "Stash struct defined with StashID, Name, StashType, Value, Version, CreatedAt fields"

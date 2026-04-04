@@ -25,30 +25,30 @@ flow:
   - F13: "Verify final state (requires close from F12): run cupboard show <id> to confirm state is closed"
   - F14: "Confirm ready excludes closed (requires closed task from F12): run cupboard ready --json --type task and verify closed task is absent"
 touchpoints:
-  - T1: "Cupboard interface: GetTable('crumbs') (prd001-cupboard-core R2)"
-  - T2: "Table interface: Get, Set, Fetch (prd001-cupboard-core R3)"
-  - T3: "cupboard CLI create command: creation via Table.Set (prd003-crumbs-interface R3)"
-  - T4: "cupboard CLI ready command: Fetch with filter (prd003-crumbs-interface R9, R10)"
-  - T5: "cupboard CLI update command: SetState (prd003-crumbs-interface R4)"
-  - T6: "cupboard CLI close command: Pebble (prd003-crumbs-interface R4.3)"
-  - T7: "cupboard CLI show command: Table.Get (prd001-cupboard-core R3.2)"
-  - T8: "cupboard CLI list command: Table.Fetch (prd003-crumbs-interface R10)"
-  - T9: "cupboard CLI comments add command: metadata (prd002-sqlite-backend R2.8)"
-  - T10: "Crumb entity: state transitions, properties (prd003-crumbs-interface R2, R4, R5)"
-  - T11: "Properties: type, priority, labels (prd004-properties-interface R9)"
-  - T12: "SQLite backend: JSONL persistence (prd002-sqlite-backend R5)"
+  - T1: "Cupboard interface: GetTable('crumbs') (srd001-cupboard-core R2)"
+  - T2: "Table interface: Get, Set, Fetch (srd001-cupboard-core R3)"
+  - T3: "cupboard CLI create command: creation via Table.Set (srd003-crumbs-interface R3)"
+  - T4: "cupboard CLI ready command: Fetch with filter (srd003-crumbs-interface R9, R10)"
+  - T5: "cupboard CLI update command: SetState (srd003-crumbs-interface R4)"
+  - T6: "cupboard CLI close command: Pebble (srd003-crumbs-interface R4.3)"
+  - T7: "cupboard CLI show command: Table.Get (srd001-cupboard-core R3.2)"
+  - T8: "cupboard CLI list command: Table.Fetch (srd003-crumbs-interface R10)"
+  - T9: "cupboard CLI comments add command: metadata (srd002-sqlite-backend R2.8)"
+  - T10: "Crumb entity: state transitions, properties (srd003-crumbs-interface R2, R4, R5)"
+  - T11: "Properties: type, priority, labels (srd004-properties-interface R9)"
+  - T12: "SQLite backend: JSONL persistence (srd002-sqlite-backend R5)"
 success_criteria:
   - id: S1
     criterion: Full issue lifecycle completes through CLI commands; create produces a crumb with properties, update transitions state, close marks as closed, and ready correctly excludes non-open tasks — confirming the seven issue-tracking commands compose into a working workflow
     traces:
-      - prd009-cupboard-cli AC3
-      - prd003-crumbs-interface AC3
-      - prd003-crumbs-interface AC4
+      - srd009-cupboard-cli AC3
+      - srd003-crumbs-interface AC3
+      - srd003-crumbs-interface AC4
   - id: S2
     criterion: Comment-to-CLI pipeline works end-to-end; comments add appends metadata visible in show output, confirming the metadata system integrates with the issue-tracking CLI
     traces:
-      - prd005-metadata-interface AC5
-      - prd005-metadata-interface AC7
+      - srd005-metadata-interface AC5
+      - srd005-metadata-interface AC7
 out_of_scope:
   - Script integration (do-work.sh, make-work.sh) covered by rel02.1-uc003-self-hosting Phase 2
   - Interactive agent workflow rules covered by rel02.1-uc003-self-hosting Phase 3

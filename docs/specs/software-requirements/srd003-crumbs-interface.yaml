@@ -1,9 +1,9 @@
-id: "prd003-crumbs-interface"
+id: "srd003-crumbs-interface"
 title: Crumbs Interface
 problem: |
-  Applications need to create, retrieve, and manage individual work items (crumbs). prd001-cupboard-core defines the Cupboard interface with uniform Table access, but it does not specify the Crumb entity structure, entity methods, or how crumbs interact with the Table interface. Without this specification, implementations will make inconsistent decisions about field names, state transitions, and property handling.
+  Applications need to create, retrieve, and manage individual work items (crumbs). srd001-cupboard-core defines the Cupboard interface with uniform Table access, but it does not specify the Crumb entity structure, entity methods, or how crumbs interact with the Table interface. Without this specification, implementations will make inconsistent decisions about field names, state transitions, and property handling.
 
-  This PRD defines the Crumb entity: the struct fields, entity methods for state management and property access, and how crumbs are stored and retrieved via the Table interface. Trail membership is not stored on the Crumb; the links table (prd002-sqlite-backend) handles belongs_to relationships.
+  This SRD defines the Crumb entity: the struct fields, entity methods for state management and property access, and how crumbs are stored and retrieved via the Table interface. Trail membership is not stored on the Crumb; the links table (srd002-sqlite-backend) handles belongs_to relationships.
 goals:
 - G1: Define the Crumb struct with all required fields
 - G2: Define state values and their meaning
@@ -41,7 +41,7 @@ requirements:
         weight: 2
     - R1.4:
         text: "Trail membership is not a Crumb field. Use the links table (belongs_to link type) to associate crumbs with\
-          \ trails. See prd002-sqlite-backend"
+          \ trails. See srd002-sqlite-backend"
         weight: 1
     - R1.5:
         text: "CreatedAt and UpdatedAt must be set to the current time on creation. UpdatedAt must be updated on any modification\
@@ -76,7 +76,7 @@ requirements:
     - R3.2:
         text: "When Table.Set is called with an empty ID, the backend must generate a UUID v7 for CrumbID, set State to \"\
           draft\", set CreatedAt to now, set UpdatedAt to now, and initialize Properties map with all defined properties set\
-          \ to their type-based default values (see prd004-properties-interface R3.5)"
+          \ to their type-based default values (see srd004-properties-interface R3.5)"
         weight: 2
     - R3.4:
         text: "Table.Set must validate that Name is non-empty and return ErrInvalidName if empty"
@@ -244,14 +244,14 @@ package_contract:
   import_constraints:
   - pkg/schema must not import pkg/api or internal/
 non_goals:
-- "This PRD does not define the Table interface or Cupboard interface. See prd001-cupboard-core"
-- "This PRD does not define trail operations. See prd006-trails-interface"
-- "This PRD does not define property definitions. See prd004-properties-interface"
-- This PRD does not define complex state transition rules beyond Pebble validation. Applications may add additional validation
+- "This SRD does not define the Table interface or Cupboard interface. See srd001-cupboard-core"
+- "This SRD does not define trail operations. See srd006-trails-interface"
+- "This SRD does not define property definitions. See srd004-properties-interface"
+- This SRD does not define complex state transition rules beyond Pebble validation. Applications may add additional validation
   logic
-- "This PRD does not define batch operations (e.g., bulk dust, bulk update)"
-- "This PRD does not define full-text search on crumb names or content"
-- This PRD does not define property validation at the entity method level. Property methods may defer validation to Table.Set
+- "This SRD does not define batch operations (e.g., bulk dust, bulk update)"
+- "This SRD does not define full-text search on crumb names or content"
+- This SRD does not define property validation at the entity method level. Property methods may defer validation to Table.Set
   for simplicity
 acceptance_criteria:
 - id: AC1

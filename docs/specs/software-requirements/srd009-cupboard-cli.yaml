@@ -1,7 +1,7 @@
-id: "prd009-cupboard-cli"
+id: "srd009-cupboard-cli"
 title: Cupboard CLI Interface
 problem: |
-  The CLI design is scattered across multiple documents. prd001-cupboard-core defines the Cupboard and Table interfaces but does not specify CLI commands. prd010-configuration-directories defines configuration flags but not command structure. prd003-crumbs-interface defines the Crumb entity but not crumb-specific CLI commands. eng02-beads-migration lists issue-tracking commands but not their full specification.
+  The CLI design is scattered across multiple documents. srd001-cupboard-core defines the Cupboard and Table interfaces but does not specify CLI commands. srd010-configuration-directories defines configuration flags but not command structure. srd003-crumbs-interface defines the Crumb entity but not crumb-specific CLI commands. eng02-beads-migration lists issue-tracking commands but not their full specification.
 
   Agents building the CLI must read four documents and infer the CLI contract. Without a single specification, implementations diverge on command naming, flag conventions, output formats, and error handling. We need one document that defines the complete CLI interface so developers and agents can implement commands consistently.
 goals:
@@ -185,7 +185,7 @@ requirements:
         text: Init must create empty JSONL files if they do not exist
         weight: 2
     - R10.4:
-        text: "Init must seed built-in properties (priority, type, description, owner, labels) per prd004-properties-interface\
+        text: "Init must seed built-in properties (priority, type, description, owner, labels) per srd004-properties-interface\
           \ R8"
         weight: 5
     - R10.5:
@@ -195,12 +195,12 @@ requirements:
         text: "Init must print \"Cupboard initialized successfully\" on completion"
         weight: 1
 non_goals:
-- This PRD does not define a graphical user interface (GUI) or terminal user interface (TUI)
-- "This PRD does not define shell completion scripts (bash, zsh, fish)"
-- This PRD does not define a plugin system for custom commands
-- "This PRD does not define remote backend support (HTTP, gRPC)"
-- This PRD does not define batch operations beyond what the generic table commands provide
-- This PRD does not define interactive mode or REPL functionality
+- This SRD does not define a graphical user interface (GUI) or terminal user interface (TUI)
+- "This SRD does not define shell completion scripts (bash, zsh, fish)"
+- This SRD does not define a plugin system for custom commands
+- "This SRD does not define remote backend support (HTTP, gRPC)"
+- This SRD does not define batch operations beyond what the generic table commands provide
+- This SRD does not define interactive mode or REPL functionality
 acceptance_criteria:
 - id: AC1
   criterion: "All implemented commands documented (init, version, get, set, delete, list, crumb add/get/list/delete)"

@@ -33,35 +33,35 @@ flow:
   - F22: "Verify history entries (requires history from F21): confirm entries have correct version, operation, and value snapshots"
   - F23: "Detach the cupboard: call cupboard.Detach()"
 touchpoints:
-  - T1: "Cupboard interface: Attach, Detach, GetTable (prd001-cupboard-core R2)"
-  - T2: "Table (stashes): Get, Set, Delete, Fetch (prd001-cupboard-core R3)"
-  - T3: "Stash entity: StashID, Name, StashType, Value, Version, CreatedAt fields (prd008-stash-interface R1)"
-  - T4: "Stash types: resource, artifact, context, counter, lock (prd008-stash-interface R2)"
-  - T5: "SetValue/GetValue methods for value access (prd008-stash-interface R4)"
-  - T6: "Increment method for counter operations (prd008-stash-interface R5)"
-  - T7: "Acquire/Release methods for lock operations (prd008-stash-interface R6)"
-  - T8: "Version tracking across mutations (prd008-stash-interface R1.6)"
-  - T9: "Filter map for stash queries: stash_type, name (prd008-stash-interface R9)"
-  - T10: "Stash history tracking: FetchStashHistory method (prd008-stash-interface R7)"
+  - T1: "Cupboard interface: Attach, Detach, GetTable (srd001-cupboard-core R2)"
+  - T2: "Table (stashes): Get, Set, Delete, Fetch (srd001-cupboard-core R3)"
+  - T3: "Stash entity: StashID, Name, StashType, Value, Version, CreatedAt fields (srd008-stash-interface R1)"
+  - T4: "Stash types: resource, artifact, context, counter, lock (srd008-stash-interface R2)"
+  - T5: "SetValue/GetValue methods for value access (srd008-stash-interface R4)"
+  - T6: "Increment method for counter operations (srd008-stash-interface R5)"
+  - T7: "Acquire/Release methods for lock operations (srd008-stash-interface R6)"
+  - T8: "Version tracking across mutations (srd008-stash-interface R1.6)"
+  - T9: "Filter map for stash queries: stash_type, name (srd008-stash-interface R9)"
+  - T10: "Stash history tracking: FetchStashHistory method (srd008-stash-interface R7)"
 success_criteria:
   - id: S1
     criterion: All five stash types create and operate correctly through the Table interface; resource/artifact/context use SetValue/GetValue, counter uses Increment with positive and negative deltas, lock uses Acquire/Release with reentrant and contention semantics — confirming type-specific operations compose with the uniform storage layer
     traces:
-      - prd008-stash-interface AC2
-      - prd008-stash-interface AC3
-      - prd008-stash-interface AC4
-      - prd008-stash-interface AC5
+      - srd008-stash-interface AC2
+      - srd008-stash-interface AC3
+      - srd008-stash-interface AC4
+      - srd008-stash-interface AC5
   - id: S2
     criterion: Version tracking is consistent across all mutation types; Version starts at 1 and increments on every operation (create, set, increment, acquire, release), with FetchStashHistory returning entries for each mutation ordered by version ascending
     traces:
-      - prd008-stash-interface AC1
-      - prd008-stash-interface AC6
-      - prd008-stash-interface AC7
+      - srd008-stash-interface AC1
+      - srd008-stash-interface AC6
+      - srd008-stash-interface AC7
   - id: S3
     criterion: Fetch with stash_type and name filters returns correct subsets, and delete removes stash with subsequent Get returning ErrNotFound — confirming query and lifecycle operations through the Table interface
     traces:
-      - prd008-stash-interface AC10
-      - prd008-stash-interface AC12
+      - srd008-stash-interface AC10
+      - srd008-stash-interface AC12
 out_of_scope:
   - Stash scoping via scoped_to links (see rel03.0-uc002)
   - Blocking lock acquisition with timeout

@@ -31,31 +31,31 @@ flow:
   - F13: "Verify cascade deletion (requires abandonment from F12): crumbs return ErrNotFound, all related links deleted, properties cleaned up"
   - F14: "Detach the cupboard: call cupboard.Detach()"
 touchpoints:
-  - T1: "Cupboard interface: Attach, Detach, GetTable (prd001-cupboard-core R2)"
-  - T2: "Table interface: Get, Set, Delete, Fetch (prd001-cupboard-core R3)"
-  - T3: "Trail entity: SetState method for state transitions (prd006-trails-interface R2)"
-  - T4: "Trail entity: Complete method marks crumbs permanent (prd006-trails-interface R5)"
-  - T5: "Trail entity: Abandon method triggers cascade deletion (prd006-trails-interface R6)"
-  - T6: "belongs_to links: crumb → trail membership (prd007-links-interface R2.1)"
-  - T7: "Cardinality constraint: crumb belongs to at most one trail (prd007-links-interface R6.1)"
-  - T8: "Backend cascade on complete: removes belongs_to links (prd006-trails-interface R5.6)"
-  - T9: "Backend cascade on abandon: deletes crumbs, properties, links atomically (prd006-trails-interface R6.6, R6.7)"
+  - T1: "Cupboard interface: Attach, Detach, GetTable (srd001-cupboard-core R2)"
+  - T2: "Table interface: Get, Set, Delete, Fetch (srd001-cupboard-core R3)"
+  - T3: "Trail entity: SetState method for state transitions (srd006-trails-interface R2)"
+  - T4: "Trail entity: Complete method marks crumbs permanent (srd006-trails-interface R5)"
+  - T5: "Trail entity: Abandon method triggers cascade deletion (srd006-trails-interface R6)"
+  - T6: "belongs_to links: crumb → trail membership (srd007-links-interface R2.1)"
+  - T7: "Cardinality constraint: crumb belongs to at most one trail (srd007-links-interface R6.1)"
+  - T8: "Backend cascade on complete: removes belongs_to links (srd006-trails-interface R5.6)"
+  - T9: "Backend cascade on abandon: deletes crumbs, properties, links atomically (srd006-trails-interface R6.6, R6.7)"
 success_criteria:
   - id: S1
     criterion: Trail completion makes crumbs permanent; Complete removes all belongs_to links but crumbs persist without trail association, indistinguishable from never-trailed crumbs — confirming the link-removal cascade on the completion path
     traces:
-      - prd006-trails-interface AC5
-      - prd006-trails-interface AC6
+      - srd006-trails-interface AC5
+      - srd006-trails-interface AC6
   - id: S2
     criterion: Trail abandonment deletes crumbs atomically; Abandon removes crumbs, their properties, metadata, and all links involving the crumb — confirming cascade deletion across multiple tables
     traces:
-      - prd006-trails-interface AC7
-      - prd006-trails-interface AC8
+      - srd006-trails-interface AC7
+      - srd006-trails-interface AC8
   - id: S3
     criterion: Crumb-trail cardinality is enforced; a crumb belongs to at most one trail, and crumbs can move between trails by deleting and recreating belongs_to links — confirming membership constraints through the links table
     traces:
-      - prd007-links-interface AC8
-      - prd006-trails-interface AC9
+      - srd007-links-interface AC8
+      - srd006-trails-interface AC9
 out_of_scope:
   - Trail branching via branches_from links (see rel03.0-uc001-trail-exploration)
   - Nested trails or trail hierarchies

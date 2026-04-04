@@ -10,37 +10,37 @@ flow:
   - F1: "Build and install generation N: Generation N is built, tested, and installed. The go install step places the cupboard binary in $GOBIN. This binary becomes the reference implementation for the current JSONL format."
   - F2: "Create JSONL data using generation N (requires installed binary from F1): Create crumbs using the generation N binary. This data represents the contract that generation N+1 must honor."
   - F3: "Run --regenerate (requires committed data from F2): The script tags the current repo state, deletes all Go source files, reinitializes the Go module, and commits. Internally runs git tag, find -delete, rm, go mod init, git add, git commit."
-  - F4: "Rebuild from documentation (requires clean slate from F3): The make-work/do-work loop rebuilds cupboard from documentation. The new code (generation N+1) is written by agents reading PRDs, architecture docs, and use cases. The agents produce a fresh implementation that must conform to the documented JSONL format (prd002-sqlite-backend R2)."
+  - F4: "Rebuild from documentation (requires clean slate from F3): The make-work/do-work loop rebuilds cupboard from documentation. The new code (generation N+1) is written by agents reading SRDs, architecture docs, and use cases. The agents produce a fresh implementation that must conform to the documented JSONL format (srd002-sqlite-backend R2)."
   - F5: "Build generation N+1 (requires rebuilt source from F4): Build and verify generation N+1 compiles successfully."
-  - F6: "Load generation N data with generation N+1 (requires N+1 binary from F5 and N data from F2): Point generation N+1 at the JSONL data created by generation N. The backend's startup sequence (prd002-sqlite-backend R4) loads JSONL into SQLite. If the format has drifted, this step fails."
+  - F6: "Load generation N data with generation N+1 (requires N+1 binary from F5 and N data from F2): Point generation N+1 at the JSONL data created by generation N. The backend's startup sequence (srd002-sqlite-backend R4) loads JSONL into SQLite. If the format has drifted, this step fails."
   - F7: "Verify read operations (requires loaded data from F6): Verify read operations against generation N data return correct values."
   - F8: "Verify write operations (requires successful reads from F7): Verify write operations update generation N data correctly. Generation N+1 must write JSONL in a format that both itself and generation N can read."
   - F9: "Verify generation N reads N+1 modifications (requires N+1 writes from F8 and installed N binary from F1): Verify the installed generation N binary can still read the data after generation N+1 modifies it. This confirms write compatibility in both directions."
   - F10: "Verify property operations across generations (requires property data from F2 and N+1 binary from F5): If generation N defined properties and set values, generation N+1 must load those properties and values correctly (requires rel02.0 property enforcement)."
 touchpoints:
   - T1: "mage openGeneration / closeGeneration: Orchestrates the regeneration cycle (tag, delete, reinit, rebuild)"
-  - T2: "SQLite backend startup: Loads JSONL files into SQLite; format must match across generations (prd002-sqlite-backend R4)"
-  - T3: "JSONL file format: The contract between generations; format stability is the invariant (prd002-sqlite-backend R2)"
-  - T4: "JSONL write path: Writes must produce JSONL that older and newer generations can parse (prd002-sqlite-backend R5)"
-  - T5: "Unknown field handling: Unknown fields in JSONL are ignored, enabling forward compatibility (prd002-sqlite-backend R7.2)"
-  - T6: "Cupboard interface: Attach/Detach, GetTable work identically across generations (prd001-cupboard-core R4, R5)"
-  - T7: "Property system: Property definitions and values persist across regeneration (prd004-properties-interface R4)"
+  - T2: "SQLite backend startup: Loads JSONL files into SQLite; format must match across generations (srd002-sqlite-backend R4)"
+  - T3: "JSONL file format: The contract between generations; format stability is the invariant (srd002-sqlite-backend R2)"
+  - T4: "JSONL write path: Writes must produce JSONL that older and newer generations can parse (srd002-sqlite-backend R5)"
+  - T5: "Unknown field handling: Unknown fields in JSONL are ignored, enabling forward compatibility (srd002-sqlite-backend R7.2)"
+  - T6: "Cupboard interface: Attach/Detach, GetTable work identically across generations (srd001-cupboard-core R4, R5)"
+  - T7: "Property system: Property definitions and values persist across regeneration (srd004-properties-interface R4)"
 success_criteria:
   - id: S1
     criterion: Forward compatibility holds; generation N+1, rebuilt entirely from documentation, loads JSONL data created by generation N without error and returns correct values for all read operations
     traces:
-      - prd002-sqlite-backend AC1
-      - prd002-sqlite-backend AC3
+      - srd002-sqlite-backend AC1
+      - srd002-sqlite-backend AC3
   - id: S2
     criterion: Backward compatibility holds; the installed generation N binary reads data modified by generation N+1 and returns updated values, confirming write format stability across generations
     traces:
-      - prd002-sqlite-backend AC1
-      - prd002-sqlite-backend AC4
+      - srd002-sqlite-backend AC1
+      - srd002-sqlite-backend AC4
   - id: S3
     criterion: Property data survives regeneration; properties and values created by generation N are loaded correctly by generation N+1, confirming cross-component format stability between the property system and JSONL persistence
     traces:
-      - prd004-properties-interface AC5
-      - prd002-sqlite-backend AC3
+      - srd004-properties-interface AC5
+      - srd002-sqlite-backend AC3
 out_of_scope:
   - Schema migrations or versioned JSONL formats (we rely on format stability and unknown-field tolerance)
   - Testing more than two generations in sequence (N and N+1 only)

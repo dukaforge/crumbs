@@ -23,30 +23,30 @@ flow:
   - F7: "Handle invalid JSON (tested on F2): set returns exit code 1 with parse error details"
   - F8: "Handle invalid filter (tested on F3): list returns exit code 1 with expected key=value message"
 touchpoints:
-  - T1: "Cupboard interface: GetTable returns Table for any standard table name (prd001-cupboard-core R2)"
-  - T2: "Table interface: Get, Set, Delete, Fetch operations (prd001-cupboard-core R3)"
-  - T3: "cmd/cupboard/get.go: retrieves entity by ID, outputs JSON (prd009-cupboard-cli R3.1)"
-  - T4: "cmd/cupboard/set.go: creates or updates entity from JSON input (prd009-cupboard-cli R3.2)"
-  - T5: "cmd/cupboard/list.go: queries with key=value filters, outputs JSON array (prd009-cupboard-cli R3.4)"
-  - T6: "cmd/cupboard/delete.go: removes entity by ID (prd009-cupboard-cli R3.3)"
-  - T7: "Error handling: exit codes and message format (prd009-cupboard-cli R8, R9)"
-  - T8: "Output format: JSON with 2-space indentation (prd009-cupboard-cli R7)"
+  - T1: "Cupboard interface: GetTable returns Table for any standard table name (srd001-cupboard-core R2)"
+  - T2: "Table interface: Get, Set, Delete, Fetch operations (srd001-cupboard-core R3)"
+  - T3: "cmd/cupboard/get.go: retrieves entity by ID, outputs JSON (srd009-cupboard-cli R3.1)"
+  - T4: "cmd/cupboard/set.go: creates or updates entity from JSON input (srd009-cupboard-cli R3.2)"
+  - T5: "cmd/cupboard/list.go: queries with key=value filters, outputs JSON array (srd009-cupboard-cli R3.4)"
+  - T6: "cmd/cupboard/delete.go: removes entity by ID (srd009-cupboard-cli R3.3)"
+  - T7: "Error handling: exit codes and message format (srd009-cupboard-cli R8, R9)"
+  - T8: "Output format: JSON with 2-space indentation (srd009-cupboard-cli R7)"
 success_criteria:
   - id: S1
     criterion: Full CRUD cycle works through the CLI; set creates with generated ID, get retrieves as JSON, set updates, list returns filtered results, delete removes — all with correct exit codes (0 for success, 1 for errors)
     traces:
-      - prd009-cupboard-cli AC3
-      - prd009-cupboard-cli AC8
+      - srd009-cupboard-cli AC3
+      - srd009-cupboard-cli AC8
   - id: S2
     criterion: All generic table commands (get, set, list, delete) work identically across crumbs, trails, and links table types, confirming the CLI's uniform table routing
     traces:
-      - prd009-cupboard-cli AC3
-      - prd001-cupboard-core AC4
+      - srd009-cupboard-cli AC3
+      - srd001-cupboard-core AC4
   - id: S3
     criterion: Error handling is consistent across all commands; unknown table names, missing entities, invalid JSON, and malformed filters all produce exit code 1 with descriptive messages on stderr
     traces:
-      - prd009-cupboard-cli AC8
-      - prd009-cupboard-cli AC9
+      - srd009-cupboard-cli AC8
+      - srd009-cupboard-cli AC9
 out_of_scope:
   - Entity-specific commands with friendly flags (cupboard crumb add --name)
   - Human-readable table output (only JSON output tested)

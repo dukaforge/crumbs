@@ -20,29 +20,29 @@ flow:
   - F8: "Run benchmarks and capture baseline (requires all benchmarks from F2-F7): go test -bench=. -benchmem ./internal/sqlite/..."
   - F9: "Compare against baseline on code changes (requires baseline from F8): use benchstat for statistical comparison"
 touchpoints:
-  - T1: "Table interface: Get, Set, Delete, Fetch (prd001-cupboard-core R3)"
-  - T2: "SQLite backend: entity hydration from rows (prd002-sqlite-backend R14)"
-  - T3: "SQLite backend: entity persistence to rows (prd002-sqlite-backend R15)"
-  - T4: "SQLite backend: JSONL atomic write (prd002-sqlite-backend R5.2)"
-  - T5: "SQLite backend: immediate sync strategy (prd002-sqlite-backend R16.2)"
-  - T6: "Crumb entity: SetProperty, GetProperty (prd003-crumbs-interface R5)"
-  - T7: "Crumb table: filter map queries (prd003-crumbs-interface R9)"
-  - T8: "SQLite backend: idx_crumbs_state index (prd002-sqlite-backend R3.3)"
+  - T1: "Table interface: Get, Set, Delete, Fetch (srd001-cupboard-core R3)"
+  - T2: "SQLite backend: entity hydration from rows (srd002-sqlite-backend R14)"
+  - T3: "SQLite backend: entity persistence to rows (srd002-sqlite-backend R15)"
+  - T4: "SQLite backend: JSONL atomic write (srd002-sqlite-backend R5.2)"
+  - T5: "SQLite backend: immediate sync strategy (srd002-sqlite-backend R16.2)"
+  - T6: "Crumb entity: SetProperty, GetProperty (srd003-crumbs-interface R5)"
+  - T7: "Crumb table: filter map queries (srd003-crumbs-interface R9)"
+  - T8: "SQLite backend: idx_crumbs_state index (srd002-sqlite-backend R3.3)"
 success_criteria:
   - id: S1
     criterion: Full benchmark suite completes without error and captures baseline; all Get, Set, Delete, Fetch, and property benchmarks at multiple scales produce ns/op, B/op, and allocs/op output committed as baseline.txt for regression tracking
     traces:
-      - prd001-cupboard-core AC4
-      - prd002-sqlite-backend AC14
+      - srd001-cupboard-core AC4
+      - srd002-sqlite-backend AC14
   - id: S2
     criterion: Benchmark results are consistent and cover multi-scale data sizes; each benchmark reports variance under 10% across runs, and the suite spans 10 to 10000 entity scales to catch scaling regressions
     traces:
-      - prd002-sqlite-backend AC14
-      - prd002-sqlite-backend AC15
+      - srd002-sqlite-backend AC14
+      - srd002-sqlite-backend AC15
 out_of_scope:
-  - Concurrent access benchmarks (prd002-sqlite-backend R8 describes single-writer model)
+  - Concurrent access benchmarks (srd002-sqlite-backend R8 describes single-writer model)
   - Network latency (SQLite backend is local; no network overhead)
   - CLI command overhead (benchmarks measure Table interface, not CLI parsing)
-  - Non-immediate sync strategies (prd002-sqlite-backend R16.3, R16.4 are deferred performance options)
+  - Non-immediate sync strategies (srd002-sqlite-backend R16.3, R16.4 are deferred performance options)
   - Trail and stash operations (those entity types are in later releases)
 test_suite: test-rel02.1

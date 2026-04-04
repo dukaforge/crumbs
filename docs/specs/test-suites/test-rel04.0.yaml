@@ -3,9 +3,9 @@ title: Branch-Independent Data Persistence
 release: "04.0"
 traces:
   - rel04.0-uc001-branch-independent-data
-  - prd002-sqlite-backend R4, R1.1
-  - prd010-configuration-directories R1, R2
-  - prd012-branch-independent-data R1.1, R1.2, R1.4, R2.1, R2.2, R2.3, R3.3, R4.1
+  - srd002-sqlite-backend R4, R1.1
+  - srd010-configuration-directories R1, R2
+  - srd012-branch-independent-data R1.1, R1.2, R1.4, R2.1, R2.2, R2.3, R3.3, R4.1
 preconditions:
   - Git repository initialized with cupboard configured
   - data directory path set in config; cupboard.db in .gitignore

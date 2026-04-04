@@ -34,21 +34,21 @@ flow:
   - F17: "Run full benchmark suite (requires all benchmarks from F3-F16): execute go test -bench=. -benchmem and capture output"
   - F18: "Record baseline (requires output from F17): save benchmark output for future comparison with benchstat"
 touchpoints:
-  - T1: "Table interface: Get, Set, Delete, Fetch (prd001-cupboard-core R3)"
-  - T2: "SQLite backend: entity hydration, dehydration, JSONL persistence (prd002-sqlite-backend R14, R15)"
-  - T3: "SQLite indexes: idx_crumbs_state for state filter benchmarks (prd002-sqlite-backend R3.3)"
-  - T4: "Cupboard interface: Attach, Detach for benchmark setup/teardown (prd001-cupboard-core R2)"
+  - T1: "Table interface: Get, Set, Delete, Fetch (srd001-cupboard-core R3)"
+  - T2: "SQLite backend: entity hydration, dehydration, JSONL persistence (srd002-sqlite-backend R14, R15)"
+  - T3: "SQLite indexes: idx_crumbs_state for state filter benchmarks (srd002-sqlite-backend R3.3)"
+  - T4: "Cupboard interface: Attach, Detach for benchmark setup/teardown (srd001-cupboard-core R2)"
 success_criteria:
   - id: S1
     criterion: All benchmark functions (Get, Set create, Set update, Delete, Fetch all, Fetch with state filter) complete without error and produce ns/op, B/op, and allocs/op output, confirming the Table interface and SQLite backend operate correctly under sustained load
     traces:
-      - prd001-cupboard-core AC3
-      - prd002-sqlite-backend AC4
+      - srd001-cupboard-core AC3
+      - srd002-sqlite-backend AC4
   - id: S2
     criterion: Benchmarks cover multiple data scales (Get at 4 scales, Set/Delete/Fetch at 2 scales each), validating that the Table-to-SQLite path maintains consistent behavior as data volume increases from 10 to 10000 entities
     traces:
-      - prd002-sqlite-backend AC2
-      - prd002-sqlite-backend AC4
+      - srd002-sqlite-backend AC2
+      - srd002-sqlite-backend AC4
 out_of_scope:
   - Property operations (SetProperty, GetProperty, ClearProperty) — see rel02.0
   - Fetch with properties filter — requires rel02.0 property system

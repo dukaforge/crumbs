@@ -28,42 +28,42 @@ flow:
   - F18: "Verify value type validation (requires text property from F2): Attempt to call DefineCategory on a text property. Verify ErrInvalidValueType is returned."
   - F19: "Detach the cupboard: Call cupboard.Detach()."
 touchpoints:
-  - T1: "Cupboard interface: Attach, Detach, GetTable (prd001-cupboard-core R2)"
-  - T2: "Table (crumbs): Get, Set, Fetch (prd001-cupboard-core R3)"
-  - T3: "Table (properties): Get, Set, Fetch (prd001-cupboard-core R3)"
-  - T4: "Crumb entity: SetProperty, GetProperty, GetProperties, ClearProperty (prd003-crumbs-interface R5)"
-  - T5: "Property entity: struct fields, DefineCategory, GetCategories (prd004-properties-interface R7, R8)"
-  - T6: "Built-in property seeding (prd004-properties-interface R9, prd002-sqlite-backend R9)"
-  - T7: "Crumb creation with property auto-initialization (prd003-crumbs-interface R3)"
-  - T8: "Property definition with backfill to existing crumbs (prd004-properties-interface R4)"
-  - T9: "Category entity: struct fields, persistence to SQLite and JSONL (prd004-properties-interface R2, R7)"
+  - T1: "Cupboard interface: Attach, Detach, GetTable (srd001-cupboard-core R2)"
+  - T2: "Table (crumbs): Get, Set, Fetch (srd001-cupboard-core R3)"
+  - T3: "Table (properties): Get, Set, Fetch (srd001-cupboard-core R3)"
+  - T4: "Crumb entity: SetProperty, GetProperty, GetProperties, ClearProperty (srd003-crumbs-interface R5)"
+  - T5: "Property entity: struct fields, DefineCategory, GetCategories (srd004-properties-interface R7, R8)"
+  - T6: "Built-in property seeding (srd004-properties-interface R9, srd002-sqlite-backend R9)"
+  - T7: "Crumb creation with property auto-initialization (srd003-crumbs-interface R3)"
+  - T8: "Property definition with backfill to existing crumbs (srd004-properties-interface R4)"
+  - T9: "Category entity: struct fields, persistence to SQLite and JSONL (srd004-properties-interface R2, R7)"
 success_criteria:
   - id: S1
     criterion: Property auto-initialization works on crumb creation and post-definition backfill; a crumb created after Attach has all built-in properties with defaults, and a crumb created before a custom property definition receives the new property via backfill
     traces:
-      - prd004-properties-interface AC5
-      - prd003-crumbs-interface AC7
+      - srd004-properties-interface AC5
+      - srd003-crumbs-interface AC7
   - id: S2
     criterion: Property CRUD round-trips correctly; SetProperty persists a value retrievable by GetProperty, ClearProperty resets to the default (not null), and GetProperties returns the full set after each mutation
     traces:
-      - prd003-crumbs-interface AC5
-      - prd003-crumbs-interface AC6
+      - srd003-crumbs-interface AC5
+      - srd003-crumbs-interface AC6
   - id: S3
     criterion: GetProperties never returns a partial set; at every point in the flow (after creation, after backfill, after set, after clear) every crumb has exactly as many properties as are defined, with no gaps
     traces:
-      - prd004-properties-interface AC5
-      - prd003-crumbs-interface AC5
+      - srd004-properties-interface AC5
+      - srd003-crumbs-interface AC5
   - id: S4
     criterion: Category operations enforce constraints; DefineCategory creates ordered categories retrievable via GetCategories, ErrDuplicateName rejects duplicate names within a property, and ErrInvalidValueType rejects category operations on non-categorical properties
     traces:
-      - prd004-properties-interface AC8
-      - prd004-properties-interface AC9
-      - prd004-properties-interface AC12
+      - srd004-properties-interface AC8
+      - srd004-properties-interface AC9
+      - srd004-properties-interface AC12
 out_of_scope:
   - Core CRUD operations (Get, Set, Delete, Fetch) - see rel01.0-uc003
-  - Property deletion or renaming (not supported per prd004-properties-interface)
+  - Property deletion or renaming (not supported per srd004-properties-interface)
   - Trail operations - see rel03.0-uc001
   - Concurrent property definition and crumb creation
   - Property value validation beyond type checking
-  - Category deletion or renaming (not supported per prd004-properties-interface)
+  - Category deletion or renaming (not supported per srd004-properties-interface)
 test_suite: test-rel02.0

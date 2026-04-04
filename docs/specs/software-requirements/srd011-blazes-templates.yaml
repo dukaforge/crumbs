@@ -1,4 +1,4 @@
-id: "prd011-blazes-templates"
+id: "srd011-blazes-templates"
 title: "Blazes Template Schema, Discovery, and Selection"
 problem: |
   Coding agents frequently encounter tasks that follow recognizable patterns: fixing a bug, implementing
@@ -14,11 +14,11 @@ problem: |
   the workflow structure (which crumbs to create, their dependencies, their trail organization) so agents
   start from a known-good pattern instead of improvising.
 
-  This PRD defines the blaze template system: the YAML schema for template files, the mechanism for
+  This SRD defines the blaze template system: the YAML schema for template files, the mechanism for
   discovering templates on the filesystem, the algorithm for matching a task to a template via tags, the
   selection logic when multiple templates match, and the extraction of parameters that the agent or user
   must supply before instantiation. Template instantiation (actually creating trails, crumbs, and links
-  from a template) is out of scope and deferred to a future PRD (prd-blazes-instantiation).
+  from a template) is out of scope and deferred to a future SRD (srd-blazes-instantiation).
 goals:
 - G1: Define the Blaze template YAML schema with required and optional fields
 - G2: Define the BlazeParameter schema for template parameters
@@ -68,12 +68,12 @@ requirements:
         text: "The parameters field is optional. When omitted or empty, the template requires no user input before instantiation"
         weight: 1
     - R1.9:
-        text: "The trail_definition field is optional in this PRD. Its schema will be defined in prd-blazes-instantiation.\
+        text: "The trail_definition field is optional in this SRD. Its schema will be defined in srd-blazes-instantiation.\
           \ Discovery and selection ignore this field entirely"
         weight: 1
     - R1.10:
         text: Unknown fields in the template YAML must be ignored (forward compatibility). The parser must not reject a template
-          because it contains fields not defined in this PRD
+          because it contains fields not defined in this SRD
         weight: 1
     - R1.11:
         text: |
@@ -118,7 +118,7 @@ requirements:
               type: integer
               default: 3
           trail_definition:
-            # Defined in prd-blazes-instantiation
+            # Defined in srd-blazes-instantiation
           ```
         weight: 1
   R2:
@@ -186,7 +186,7 @@ requirements:
           3. Well-known path: `.crumbs/blazes/` relative to the Cupboard data directory (Config.DataDir)
         weight: 1
     - R3.3:
-        text: "The well-known path `.crumbs/blazes/` is relative to the data directory resolved by prd010-configuration-directories.\
+        text: "The well-known path `.crumbs/blazes/` is relative to the data directory resolved by srd010-configuration-directories.\
           \ For example, if DataDir is `/project/.crumbs-db`, the well-known template path is `/project/.crumbs-db/.crumbs/blazes/`"
         weight: 3
     - R3.4:
@@ -230,7 +230,7 @@ requirements:
         weight: 1
     - R5.2:
         text: "Parsing must not read or interpret the trail_definition field. This field is opaque during discovery and selection,\
-          \ reserved for instantiation (prd-blazes-instantiation)"
+          \ reserved for instantiation (srd-blazes-instantiation)"
         weight: 1
     - R5.3:
         text: "If a template file contains invalid YAML (syntax error), the parser must skip that file, record a warning with\
@@ -403,7 +403,7 @@ requirements:
     title: Error Handling
     items:
     - R9.1:
-        text: "Blaze template operations must use the following sentinel errors, following the pattern established in prd001-cupboard-core\
+        text: "Blaze template operations must use the following sentinel errors, following the pattern established in srd001-cupboard-core\
           \ R7"
         weight: 1
     - R9.2:
@@ -448,20 +448,20 @@ requirements:
           \ as warnings. The parser skips the unreadable file and continues with remaining files"
         weight: 1
 non_goals:
-- "This PRD does not define trail instantiation from templates. Creating trails, crumbs, and belongs_to links from a selected\
-  \ template is deferred to prd-blazes-instantiation"
-- "This PRD does not define parameter value binding or placeholder expansion. Substituting parameter values into trail definitions\
-  \ is deferred to prd-blazes-instantiation"
-- "This PRD does not define creating crumbs via Table.Set (prd003-crumbs-interface R3) from template data. That requires instantiation"
-- "This PRD does not define creating trails via Table.Set (prd006-trails-interface R3) from template data. That requires instantiation"
-- "This PRD does not define creating belongs_to links (prd006-trails-interface R7) from template data. That requires instantiation"
-- This PRD does not define template versioning or inheritance. Templates are standalone files; there is no mechanism for one
+- "This SRD does not define trail instantiation from templates. Creating trails, crumbs, and belongs_to links from a selected\
+  \ template is deferred to srd-blazes-instantiation"
+- "This SRD does not define parameter value binding or placeholder expansion. Substituting parameter values into trail definitions\
+  \ is deferred to srd-blazes-instantiation"
+- "This SRD does not define creating crumbs via Table.Set (srd003-crumbs-interface R3) from template data. That requires instantiation"
+- "This SRD does not define creating trails via Table.Set (srd006-trails-interface R3) from template data. That requires instantiation"
+- "This SRD does not define creating belongs_to links (srd006-trails-interface R7) from template data. That requires instantiation"
+- This SRD does not define template versioning or inheritance. Templates are standalone files; there is no mechanism for one
   template to extend or override another
-- This PRD does not define remote template repositories. Templates are local filesystem files only
-- This PRD does not define template creation or editing workflows. Templates are authored manually or by external tools
-- "This PRD does not define a specialized BlazeTable interface. Blaze operations are standalone functions, not part of the\
+- This SRD does not define remote template repositories. Templates are local filesystem files only
+- This SRD does not define template creation or editing workflows. Templates are authored manually or by external tools
+- "This SRD does not define a specialized BlazeTable interface. Blaze operations are standalone functions, not part of the\
   \ Table interface"
-- This PRD does not define Go struct definitions. Go structs will be defined in a subsequent code task. This PRD specifies
+- This SRD does not define Go struct definitions. Go structs will be defined in a subsequent code task. This SRD specifies
   the contract
 acceptance_criteria:
 - id: AC1

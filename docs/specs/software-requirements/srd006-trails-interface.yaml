@@ -1,11 +1,11 @@
-id: "prd006-trails-interface"
+id: "srd006-trails-interface"
 title: Trails Interface
 problem: |
   Applications need to support exploratory work sessions where users can try different approaches without committing to them permanently. A developer might start working on a feature, explore multiple implementation paths, and later decide to keep some work while discarding dead ends. Without trails, all crumbs are permanent from the moment of creation, making exploratory workflows awkward or impossible.
 
   We need a way to group crumbs into exploratory sessions (trails) that can later be committed (made permanent) or abandoned (discarded entirely). This enables backtracking and branching without cluttering the main work stream with abandoned attempts.
 
-  This PRD defines the Trail entity: its struct fields and entity methods for lifecycle operations (Complete, Abandon). Entity methods update the Trail struct in memory; the caller persists changes via Table.Set, at which point the backend performs cascade operations (removing links or deleting crumbs). Trail membership is stored via the links table (belongs_to relationship); this PRD specifies the semantics while prd002-sqlite-backend specifies the storage.
+  This SRD defines the Trail entity: its struct fields and entity methods for lifecycle operations (Complete, Abandon). Entity methods update the Trail struct in memory; the caller persists changes via Table.Set, at which point the backend performs cascade operations (removing links or deleting crumbs). Trail membership is stored via the links table (belongs_to relationship); this SRD specifies the semantics while srd002-sqlite-backend specifies the storage.
 goals:
 - G1: Define the Trail struct with all required fields
 - G2: Define trail states and their meaning
@@ -176,7 +176,7 @@ requirements:
         text: All errors must be checkable with errors.Is
         weight: 1
     - R8.3:
-        text: "Table operations (Get, Set, Fetch) may return additional errors as defined in prd001-cupboard-core R7"
+        text: "Table operations (Get, Set, Fetch) may return additional errors as defined in srd001-cupboard-core R7"
         weight: 1
   R9:
     title: Trail Branching
@@ -213,15 +213,15 @@ package_contract:
   import_constraints:
   - pkg/schema must not import pkg/api or internal/
 non_goals:
-- "This PRD does not define crumb CRUD operations. See prd003-crumbs-interface."
-- "This PRD does not define the Table interface or link storage. The Table interface is defined in prd001-cupboard-core and\
-  \ the links table is detailed in prd002-sqlite-backend. This PRD defines entity methods that use those interfaces."
-- This PRD does not define nested trails or trail hierarchies. Each trail is independent.
-- This PRD does not define undo for Complete or Abandon. These are terminal operations.
-- "This PRD does not define batch operations on trails (e.g., merge trails, split trails)."
-- "This PRD does not define a specialized TrailTable interface. Trails are accessed via the standard Table interface from\
-  \ prd001-cupboard-core."
-- This PRD does not define entity methods for adding or removing crumbs from trails. Crumb membership is managed via the links
+- "This SRD does not define crumb CRUD operations. See srd003-crumbs-interface."
+- "This SRD does not define the Table interface or link storage. The Table interface is defined in srd001-cupboard-core and\
+  \ the links table is detailed in srd002-sqlite-backend. This SRD defines entity methods that use those interfaces."
+- This SRD does not define nested trails or trail hierarchies. Each trail is independent.
+- This SRD does not define undo for Complete or Abandon. These are terminal operations.
+- "This SRD does not define batch operations on trails (e.g., merge trails, split trails)."
+- "This SRD does not define a specialized TrailTable interface. Trails are accessed via the standard Table interface from\
+  \ srd001-cupboard-core."
+- This SRD does not define entity methods for adding or removing crumbs from trails. Crumb membership is managed via the links
   table using the standard Table interface.
 acceptance_criteria:
 - id: AC1

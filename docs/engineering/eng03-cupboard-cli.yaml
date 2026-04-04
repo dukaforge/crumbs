@@ -3,7 +3,7 @@ title: Cupboard CLI Usage
 introduction: |
   This guideline describes how to install, configure, and use the cupboard command-line tool. We
   cover installation, initialization, configuration, and the full command set for managing crumbs
-  and issue tracking. For the formal specification, see prd009-cupboard-cli.yaml.
+  and issue tracking. For the formal specification, see srd009-cupboard-cli.yaml.
 sections:
 - title: Installation
   content: |
@@ -266,14 +266,14 @@ sections:
     Data migration involves moving from .beads/issues.jsonl to the cupboard data directory.
     Commit JSONL files from the data directory instead of .beads/ files.
 references:
-- id: prd009-cupboard-cli
-  path: specs/product-requirements/prd009-cupboard-cli.yaml
+- id: srd009-cupboard-cli
+  path: specs/software-requirements/srd009-cupboard-cli.yaml
   note: formal CLI specification
-- id: prd010-configuration-directories
-  path: specs/product-requirements/prd010-configuration-directories.yaml
+- id: srd010-configuration-directories
+  path: specs/software-requirements/srd010-configuration-directories.yaml
   note: directory structure and config loading
-- id: prd001-cupboard-core
-  path: specs/product-requirements/prd001-cupboard-core.yaml
+- id: srd001-cupboard-core
+  path: specs/software-requirements/srd001-cupboard-core.yaml
   note: Cupboard and Table interfaces
 - id: eng01-git-integration
   path: engineering/eng01-git-integration.yaml

@@ -1,16 +1,16 @@
-id: "prd007-links-interface"
+id: "srd007-links-interface"
 title: Links Interface
 problem: |
-  Links represent directed edges in the entity graph. They connect crumbs to trails (belongs_to), crumbs to crumbs (child_of), trails to crumbs (branches_from), and stashes to trails (scoped_to). Link requirements are currently scattered across four PRDs (prd002-sqlite-backend, prd006-trails-interface, prd008-stash-interface, prd003-crumbs-interface), making it difficult to understand the complete link behavior and constraints.
+  Links represent directed edges in the entity graph. They connect crumbs to trails (belongs_to), crumbs to crumbs (child_of), trails to crumbs (branches_from), and stashes to trails (scoped_to). Link requirements are currently scattered across four SRDs (srd002-sqlite-backend, srd006-trails-interface, srd008-stash-interface, srd003-crumbs-interface), making it difficult to understand the complete link behavior and constraints.
 
-  We consolidate all link requirements into one authoritative source. Other PRDs should reference prd007-links-interface for link behavior rather than duplicating these specifications. The Link entity is the only entity without a dedicated interface PRD; prd007 fills that gap.
+  We consolidate all link requirements into one authoritative source. Other SRDs should reference srd007-links-interface for link behavior rather than duplicating these specifications. The Link entity is the only entity without a dedicated interface SRD; srd007 fills that gap.
 goals:
 - G1: Define the Link struct with all required fields
 - G2: Define valid link types and their semantics
 - G3: Document CRUD operations via the Table interface
 - G4: Define filter keys and query semantics
 - G5: Document uniqueness constraint and indexes
-- G6: Consolidate cardinality rules from other PRDs
+- G6: Consolidate cardinality rules from other SRDs
 - G7: Document error handling
 - G8: Define graph audit functions for integrity validation
 requirements:
@@ -157,11 +157,11 @@ requirements:
         text: "Audit functions are also available as Cupboard methods for on-demand validation"
         weight: 8
 non_goals:
-- "This PRD does not define cascade behavior on trail completion or abandonment. See prd006-trails-interface for cascade semantics"
-- "This PRD does not define entity-specific query patterns (e.g., finding all crumbs in a trail). Those patterns are documented\
-  \ in the entity-specific PRDs"
-- This PRD does not define link update operations. Links are immutable; delete and recreate to modify
-- This PRD does not change the existing Link implementation
+- "This SRD does not define cascade behavior on trail completion or abandonment. See srd006-trails-interface for cascade semantics"
+- "This SRD does not define entity-specific query patterns (e.g., finding all crumbs in a trail). Those patterns are documented\
+  \ in the entity-specific SRDs"
+- This SRD does not define link update operations. Links are immutable; delete and recreate to modify
+- This SRD does not change the existing Link implementation
 acceptance_criteria:
 - id: AC1
   criterion: "Link struct defined with LinkID, LinkType, FromID, ToID, CreatedAt"
@@ -209,7 +209,7 @@ acceptance_criteria:
   - R5.4
   - R5.5
 - id: AC8
-  criterion: Cardinality rules consolidated from other PRDs
+  criterion: Cardinality rules consolidated from other SRDs
   traces:
   - R6.1
   - R6.2

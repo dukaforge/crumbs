@@ -4,9 +4,9 @@ summary: 'The CLI loads configuration using a multi-layer precedence chain: plat
 
   defaults, environment variable overrides, config.yaml values, and CLI flag overrides.
 
-  This tracer bullet validates the config loading pipeline from prd010-configuration-directories
+  This tracer bullet validates the config loading pipeline from srd010-configuration-directories
 
-  and prd009-cupboard-cli, ensuring developers can control where config and data live.
+  and srd009-cupboard-cli, ensuring developers can control where config and data live.
 
   '
 actor: Developer running the cupboard CLI on Linux, macOS, or Windows
@@ -21,24 +21,24 @@ flow:
   - F7: "Pass resolved paths to Cupboard (requires both directories from F3 and F5): construct Config struct with Backend and DataDir, call Attach"
   - F8: "Verify operations work (requires attached Cupboard from F7): run a command that exercises the resolved paths (e.g., cupboard init, cupboard list crumbs)"
 touchpoints:
-  - T1: "internal/paths.DefaultConfigDir: platform-specific config directory (prd010-configuration-directories R1.2)"
-  - T2: "internal/paths.DefaultDataDir: platform-specific data directory (prd010-configuration-directories R2.2)"
-  - T3: "internal/paths.ResolveConfigDir: flag > env > default precedence (prd010-configuration-directories R1.3)"
-  - T4: "internal/paths.ResolveDataDir: flag > config > default precedence (prd010-configuration-directories R2.3)"
-  - T5: "cmd/cupboard/config.loadConfig: Viper-based config loading (prd010-configuration-directories R7)"
-  - T6: Global flags --config-dir and --data-dir (prd009-cupboard-cli R6.2, R6.3)
+  - T1: "internal/paths.DefaultConfigDir: platform-specific config directory (srd010-configuration-directories R1.2)"
+  - T2: "internal/paths.DefaultDataDir: platform-specific data directory (srd010-configuration-directories R2.2)"
+  - T3: "internal/paths.ResolveConfigDir: flag > env > default precedence (srd010-configuration-directories R1.3)"
+  - T4: "internal/paths.ResolveDataDir: flag > config > default precedence (srd010-configuration-directories R2.3)"
+  - T5: "cmd/cupboard/config.loadConfig: Viper-based config loading (srd010-configuration-directories R7)"
+  - T6: Global flags --config-dir and --data-dir (srd009-cupboard-cli R6.2, R6.3)
 success_criteria:
   - id: S1
     criterion: Full precedence chain resolves correctly for both config and data directories; flag overrides environment variable, environment variable overrides config.yaml, config.yaml overrides platform default
     traces:
-      - prd010-configuration-directories AC1
-      - prd010-configuration-directories AC2
-      - prd010-configuration-directories AC8
+      - srd010-configuration-directories AC1
+      - srd010-configuration-directories AC2
+      - srd010-configuration-directories AC8
   - id: S2
     criterion: First-run experience works without pre-existing configuration; missing config.yaml uses defaults, config directory is created if absent, and CLI operations succeed immediately
     traces:
-      - prd010-configuration-directories AC1
-      - prd010-configuration-directories AC8
+      - srd010-configuration-directories AC1
+      - srd010-configuration-directories AC8
 out_of_scope:
   - Configuration file encryption or secrets management
   - Multi-workspace support (multiple data directories)

@@ -7,13 +7,13 @@ traces:
 - rel01.0-uc003-crumb-lifecycle
 - rel01.0-uc004-scaffolding-validation
 - rel01.0-uc005-crumbs-table-benchmarks
-- prd001-cupboard-core R1, R2, R2.5, R3, R4, R5, R6, R7
-- prd002-sqlite-backend R3.3, R4, R5, R6, R14, R15, R16
-- prd003-crumbs-interface R1, R2, R3, R4, R5, R9, R10
-- prd004-properties-interface R1
-- prd005-metadata-interface R1
-- prd006-trails-interface R1
-- prd008-stash-interface R1
+- srd001-cupboard-core R1, R2, R2.5, R3, R4, R5, R6, R7
+- srd002-sqlite-backend R3.3, R4, R5, R6, R14, R15, R16
+- srd003-crumbs-interface R1, R2, R3, R4, R5, R9, R10
+- srd004-properties-interface R1
+- srd005-metadata-interface R1
+- srd006-trails-interface R1
+- srd008-stash-interface R1
 preconditions:
 - Cupboard binary built from cmd/cupboard
 - Fresh temp directory for config and data
@@ -82,7 +82,7 @@ test_cases:
     exit_code: 0
 - name: Full lifecycle with crumbs and trails
   description: 'Create 3 crumbs, transition crumb1 to pebble, create 2 trails, link crumb2 to trail1 and crumb3 to trail2,
-    complete trail1, abandon trail2. Per prd006-trails-interface R5.6/R6.6: completing trail1 removes belongs_to links (crumb2
+    complete trail1, abandon trail2. Per srd006-trails-interface R5.6/R6.6: completing trail1 removes belongs_to links (crumb2
     becomes permanent), abandoning trail2 deletes crumb3. '
   inputs: {}
   expected:
@@ -520,7 +520,7 @@ test_cases:
     stdout: cupboard
 - name: Crumb struct has required fields
   description: 'Compile-time test. Instantiate a Crumb with all documented fields to verify the struct definition matches
-    prd003-crumbs-interface. '
+    srd003-crumbs-interface. '
   inputs: {}
   expected: {}
 - name: Trail struct has required fields
@@ -651,7 +651,7 @@ test_cases:
     stdout: BenchmarkCrumbsGet10000_UC005
 - name: Set create benchmark with 10 existing crumbs
   description: 'Measure Table.Set latency for creating new crumbs (empty ID triggers UUID v7 generation). Seeds 10 existing
-    crumbs before measuring create operations per prd002-sqlite-backend R5.3. '
+    crumbs before measuring create operations per srd002-sqlite-backend R5.3. '
   inputs:
     args:
     - go test -bench=BenchmarkCrumbsSetCreate10_UC005 -benchmem ./tests/integration/...
@@ -714,7 +714,7 @@ test_cases:
     stdout: BenchmarkCrumbsFetchAll1000_UC005
 - name: Fetch with state filter benchmark 100 crumbs
   description: 'Measure Table.Fetch with state filter (State: draft). Seeds 100 crumbs cycling through draft, pending, ready
-    states. Exercises idx_crumbs_state index per prd002-sqlite-backend R3.3. '
+    states. Exercises idx_crumbs_state index per srd002-sqlite-backend R3.3. '
   inputs:
     args:
     - go test -bench=BenchmarkCrumbsFetchState100_UC005 -benchmem ./tests/integration/...

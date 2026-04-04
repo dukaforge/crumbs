@@ -4,10 +4,10 @@ release: '02.0'
 traces:
 - rel02.0-uc001-property-enforcement
 - rel02.0-uc002-regeneration-compatibility
-- prd001-cupboard-core R2, R3, R4, R5
-- prd002-sqlite-backend R2, R4, R5, R7.2, R9
-- prd003-crumbs-interface R3, R5
-- prd004-properties-interface R2, R4, R7, R8, R9
+- srd001-cupboard-core R2, R3, R4, R5
+- srd002-sqlite-backend R2, R4, R5, R7.2, R9
+- srd003-crumbs-interface R3, R5
+- srd004-properties-interface R2, R4, R7, R8, R9
 preconditions:
 - Cupboard binary built from cmd/cupboard
 - Fresh temp directory for config and data
