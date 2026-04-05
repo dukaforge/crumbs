@@ -214,6 +214,24 @@ package_contract:
     signature: "func (t *Trail) Abandon() error"
   import_constraints:
   - pkg/schema must not import pkg/api or internal/
+semantic_model:
+  observe: |
+    Read ifc-entity-types.yaml Trail data structure for field types and operations.
+    Read R1-R9 for struct fields, state values, state transitions, Complete/Abandon
+    semantics, crumb membership via belongs_to links, and trail branching via
+    branches_from links.
+  reason: |
+    Define Trail struct with TrailID, State, CreatedAt, CompletedAt per R1.
+    Implement state machine (draft→pending→active→completed|abandoned) per R2.
+    Implement Complete: requires active state, sets State and CompletedAt per R5.
+    Implement Abandon: requires active state, sets State and CompletedAt per R6.
+    Both methods modify struct fields only; cascade operations (crumbs to pebble
+    or dust) are the backend's responsibility in srd002.
+    pkg/schema must not import pkg/api or internal/.
+  produce: |
+    Single file pkg/schema/trail.go containing Trail struct and methods:
+    Complete, Abandon.
+
 non_goals:
 - "This SRD does not define crumb CRUD operations. See srd003-crumbs-interface."
 - "This SRD does not define the Table interface or link storage. The Table interface is defined in srd001-cupboard-core and\

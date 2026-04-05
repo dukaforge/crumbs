@@ -248,6 +248,23 @@ package_contract:
     signature: "func (p *Property) DefineCategory(name string, ordinal int) (*Category, error)"
   import_constraints:
   - pkg/schema must not import pkg/api or internal/
+semantic_model:
+  observe: |
+    Read ifc-entity-types.yaml Property and Category data structures for field types.
+    Read R1-R10 for struct fields, value type system (categorical, text, integer,
+    boolean, timestamp, list), default values, category management, built-in
+    properties (priority, status), and error types.
+  reason: |
+    Define Property struct with PropertyID, Name, Description, ValueType, CreatedAt
+    per R1. Define Category struct with CategoryID, PropertyID, Name, Ordinal per R2.
+    Implement value type defaults per R3. Implement DefineCategory with uniqueness
+    validation and categorical-type guard per R7. Implement GetCategories with
+    ordinal+name ordering per R8. All methods modify struct fields only.
+    pkg/schema must not import pkg/api or internal/.
+  produce: |
+    Single file pkg/schema/property.go containing Property struct, Category struct,
+    DefineCategory, GetCategories, and value type default functions.
+
 non_goals:
 - "This SRD does not define setting or getting property values on crumbs. See srd003-crumbs-interface for SetProperty, GetProperty,\
   \ GetProperties, and ClearProperty"

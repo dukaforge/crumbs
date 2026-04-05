@@ -245,6 +245,23 @@ package_contract:
     signature: "func (c *Crumb) GetProperty(propertyID string) (any, error)"
   import_constraints:
   - pkg/schema must not import pkg/api or internal/
+semantic_model:
+  observe: |
+    Read ifc-entity-types.yaml Crumb data structure for field types and operations.
+    Read R1-R11 for struct fields, state values, state transitions, property methods,
+    filter map keys, and error types. Read srd004 for property value types and categories
+    (SetProperty must validate against them).
+  reason: |
+    Define Crumb struct with CrumbID, Name, State, CreatedAt, UpdatedAt, Properties
+    per R1. Implement state machine (draft→pending→ready→taken→pebble|dust) per R2.
+    Implement Pebble (requires taken state) and Dust per R4. Implement SetProperty
+    with type checking and category validation, GetProperty per R5. All methods
+    modify struct fields only — no I/O, no database knowledge.
+    pkg/schema must not import pkg/api or internal/.
+  produce: |
+    Single file pkg/schema/crumb.go containing Crumb struct and methods:
+    SetState, Pebble, Dust, SetProperty, GetProperty.
+
 non_goals:
 - "This SRD does not define the Table interface or Cupboard interface. See srd001-cupboard-core"
 - "This SRD does not define trail operations. See srd006-trails-interface"
