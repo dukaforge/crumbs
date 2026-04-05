@@ -86,6 +86,22 @@ requirements:
         text: "Callers use the delete callback to execute entity-specific CASCADE deletes (e.g., deleting a crumb's properties,\
           \ metadata, and links within the same transaction)"
         weight: 5
+semantic_model:
+  observe: |
+    Read R1-R3 for UUID v7 generation, upsert scaffolding, and delete scaffolding.
+    Read srd002 R5 and R11 for how table accessors consume these utilities
+    (transaction callbacks, existence check patterns).
+  reason: |
+    Implement NewEntityID: generate UUID v7, extract UTC timestamp per R1.
+    Implement UpsertInTx: begin transaction, check existence via SQL query,
+    call onInsert or onUpdate callback, commit, return inserted boolean per R2.
+    Implement DeleteInTx: validate ID non-empty, check existence, call onDelete
+    callback within transaction, commit per R3. No entity type imports;
+    callbacks provide entity-specific SQL. Uses database/sql and github.com/google/uuid.
+  produce: |
+    Single file internal/persistence/lifecycle/lifecycle.go containing
+    NewEntityID, UpsertInTx, DeleteInTx.
+
 non_goals:
 - "This SRD does not define JSONL persistence after commit. Table accessors handle JSONL writes after the transaction completes,\
   \ since JSONL file selection varies by entity type"

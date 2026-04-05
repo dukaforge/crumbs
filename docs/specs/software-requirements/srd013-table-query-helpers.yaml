@@ -108,6 +108,23 @@ requirements:
         text: "Provide CheckUnique that runs a uniqueness query and returns ErrDuplicateName if a matching row exists (excluding\
           \ the current entity's ID)"
         weight: 2
+semantic_model:
+  observe: |
+    Read R1-R6 for Scanner interface, filter building, pagination, result iteration,
+    single-row retrieval, and existence checks. Read srd002 R13-R15 for how table
+    accessors consume these utilities (hydration callbacks, filter map patterns).
+  reason: |
+    Define Scanner interface unifying *sql.Row and *sql.Rows per R1. Implement
+    AddStringFilter and AddIntFilter to extract filter map values and append SQL
+    WHERE conditions per R2. Implement ApplyLimitOffset per R3. Implement FetchRows
+    with Scanner-based hydration callback per R4. Implement GetByID with ErrNoRows
+    to ErrNotFound mapping per R5. Implement CheckExists and CheckUnique per R6.
+    No entity type imports; operate on database/sql and pkg/api types only.
+  produce: |
+    Single file internal/persistence/queryutil/queryutil.go containing Scanner
+    interface, AddStringFilter, AddIntFilter, ApplyLimitOffset, FetchRows,
+    GetByID, CheckExists, CheckUnique.
+
 non_goals:
 - "This SRD does not define entity-specific hydration logic. Each table accessor still defines its own hydration function;\
   \ this SRD provides the Scanner interface they accept"

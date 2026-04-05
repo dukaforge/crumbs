@@ -166,6 +166,22 @@ package_contract:
   - name: ErrInvalidID
   import_constraints:
   - "pkg/api must not import pkg/schema, internal/, or cmd/"
+semantic_model:
+  observe: |
+    Read ifc-cupboard-and-config.yaml for interface operations and data structures.
+    Read R1-R8 for Config validation, Cupboard lifecycle, Table CRUD, error types,
+    and entity ID generation rules. Read ARCHITECTURE.yaml Interfaces (pkg/api)
+    component for responsibility boundaries.
+  reason: |
+    Define Config struct with Backend and DataDir fields per R1. Define Cupboard
+    interface with GetTable, Attach, Detach per R2. Define Table interface with
+    Get, Set, Delete, Fetch per R3. Define sentinel errors (ErrAlreadyAttached,
+    ErrCupboardDetached, ErrTableNotFound, ErrNotFound, ErrInvalidID) per R7.
+    pkg/api must not import pkg/schema or internal/.
+  produce: |
+    Single file pkg/api/api.go containing Cupboard interface, Table interface,
+    Config struct with Validate method, and sentinel error variables.
+
 non_goals:
 - "This SRD does not define entity-specific schemas or operations. Entity types are defined in their respective interface\
   \ SRDs (srd003-crumbs-interface, srd006-trails-interface, etc.)."

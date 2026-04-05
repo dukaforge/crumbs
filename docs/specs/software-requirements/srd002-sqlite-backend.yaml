@@ -436,6 +436,27 @@ package_contract:
   - internal/persistence must not import cmd/
   - "internal/persistence/engine must not import pkg/schema (entity-agnostic)"
   - internal/persistence/mapping must not import internal/persistence/engine
+semantic_model:
+  observe: |
+    Read ifc-cupboard-and-config.yaml for Cupboard and Table interfaces to implement.
+    Read ifc-entity-types.yaml for all entity struct fields (hydration/persistence targets).
+    Read R1-R16 for directory layout, JSONL format, SQLite schema, startup/shutdown,
+    write operations, concurrency, table routing, hydration, persistence, and sync strategies.
+    Read srd013 and srd014 package contracts for queryutil and lifecycle utilities to consume.
+  reason: |
+    Implement engine (schema creation, JSONL read/write, sync strategy per R3-R4, R16).
+    Implement mapping (one hydrate + one persist function per entity type per R14-R15).
+    Implement table accessors: Get delegates to queryutil.GetByID, Set delegates to
+    lifecycle.UpsertInTx, Delete delegates to lifecycle.DeleteInTx, Fetch delegates
+    to queryutil.FetchRows. Wire table name routing per R12. Implement trail cascade
+    operations (Complete→pebble, Abandon→dust+delete) per R5.
+    internal/persistence must not import cmd/. Engine must not import pkg/schema.
+  produce: |
+    Files in internal/persistence/: engine/engine.go (SQLite lifecycle, schema, JSONL sync),
+    mapping/hydrate.go (per-entity hydration), mapping/persist.go (per-entity persistence),
+    backend.go (NewSQLiteBackend, table routing, Cupboard implementation),
+    and one table accessor file per entity type.
+
 non_goals:
 - "This SRD does not define the Cupboard interface operations. Those are in srd001-cupboard-core and the interface SRDs"
 - "This SRD does not define cross-process locking. Single-process access is assumed"

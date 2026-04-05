@@ -268,6 +268,24 @@ package_contract:
     signature: "func (s *Stash) Release(holder string) error"
   import_constraints:
   - pkg/schema must not import pkg/api or internal/
+semantic_model:
+  observe: |
+    Read ifc-entity-types.yaml Stash data structure for field types and operations.
+    Read R1-R13 for struct fields, stash types (resource, artifact, context, counter,
+    lock), value operations, history tracking, scoping via scoped_to links, and
+    error types.
+  reason: |
+    Define Stash struct with StashID, Name, StashType, Value, Version, CreatedAt
+    per R1. Define StashHistoryEntry per R7. Implement SetValue: reject lock type,
+    increment version per R4. Implement Increment: validate counter type, add delta
+    per R5. Implement Acquire: validate lock type, check reentrant, set holder per R6.
+    Implement Release: validate lock type, verify holder, clear lock per R6.
+    All methods modify struct fields only — no I/O, no database knowledge.
+    pkg/schema must not import pkg/api or internal/.
+  produce: |
+    Single file pkg/schema/stash.go containing Stash struct, StashHistoryEntry
+    struct, and methods: SetValue, Increment, Acquire, Release.
+
 non_goals:
 - This SRD does not define queue or channel stash types. These may be added in a future version
 - "This SRD does not define stash replication or cross-cupboard sharing"
