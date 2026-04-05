@@ -1,5 +1,7 @@
 id: "srd004-properties-interface"
 title: Properties Interface
+implemented_by:
+  - Entity Types
 problem: |
   Applications need extensible attributes on crumbs beyond the core fields (name, state, timestamps). A task tracker might need priority, labels, and owner; a bug tracker might need severity and component. Hardcoding these fields into the Crumb struct creates rigid schemas that require code changes and migrations for every new attribute.
 

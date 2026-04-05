@@ -1,5 +1,7 @@
 id: "srd005-metadata-interface"
 title: Metadata Interface
+implemented_by:
+  - Entity Types
 problem: |
   Applications need to attach supplementary information to crumbs beyond structured properties. A developer might add comments during work, attach log files for debugging, or link to external resources. Properties handle typed, single-value attributes; metadata handles unstructured, multi-value content like comments, attachments, and activity logs.
 

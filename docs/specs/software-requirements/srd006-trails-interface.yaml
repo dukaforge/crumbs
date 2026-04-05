@@ -1,5 +1,7 @@
 id: "srd006-trails-interface"
 title: Trails Interface
+implemented_by:
+  - Entity Types
 problem: |
   Applications need to support exploratory work sessions where users can try different approaches without committing to them permanently. A developer might start working on a feature, explore multiple implementation paths, and later decide to keep some work while discarding dead ends. Without trails, all crumbs are permanent from the moment of creation, making exploratory workflows awkward or impossible.
 

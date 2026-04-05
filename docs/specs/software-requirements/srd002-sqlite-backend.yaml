@@ -1,5 +1,9 @@
 id: "srd002-sqlite-backend"
 title: SQLite Backend
+implemented_by:
+  - Cupboard and Config
+used_by:
+  - Entity Types
 problem: |
   The SQLite backend needs a detailed specification for how JSONL files and SQLite interact. srd001-cupboard-core establishes that JSONL is the source of truth and SQLite serves as a query engine, but it does not specify the JSONL file format, SQLite schema, sync lifecycle, or error handling. Without this detail, implementation will make ad-hoc decisions that may not align with project goals.
 

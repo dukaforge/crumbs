@@ -54,6 +54,7 @@ interfaces:
       The Cupboard interface provides table access and lifecycle management. Config selects
       the backend type and data directory. SQLiteConfig extends Config with sync strategy,
       batch size, and batch interval settings.
+    spec_file: docs/interfaces/ifc-cupboard-and-config.yaml
     data_structures:
       - "Config: backend selection and configuration (Backend, DataDir). See srd001-cupboard-core R1."
       - "SQLiteConfig: SQLite-specific configuration for sync strategy, batch size, and batch interval. See srd002-sqlite-backend R16."
@@ -70,6 +71,7 @@ interfaces:
     summary: |
       In-memory domain objects with state-transition methods. Entity methods modify struct fields
       only — no I/O, no database knowledge. All entities use UUID v7 identifiers.
+    spec_file: docs/interfaces/ifc-entity-types.yaml
     data_structures:
       - "Crumb: work item with CrumbID, Name, State, CreatedAt, UpdatedAt, Properties. See srd003-crumbs-interface."
       - "Trail: exploration session with TrailID, State, CreatedAt, CompletedAt. See srd006-trails-interface."

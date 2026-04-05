@@ -1,5 +1,7 @@
 id: "srd003-crumbs-interface"
 title: Crumbs Interface
+implemented_by:
+  - Entity Types
 problem: |
   Applications need to create, retrieve, and manage individual work items (crumbs). srd001-cupboard-core defines the Cupboard interface with uniform Table access, but it does not specify the Crumb entity structure, entity methods, or how crumbs interact with the Table interface. Without this specification, implementations will make inconsistent decisions about field names, state transitions, and property handling.
 

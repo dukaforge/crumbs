@@ -1,5 +1,7 @@
 id: "srd010-configuration-directories"
 title: Configuration Directory Structure
+used_by:
+  - Cupboard and Config
 problem: |
   The Cupboard CLI needs two distinct directory locations: one for application settings (backend selection, defaults) and one for backend data (crumbs, trails, links). These serve different purposes and have different lifecycles. Configuration is set once and rarely changes; data changes constantly. Separating them clarifies what to version-control versus what to treat as runtime state, and simplifies backup strategies.
 

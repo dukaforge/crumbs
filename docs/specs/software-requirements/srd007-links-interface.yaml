@@ -1,5 +1,7 @@
 id: "srd007-links-interface"
 title: Links Interface
+implemented_by:
+  - Entity Types
 problem: |
   Links represent directed edges in the entity graph. They connect crumbs to trails (belongs_to), crumbs to crumbs (child_of), trails to crumbs (branches_from), and stashes to trails (scoped_to). Link requirements are currently scattered across four SRDs (srd002-sqlite-backend, srd006-trails-interface, srd008-stash-interface, srd003-crumbs-interface), making it difficult to understand the complete link behavior and constraints.
 
