@@ -447,6 +447,31 @@ requirements:
         text: "I/O errors reading individual template files (e.g., file deleted between listing and reading) must be treated\
           \ as warnings. The parser skips the unreadable file and continues with remaining files"
         weight: 1
+package_contract:
+  exports:
+  - name: BlazeMetadata
+    signature: "type BlazeMetadata struct { Name string; Description string; Tags []string; Parameters []BlazeParameter; Version string; Priority int; Author string; FilePath string }"
+  - name: BlazeParameter
+    signature: "type BlazeParameter struct { Name string; Description string; Type string; Default string }"
+  - name: SelectionResult
+    signature: "type SelectionResult struct { Selected *BlazeMetadata; Tied []*BlazeMetadata; Ambiguous bool; NoMatch bool }"
+  - name: ExtractedParameter
+    signature: "type ExtractedParameter struct { Name string; Description string; Type string; Default string; Required bool; InferredValue string; Inferred bool }"
+  - name: DiscoverTemplateDir
+    signature: "func DiscoverTemplateDir(path string) (string, error)"
+  - name: ListTemplates
+    signature: "func ListTemplates(dir string) ([]string, error)"
+  - name: ParseTemplates
+    signature: "func ParseTemplates(paths []string) ([]BlazeMetadata, []error)"
+  - name: MatchTemplates
+    signature: "func MatchTemplates(templates []BlazeMetadata, tags []string) []BlazeMetadata"
+  - name: SelectTemplate
+    signature: "func SelectTemplate(matched []BlazeMetadata) SelectionResult"
+  - name: ExtractParameters
+    signature: "func ExtractParameters(template *BlazeMetadata) []ExtractedParameter"
+  import_constraints:
+  - "pkg/blazes must not import pkg/api, pkg/schema, or internal/"
+
 non_goals:
 - "This SRD does not define trail instantiation from templates. Creating trails, crumbs, and belongs_to links from a selected\
   \ template is deferred to srd-blazes-instantiation"

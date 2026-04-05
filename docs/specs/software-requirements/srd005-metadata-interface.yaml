@@ -217,6 +217,15 @@ requirements:
     - R10.2:
         text: All errors must be checkable with errors.Is
         weight: 1
+package_contract:
+  exports:
+  - name: Metadata
+    signature: "type Metadata struct { MetadataID string; CrumbID string; TableName string; PropertyID string; Content string; CreatedAt time.Time }"
+  - name: Schema
+    signature: "type Schema struct { SchemaName string; Description string; ContentType string }"
+  import_constraints:
+  - pkg/schema must not import pkg/api or internal/
+
 non_goals:
 - "This SRD does not define the Table interface or Cupboard interface. See srd001-cupboard-core."
 - "This SRD does not define crumb operations. See srd003-crumbs-interface."

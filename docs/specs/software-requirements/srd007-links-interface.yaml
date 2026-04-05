@@ -158,6 +158,18 @@ requirements:
     - R8.5:
         text: "Audit functions are also available as Cupboard methods for on-demand validation"
         weight: 8
+package_contract:
+  exports:
+  - name: Link
+    signature: "type Link struct { LinkID string; LinkType string; FromID string; ToID string; CreatedAt time.Time }"
+  - name: ValidateDAG
+    signature: "func ValidateDAG(cupboard api.Cupboard) error"
+  - name: ValidateReferences
+    signature: "func ValidateReferences(cupboard api.Cupboard) error"
+  import_constraints:
+  - pkg/schema must not import pkg/api or internal/
+  - "Graph audit functions may import pkg/api for Cupboard access"
+
 non_goals:
 - "This SRD does not define cascade behavior on trail completion or abandonment. See srd006-trails-interface for cascade semantics"
 - "This SRD does not define entity-specific query patterns (e.g., finding all crumbs in a trail). Those patterns are documented\
