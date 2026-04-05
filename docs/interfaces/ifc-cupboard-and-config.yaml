@@ -1,0 +1,125 @@
+# Copyright (c) 2026 Petar Djukic. All rights reserved.
+# SPDX-License-Identifier: MIT
+
+id: ifc-cupboard-and-config
+name: Cupboard and Config
+summary: |
+  The Cupboard interface provides table access and lifecycle management. Config selects
+  the backend type and data directory. SQLiteConfig extends Config with sync strategy,
+  batch size, and batch interval settings.
+
+data_structures:
+  - name: Config
+    description: Backend selection and configuration. Validated on Attach.
+    fields:
+      - name: Backend
+        type: string
+        description: Backend type identifier (e.g., "sqlite"). Validated non-empty and recognized.
+        required: true
+      - name: DataDir
+        type: string
+        description: Directory for backend storage. Required for "sqlite" backend.
+        required: true
+
+  - name: SQLiteConfig
+    description: SQLite-specific configuration extending Config with sync strategy and batching.
+    fields:
+      - name: SyncStrategy
+        type: string
+        description: JSONL write timing strategy. One of "immediate" (default) or "on_close".
+        required: false
+      - name: BatchSize
+        type: integer
+        description: Batch write threshold. Used with batch strategy.
+        required: false
+      - name: BatchInterval
+        type: duration
+        description: Batch write interval. Used with batch strategy.
+        required: false
+
+  - name: Table
+    description: Uniform CRUD accessor for a single entity type. Returned by Cupboard.GetTable.
+    fields: []
+
+operations:
+  - name: Cupboard.GetTable
+    description: Returns a Table accessor for the given entity type. Table names are fixed strings (crumbs, trails, properties, categories, metadata, links, stashes, stash_history, crumb_properties).
+    parameters:
+      - name: tableName
+        type: string
+        description: Name of the entity table.
+    returns:
+      - name: table
+        type: Table
+      - name: err
+        type: error
+
+  - name: Cupboard.Attach
+    description: Opens the backend and loads data. Returns ErrAlreadyAttached if already attached.
+    parameters:
+      - name: config
+        type: Config
+        description: Backend configuration.
+    returns:
+      - name: err
+        type: error
+
+  - name: Cupboard.Detach
+    description: Closes the backend and flushes pending writes. Idempotent.
+    parameters: []
+    returns:
+      - name: err
+        type: error
+
+  - name: Table.Get
+    description: Retrieve a single entity by ID. Returns ErrNotFound if the entity does not exist or ErrInvalidID if the ID is empty.
+    parameters:
+      - name: id
+        type: string
+        description: Entity UUID.
+    returns:
+      - name: entity
+        type: any
+      - name: err
+        type: error
+
+  - name: Table.Set
+    description: Create or update an entity. An empty id generates a new UUID v7 and initializes timestamps. A non-empty id updates the existing entity. Returns the generated or provided ID.
+    parameters:
+      - name: id
+        type: string
+        description: Entity UUID. Empty string creates a new entity.
+      - name: entity
+        type: any
+        description: Entity struct to persist.
+    returns:
+      - name: id
+        type: string
+      - name: err
+        type: error
+
+  - name: Table.Delete
+    description: Remove an entity by ID. Returns ErrNotFound if the entity does not exist or ErrInvalidID if the ID is empty.
+    parameters:
+      - name: id
+        type: string
+        description: Entity UUID.
+    returns:
+      - name: err
+        type: error
+
+  - name: Table.Fetch
+    description: Query entities matching a filter map. Empty or nil filter matches all entities. Returns empty slice (not nil) when no entities match. Results ordered by CreatedAt descending.
+    parameters:
+      - name: filter
+        type: map[string]any
+        description: Field-name keys with filter values. Supported keys vary by entity type. Unknown keys ignored.
+    returns:
+      - name: entities
+        type: "[]any"
+      - name: err
+        type: error
+
+references:
+  - srd001-cupboard-core
+  - srd002-sqlite-backend

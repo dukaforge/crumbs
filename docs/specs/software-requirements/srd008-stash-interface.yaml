@@ -1,5 +1,7 @@
 id: "srd008-stash-interface"
 title: Stash Interface
+implemented_by:
+  - Entity Types
 problem: |
   Crumbs are individual work items. Trails group them. But there is no mechanism for crumbs to share runtime state. When multiple agents coordinate on related tasks, they need shared resources (files, URLs, connections), artifacts (outputs from one crumb as inputs to another), context (decisions, configuration), and coordination primitives (locks, counters).
 

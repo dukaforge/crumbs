@@ -1,5 +1,7 @@
 id: "srd009-cupboard-cli"
 title: Cupboard CLI Interface
+used_by:
+  - Cupboard and Config
 problem: |
   The CLI design is scattered across multiple documents. srd001-cupboard-core defines the Cupboard and Table interfaces but does not specify CLI commands. srd010-configuration-directories defines configuration flags but not command structure. srd003-crumbs-interface defines the Crumb entity but not crumb-specific CLI commands. eng02-beads-migration lists issue-tracking commands but not their full specification.
 

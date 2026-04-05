@@ -1,5 +1,7 @@
 id: "srd001-cupboard-core"
 title: Cupboard Core Interface
+implemented_by:
+  - Cupboard and Config
 problem: |
   Applications using Crumbs need a consistent way to initialize storage, access data tables, and manage the cupboard lifecycle. Without a well-defined core interface, each application must handle backend initialization differently, leading to duplicated setup code and inconsistent error handling. We need a single entry point that accepts configuration, provides uniform table access, and cleanly releases resources when done.
 
