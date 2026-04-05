@@ -165,6 +165,18 @@ requirements:
         text: CLI configuration (config.yaml) is outside the Cupboard interface. The CLI reads config.yaml and constructs
           a Config struct to pass to Attach
         weight: 1
+package_contract:
+  exports:
+  - name: ResolveConfigDir
+    signature: "func ResolveConfigDir(flagValue string) (string, error)"
+  - name: LoadConfig
+    signature: "func LoadConfig(configDir string) (api.Config, error)"
+  - name: DefaultConfigDir
+    signature: "func DefaultConfigDir() (string, error)"
+  import_constraints:
+  - "Configuration resolution may import pkg/api for Config struct"
+  - "Must not import internal/ packages"
+
 non_goals:
 - This SRD does not define configuration file encryption or secrets management.
 - "This SRD does not define multi-workspace support (multiple data directories). One CLI instance operates on one data directory\
